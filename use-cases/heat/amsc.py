@@ -55,8 +55,8 @@ rhapsody.enable_logging(level=logging.WARNING)
 #  HEAT workflow knobs
 # ─────────────────────────────────────────────────────────────────────────────
 
-WORK_DIR = Path("/global/homes/a/aymen64/RADICAL/M3CD1-AMSC-MAY-DEMO/HEAT-WORK/HEATrun")
-DATA_DIR = Path("/global/homes/a/aymen64/RADICAL/M3CD1-AMSC-MAY-DEMO/HEAT-WORK/output")
+WORK_DIR = Path("path/to/HEAT-WORK/HEATrun")
+DATA_DIR = Path("path/to/HEAT-WORK/output")
 IMAGE    = "docker.io/plasmapotential/heat:test-build"
 
 STATE_FILE = WORK_DIR / "rose_state.pkl"
@@ -596,8 +596,12 @@ async def run_rose_workflow(bridge_url, edge_name):
 
     @learner.simulation_task(as_executable=True, capture_stdio=True)
     async def simulation(*args):
+        """
+        Note: if the bare python3 did not work, please use the python version from your
+        .amsc/ve/bin/python3 in the CLI command.
+        """
         return (
-            f"/global/u2/a/aymen64/.amsc/ve/bin/python3 /usr/bin/podman-hpc run --annotation podman_hpc.hook_tool=false --rm "
+            f"python3 /usr/bin/podman-hpc run --annotation podman_hpc.hook_tool=false --rm "
             f"-v {_work_dir}:/root/terminal "
             f"-v {_data_dir}:/root/HEAT "
             f"{_image} "

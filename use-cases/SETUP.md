@@ -66,10 +66,12 @@ pip install --upgrade dragonhpc scikit-learn mpi4py psij-python
 git clone git@github.com:radical-cybertools/radical.edge      || true
 git clone git@github.com:radical-cybertools/radical.asyncflow || true
 git clone git@github.com:radical-cybertools/rhapsody          || true
+git clone git@github.com:radical-cybertools/ROSE              || true
 
-cd radical.edge/     ; git checkout feature/amsc; git pull; pip install .; cd ..
-cd rhapsody/         ; git checkout feature/edge; git pull; pip install .; cd ..
-cd radical.asyncflow/; git checkout feature/edge; git pull; pip install .; cd ..
+cd radical.edge/     ; git checkout feature/amsc;   git pull; pip install .; cd ..
+cd rhapsody/         ; git checkout feature/edge;   git pull; pip install .; cd ..
+cd radical.asyncflow/; git checkout feature/edge;   git pull; pip install .; cd ..
+cd ROSE/             ; git checkout prototype/raas; git pull; pip install .; cd ..
 
 python3 -V
 which radical-edge-bridge.py

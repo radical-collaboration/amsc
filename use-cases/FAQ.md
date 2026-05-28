@@ -109,13 +109,18 @@ Under the rhapsody session directory on the compute side, named by task
 UID:
 
 ```
-<edge cwd>/<rhapsody-session-id>/matey.NNNN.stdout
-<edge cwd>/<rhapsody-session-id>/matey.NNNN.stderr
+<edge cwd>/<rhapsody-session-id>/task.NNNN.stdout
+<edge cwd>/<rhapsody-session-id>/task.NNNN.stderr
 ```
 
 Find `<rhapsody-session-id>` by grepping the edge log for
 `Registered session session.`. See [RUN.md](RUN.md) → *Find the task
 output*.
+
+> [NOTE]
+> By default `stderr` and `stdout` are only generated when `capture_stdio=True` is passed to the `ComputeTask`.
+
+
 
 ## I Ctrl-C'd the driver — is the IRI job still running?
 

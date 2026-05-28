@@ -12,12 +12,19 @@ cd SURGE
 pip install .
 pip install -r requirements-rose-demo.txt
 ```
+> [NOTE]
+> The setup of SURGE **MUST** be done on both **client** and **remote** side. Futher, you must change the path in `amsc.py` to the path
+> of your SURGE location on the remote resource: `_REMO = "/path/to/SURGE/examples/rose_orchestration"` 
+
+> [NOTE]
+> The deployment of ROSE aaS and its use cases will soon be fully automated.
+
 
 > [NOTE]
 > SURGE has no awareness of ML outer loop orchestration or resource distribution capabilities.
 > This is where ROSE aaS comes in. ROSE aaS enables SURGE workflows to be launched as a service and to scale and be distributed across N GPUs.
 
-3- Once you finished 1 and 2 you are ready to run on aaS on Perlmutter using
+3- Once you finished 1 and 2 you are ready to run on M3DC1 with ROSE aaS on Perlmutter:
 
 ```sh
 python amsc.py --max-iter 10 --growing-pool
@@ -30,8 +37,7 @@ python amsc.py --max-iter 10 --growing-pool
 4- The `amsc.py` already has `MLFlow` and `ClearML` tracker.
 
 
-5- To use the `MLFlow` of the `AmSC` servers please setup yours following these instrcutions: [setup-mlflow-with-amsc](https://gist.github.com/AymenFJA/0db6dcd357889546fde17a717ec2b417)
-
+5- To use the `MLFlow` of the `AmSC` servers please setup yours following these instrcutions: [AMSC-MLFLOW-SETUP.md](../AMSC-MLFLOW-SETUP.md)
 ### Sample output of the client side (your machine):
 ```shell
 2026-05-01 23:53:52,807 | DEBUG    | [urllib3.connectionpool] | https://mlflow.american-science-cloud.org:443 "POST /api/2.0/mlflow/runs/set-tag HTTP/1.1" 200 2

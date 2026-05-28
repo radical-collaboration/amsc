@@ -52,7 +52,7 @@ from radical.asyncflow import WorkflowEngine
 # _REMO — remote HPC path (hardcoded, captured into task closures so the
 #          remote Dragon worker can find dataset_utils / surge_train.py etc.)
 _EX   = Path(__file__).resolve().parent
-_REMO = "/global/homes/a/aymen64/RADICAL/M3CD1-AMSC-MAY-DEMO/SURGE/examples/rose_orchestration"
+_REMO = "/path/to/SURGE/examples/rose_orchestration"
 
 if str(_EX) not in sys.path:
     sys.path.insert(0, str(_EX))

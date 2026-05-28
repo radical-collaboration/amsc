@@ -25,8 +25,8 @@ mkdir -p HEAT-WORK && mkdir -p HEAT-WORK/HEATrun HEAT-WORK/output
 python amsc.py
 ```
 
-4- The `amsc.py` already has `MLFlow` and `ClearML` tracker.
+5. The `amsc.py` already has `MLFlow` and `ClearML` tracker.
 
 
-5- To use the `MLFlow` of the `AmSC` servers please setup yours following these instrcutions: [AMSC-MLFLOW-SETUP.md](../AMSC-MLFLOW-SETUP.md)
+6. To use the `MLFlow` of the `AmSC` servers please setup yours following these instrcutions: [AMSC-MLFLOW-SETUP.md](../AMSC-MLFLOW-SETUP.md)
 

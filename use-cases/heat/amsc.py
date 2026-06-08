@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Example 4 - ROSE ParallelActiveLearner model race — Edge Service version
+HEAT Optical Heat Flux Surrogate via ROSE — Edge Service version
 
 Combines the service scaffolding from run_rose_via_service.py with the
-SURGE parallel model race from 04_example_parallel_model_race.py.
+HEAT active-learning workflow from rose_heat_workflow_v2.py.
 
 Architecture
 ============
@@ -17,71 +17,63 @@ Architecture
    ╚══════════╝      ├── new edge ★          (spawned via IRI)
                      └── new edge ★          (spawned via PsiJ ↦ submit_tunneled)
 
-run_rose_workflow() runs the ParallelActiveLearner SURGE race on whichever
-edge comes up first.  The ConcurrentExecutionBackend from the original is
-replaced by rhapsody.get_backend('edge', ...).
+run_rose_workflow() runs the HEAT surrogate loop on whichever edge comes
+up first.  The synthetic sim/train loop from run_rose_via_service.py is
+replaced entirely by the HEAT physics workflow:
 
-CLI flags (--dataset, --candidates, --max-iter, --r2-threshold, …) still
-control the SURGE workflow; edge selection is handled interactively by the
-service infrastructure.
+  simulation  (as_executable=True)  → podman-hpc command, edge executes it
+  training    (as_executable=False) → parses HEAT CSV, trains GP surrogate
+  active_learn(as_executable=False) → max-uncertainty sampling, seeds next run
+  check_convergence (stop criterion) → mean(GP_std / y_std), stops at 0.05
+
+Surrogate learns: (lqCN, lqCF, S, P, radFrac, fracCN, fracCF) → q_max [MW/m²]
+Physics: Eich optical heat flux on NSTX-U geometry
 """
-from __future__ import annotations
 
-import argparse
 import asyncio
 import logging
 import os
-import subprocess
 import sys
 import time
 import uuid
-import warnings
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import rhapsody
-
-rhapsody.enable_logging(level=logging.DEBUG)
-
-os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
+import numpy as np
 
 from radical.edge.client import BridgeClient
-from radical.asyncflow import WorkflowEngine
 
-# _EX   — client-side path (resolved at import time, used for CLI helpers)
-# _REMO — remote HPC path (hardcoded, captured into task closures so the
-#          remote Dragon worker can find dataset_utils / surge_train.py etc.)
-_EX   = Path(__file__).resolve().parent
-_REMO = "/global/homes/a/aymen64/RADICAL/M3CD1-AMSC-MAY-DEMO/SURGE/examples/rose_orchestration"
+import rhapsody
+from radical.asyncflow      import WorkflowEngine
+from rose.al.active_learner import SequentialActiveLearner
+from rose.learner           import LearnerConfig, TaskConfig
+from rose.integrations.mlflow_tracker import MLflowTracker
 
-if str(_EX) not in sys.path:
-    sys.path.insert(0, str(_EX))
+rhapsody.enable_logging(level=logging.WARNING)
 
 
-# Inject X-Api-Key into all MLflow REST calls
-def enable_amsc_x_api_key():
+# ─────────────────────────────────────────────────────────────────────────────
+#  HEAT workflow knobs
+# ─────────────────────────────────────────────────────────────────────────────
 
-    import mlflow.utils.rest_utils as rest_utils
-    api_key = os.environ["AM_SC_API_KEY"]
-    if api_key:
-        _orig = rest_utils.http_request
-        def patched(host_creds, endpoint, method, *args, **kwargs):
-            h = dict(kwargs.get("headers") or kwargs.get("extra_headers") or {})
-            h["X-Api-Key"] = api_key
-            kwargs["headers" if "headers" in kwargs else "extra_headers"] = h
-            return _orig(host_creds, endpoint, method, *args, **kwargs)
-        rest_utils.http_request = patched
+WORK_DIR = Path("path/to/HEAT-WORK/HEATrun")
+DATA_DIR = Path("path/to/HEAT-WORK/output")
+IMAGE    = "docker.io/plasmapotential/heat:test-build"
 
+STATE_FILE = WORK_DIR / "rose_state.pkl"
 
-enable_amsc_x_api_key()
+PARAM_KEYS = ["lqCN", "lqCF", "S", "P", "radFrac", "fracCN", "fracCF"]
+PARAM_LO   = np.array([0.5,  2.0, 0.5,  5.0, 0.1, 0.4, 0.1])
+PARAM_HI   = np.array([5.0, 15.0, 5.0, 20.0, 0.8, 0.8, 0.6])
 
+MAX_ITER             = 10
+CONVERGENCE_THRESHOLD = 0.05
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  Service knobs
 # ─────────────────────────────────────────────────────────────────────────────
 
-EDGE_WAIT_SECONDS = 30 * 60
+EDGE_WAIT_SECONDS = 30 * 60 * 1000
 
 IRI_DEFAULTS = {
     'nersc': {
@@ -169,6 +161,27 @@ MACHINE_DEFAULTS = {
 AMSC_DIR = Path(os.environ.get('AMSC_DIR') or Path.home() / '.amsc').expanduser()
 
 
+# Inject X-Api-Key into all MLflow REST calls
+def enable_amsc_x_api_key():
+
+    import mlflow.utils.rest_utils as rest_utils
+    api_key = os.environ["AM_SC_API_KEY"]
+    if api_key:
+        _orig = rest_utils.http_request
+        def patched(host_creds, endpoint, method, *args, **kwargs):
+            h = dict(kwargs.get("headers") or kwargs.get("extra_headers") or {})
+            h["X-Api-Key"] = api_key
+            kwargs["headers" if "headers" in kwargs else "extra_headers"] = h
+            return _orig(host_creds, endpoint, method, *args, **kwargs)
+        rest_utils.http_request = patched
+
+
+enable_amsc_x_api_key()
+
+
+
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 #  Prompt helpers (unchanged from run_rose_via_service.py)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -229,8 +242,8 @@ def discover_targets(bc):
         if not MACHINE_DEFAULTS.get(name, {}).get('enabled', True):
             print(f'  (skipped {name}: disabled in MACHINE_DEFAULTS)')
             continue
-        edge         = bc.get_edge_client(name)
-        plugins      = edge.list_plugins()
+        edge    = bc.get_edge_client(name)
+        plugins = edge.list_plugins()
         has_rhapsody = 'rhapsody' in plugins
         has_psij     = 'psij'     in plugins
         try:
@@ -313,15 +326,14 @@ def launch_iri(bc, endpoint, cfg, bridge_url):
     token = read_token(endpoint)
     iri   = cx.connect(endpoint=endpoint, token=token)
     edge_name = f'amsc-{endpoint}-{uuid.uuid4().hex[:6]}'
-    args  = ['--name', edge_name, '--url', bridge_url]
+    args = ['--name', edge_name, '--url', bridge_url]
     if cfg['tunnel']:
         args += ['--tunnel', '--tunnel-via', cfg['login_host']]
     attrs = {
+        'queue_name': cfg['queue_name'],
         'duration'  : cfg['walltime_min'] * 60,
         'account'   : cfg['account'],
     }
-    if cfg.get('queue_name'):
-        attrs['queue_name'] = cfg['queue_name']
     if cfg['constraint']:  attrs['constraint']  = cfg['constraint']
     if cfg['reservation']: attrs['reservation'] = cfg['reservation']
     home    = cfg['home_dir'].rstrip('/')
@@ -389,21 +401,25 @@ def configure_psij(edge_name, executor):
 def launch_psij(bc, edge_name, cfg, bridge_url):
     edge = bc.get_edge_client(edge_name)
     psij = edge.get_plugin('psij')
-    home       = edge.get_plugin('sysinfo').homedir().rstrip('/')
-    amsc       = (cfg.get('amsc_dir') or '.amsc').strip('/')
-    wrapper    = f'{home}/{amsc}/ve/bin/radical-edge-wrapper.sh'
+    home    = edge.get_plugin('sysinfo').homedir().rstrip('/')
+    amsc    = (cfg.get('amsc_dir') or '.amsc').strip('/')
+    wrapper = f'{home}/{amsc}/ve/bin/radical-edge-wrapper.sh'
     child_name = f'amsc-{edge_name}-{uuid.uuid4().hex[:6]}'
     attrs = {
         'duration'  : cfg['walltime_min'] * 60,
         'account'   : cfg['account'],
     }
+
     if cfg.get('queue_name'):
         attrs['queue_name'] = cfg['queue_name']
+
     custom_attrs = {}
     if cfg.get('constraint'):
         custom_attrs[f'{cfg["executor"]}.constraint'] = cfg['constraint']
+
     if cfg.get('qos'):
         custom_attrs[f'{cfg["executor"]}.qos'] = cfg['qos']
+
     env = {'RADICAL_BRIDGE_URL': bridge_url}
     if cfg.get('setup'):
         env['RADICAL_EDGE_SETUP'] = '; '.join(cfg['setup'])
@@ -456,340 +472,252 @@ def wait_for_first_edge(bc, expected_names, timeout=EDGE_WAIT_SECONDS,
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  SURGE workflow helpers (module-level for pickling)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _candidate_configs(dataset: str, candidates: list[str], max_iter: int, growing_pool: bool):
-    from rose.learner import LearnerConfig, TaskConfig
-    from demo_common import canonical_workflow
-
-    configs = []
-    for idx, family in enumerate(candidates):
-        workflow = canonical_workflow(dataset, family)
-        label    = f"{idx}_{family}"
-        kwargs   = {
-            "learner_label": label,
-            "workflow"     : workflow,
-            "dataset"      : dataset,
-            "growing_pool" : growing_pool,
-        }
-        schedule    = {i: TaskConfig(kwargs={**kwargs, "iteration": i}) for i in range(max_iter + 1)}
-        schedule[-1] = TaskConfig(kwargs={**kwargs, "iteration": max_iter})
-        configs.append(
-            LearnerConfig(
-                simulation=schedule,
-                training=schedule,
-                active_learn=schedule,
-                criterion=schedule,
-            )
-        )
-    return configs
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-#  ROSE / SURGE workflow — replaces ConcurrentExecutionBackend with edge backend.
+#  ROSE / HEAT workflow — replaces the synthetic run_rose_workflow.
 #
-#  Signature matches the service pattern: (bridge_url, edge_name) plus
-#  the SURGE-specific keyword args forwarded from main().
+#  Tasks are defined as closures so they carry everything they need when
+#  serialised and shipped to the remote edge (no module-level imports assumed
+#  present on the HPC side).  Each task does its own imports internally.
+#
+#  State is shared via a pickle file on the bind-mounted filesystem
+#  (same mechanism as rose_heat_workflow_v2.py).
 # ─────────────────────────────────────────────────────────────────────────────
 
-async def run_rose_workflow(
-    bridge_url: str,
-    edge_name: str,
-    *,
-    dataset: str,
-    candidates: list[str],
-    max_iter: int,
-    r2_threshold: float,
-    growing_pool: bool,
-    live_progress: bool,
-    log_file: str | None,
-    quiet: bool,
-) -> None:
-    from rose.al.active_learner import ParallelActiveLearner
-    #from rose.integrations.clearml_tracker import ClearMLTracker
-    from rose.integrations.mlflow_tracker import MLflowTracker
+async def run_rose_workflow(bridge_url, edge_name):
+    """Run the HEAT surrogate loop using the named edge as a Dragon backend."""
+    print(f'\n— Running HEAT surrogate on edge "{edge_name}" (bridge: {bridge_url}) —')
 
-    from live_report import default_log_path, reset_log_file
-    from orch_report import RunTimer, print_run_header
+    # Snapshot module-level constants so closures below capture plain values,
+    # not the module globals (safer for serialisation across process boundaries).
+    _work_dir   = WORK_DIR
+    _data_dir   = DATA_DIR
+    _image      = IMAGE
+    _state_file = STATE_FILE
+    _param_keys = PARAM_KEYS
 
-    print(f'\n— Running SURGE race on edge "{edge_name}" (bridge: {bridge_url}) —')
-
-    os.environ["SURGE_ROSE_WORKSPACE_NAMESPACE"] = "example_04"
-    log_path = Path(log_file) if log_file else default_log_path("example_04")
-    if live_progress:
-        reset_log_file(log_path)
-    timer = RunTimer()
-
-    if not live_progress:
-        print_run_header(
-            example="4 - ParallelActiveLearner model race (edge service)",
-            max_iter=max_iter,
-            workers=1,          # edge backend manages its own parallelism
-            quiet=quiet,
-            extra=(
-                f"Dataset={dataset}. Candidates={candidates}. "
-                f"Pool policy={'growing subset' if growing_pool else 'full dataset'}. "
-                f"Stop each learner when val_r2 >= {r2_threshold}."
-            ),
-        )
-    else:
-        print(
-            f"Example 4: Parallel SURGE model race | dataset={dataset} | "
-            f"candidates={candidates} | log={log_path}",
-            flush=True,
-        )
-
-    # ── Edge backend (replaces ConcurrentExecutionBackend) ───────────────────
-    engine    = await rhapsody.get_backend('edge', bridge_url=bridge_url,
-                                           edge_name=edge_name)
+    # ── Backend + learner ────────────────────────────────────────────────────
+    backend   = rhapsody.get_backend('edge', bridge_url=bridge_url,
+                                     edge_name=edge_name)
+    engine    = await backend
     asyncflow = await WorkflowEngine.create(engine)
-    learner   = ParallelActiveLearner(asyncflow)
+    learner   = SequentialActiveLearner(asyncflow)
 
-    #learner.add_tracker(
-    #    ClearMLTracker(
-    #        project_name="ROSE-AMSC-DEMO",
-    #        task_name="surge_ensemble-run-02",
-    #        learner_names=[f'Surge_{c.upper()}_Learner' for c in candidates],
-    #    )
-    #)
+    # ── Shared-state helpers (closures, not module-level, for portability) ──
 
+    def _save_state(**kwargs):
+        import pickle
+        with open(_state_file, "wb") as f:
+            pickle.dump(kwargs, f)
 
-    # ── Task definitions (closures, identical to original _demo) ─────────────
+    def _load_state():
+        import pickle
+        with open(_state_file, "rb") as f:
+            return pickle.load(f)
 
-    @learner.simulation_task(as_executable=False)
-    async def simulation(*args, **kwargs):
-        import sys as _sys
+    def _write_nstxu_input_csv(params):
+        import numpy as _np
+        input_path = _work_dir / "nstx" / "NSTXU_input.csv"
+        lines_out  = []
+        with open(input_path) as f:
+            for line in f:
+                key = line.split(",")[0].strip()
+                if key in _param_keys:
+                    lines_out.append(
+                        f"{key}, {params[_param_keys.index(key)]:.4f}\n")
+                else:
+                    lines_out.append(line)
+        with open(input_path, "w") as f:
+            f.writelines(lines_out)
+
+    def _read_current_params():
+        import numpy as _np
+        params = {}
+        with open(_work_dir / "nstx" / "NSTXU_input.csv") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "," in line:
+                    k, v = [s.strip() for s in line.split(",", 1)]
+                    params[k] = v
+        return _np.array([float(params[k]) for k in _param_keys])
+
+    def _parse_heat_q_max():
         import pandas as pd
-        if _REMO not in _sys.path:
-            _sys.path.insert(0, _REMO)
-        from dataset_utils import build_training_parquet, training_row_plan, write_iteration_state
-        from demo_common import workflow_fixed_rows
+        out_dir   = _data_dir / "data" / "nstx_204118_opticalExample"
+        csv_files = list(out_dir.rglob("HF_optical_all.csv"))
+        if not csv_files:
+            raise FileNotFoundError(f"No HEAT output CSVs found under {out_dir}")
+        q_max = 0.0
+        for f in csv_files:
+            df    = pd.read_csv(f, comment="#", header=None)
+            q_max = max(q_max, float(df.iloc[:, 3].max()))
+        return q_max
 
-        it            = int(kwargs.get("iteration", 0))
-        label         = str(kwargs["learner_label"])
-        ns            = f"example_04/{label}"
-        workflow      = str(kwargs["workflow"])
-        fixed_rows    = workflow_fixed_rows(dataset, workflow, growing_pool=growing_pool)
-        use_full_dataset = dataset == "m3dc1" and not growing_pool and fixed_rows is None
-        plan = training_row_plan(
-            it,
-            dataset=dataset,
-            fixed_rows=fixed_rows,
-            use_full_dataset=use_full_dataset,
+    # ── Seed the parameter pool (local math, no filesystem needed) ──────────
+    from scipy.stats import qmc
+    sampler = qmc.LatinHypercube(d=len(_param_keys), seed=42)
+    X_pool  = qmc.scale(sampler.random(n=50), PARAM_LO, PARAM_HI)
+
+    # ── Write NSTXU_input.csv + initial pickle on the remote edge ────────────
+    # These files live on the HPC side, not on the client.  We ship a
+    # self-contained function_task so all file I/O happens remotely.
+    @asyncflow.function_task
+    async def init_state(first_params_list: list, pool_rest_list: list,
+                         work_dir_str: str, state_file_str: str,
+                         param_keys: list):
+        import numpy as np
+        import pickle
+        from pathlib import Path
+
+        work_dir     = Path(work_dir_str)
+        state_file   = Path(state_file_str)
+        first_params = np.array(first_params_list)
+        pool_rest    = np.array(pool_rest_list)
+
+        input_path = work_dir / "nstx" / "NSTXU_input.csv"
+        lines_out  = []
+        with open(input_path) as f:
+            for line in f:
+                key = line.split(",")[0].strip()
+                if key in param_keys:
+                    lines_out.append(
+                        f"{key}, {first_params[param_keys.index(key)]:.4f}\n")
+                else:
+                    lines_out.append(line)
+        with open(input_path, "w") as f:
+            f.writelines(lines_out)
+
+        with open(state_file, "wb") as f:
+            pickle.dump({"X_labeled": None, "y_labeled": None,
+                         "X_pool": pool_rest, "gp": None, "scaler": None}, f)
+
+    await init_state(X_pool[0].tolist(), X_pool[1:].tolist(),
+                     str(_work_dir), str(_state_file), list(_param_keys))
+
+    # ── Task definitions ─────────────────────────────────────────────────────
+
+    @learner.simulation_task(as_executable=True, capture_stdio=True)
+    async def simulation(*args):
+        """
+        Note: if the bare python3 did not work, please use the python version from your
+        .amsc/ve/bin/python3 in the CLI command.
+        """
+        return (
+            f"python3 /usr/bin/podman-hpc run --annotation podman_hpc.hook_tool=false --rm "
+            f"-v {_work_dir}:/root/terminal "
+            f"-v {_data_dir}:/root/HEAT "
+            f"{_image} "
+            f"--m t --f /root/terminal/batchFile.dat"
         )
-        path = build_training_parquet(
-            it,
-            dataset=dataset,
-            fixed_rows=fixed_rows,
-            use_full_dataset=use_full_dataset,
-            namespace=ns,
-        )
-        n    = pd.read_parquet(path).shape[0]
-        meta = {
-            "iteration"    : it,
-            "learner_label": label,
-            "workflow"     : workflow,
-            "dataset"      : str(path),
-            "n_rows"       : n,
-            "n_rows_total" : plan["n_rows_total"],
-            "row_policy"   : plan["row_policy"],
-        }
-        write_iteration_state(it, "simulation", meta, namespace=ns)
-        return meta
+
 
     @learner.training_task(as_executable=False)
-    async def training(sim_result, **kwargs):
-        import sys as _sys
-        import os as _os
-        import subprocess as _subprocess
-        from pathlib import Path as _Path
-        if _REMO not in _sys.path:
-            _sys.path.insert(0, _REMO)
-        from dataset_utils import read_iteration_state
+    async def training(*args, length_scale: float = 1.0):
+        import numpy as np
+        from sklearn.gaussian_process         import GaussianProcessRegressor
+        from sklearn.gaussian_process.kernels import Matern
+        from sklearn.preprocessing            import StandardScaler
 
-        it    = int(kwargs.get("iteration", sim_result["iteration"]))
-        label = str(kwargs["learner_label"])
-        ns    = f"example_04/{label}"
-        cmd   = [
-            _sys.executable,
-            str(_Path(_REMO) / "surge_train.py"),
-            "--workflow",      str(kwargs["workflow"]),
-            "--iteration",     str(it),
-            "--namespace",     ns,
-            "--dataset-path",  str(sim_result["dataset"]),
-            "--output-dir",    _REMO,
-            "--run-tag-prefix", f"rose_parallel_{label}",
-        ]
-        _remote_log = str(_Path(_REMO) / "workspace" / "example_04" / "execution.log")
-        if live_progress:
-            cmd.extend(["--log-file", _remote_log])
-        if not quiet and not live_progress:
-            cmd.append("--verbose")
-        env      = _os.environ.copy()
-        root     = str(_Path(_REMO).parents[1])
-        prev     = env.get("PYTHONPATH", "").strip()
-        env["PYTHONPATH"] = root if not prev else root + _os.pathsep + prev
-        completed = _subprocess.run(
-            cmd,
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            env=env,
+        state     = _load_state()
+        X_new     = _read_current_params().reshape(1, -1)
+        y_new     = np.array([[_parse_heat_q_max()]])
+        X_labeled = (np.vstack([state["X_labeled"], X_new])
+                     if state["X_labeled"] is not None else X_new)
+        y_labeled = (np.vstack([state["y_labeled"], y_new])
+                     if state["y_labeled"] is not None else y_new)
+
+        scaler = StandardScaler().fit(X_labeled)
+        gp     = GaussianProcessRegressor(
+            kernel=Matern(nu=2.5, length_scale=length_scale),
+            n_restarts_optimizer=5,
+            normalize_y=True,
         )
-        if completed.stdout and live_progress:
-            with _Path(_remote_log).open("a", encoding="utf-8") as handle:
-                handle.write("\n")
-                handle.write(f"Parallel learner {label} command output:\n")
-                handle.write(completed.stdout)
-        out = read_iteration_state(it, "surge_metrics", namespace=ns)
-        return {"simulation": sim_result, "surge": out}
+        gp.fit(scaler.transform(X_labeled), y_labeled.ravel())
+
+        _save_state(X_labeled=X_labeled, y_labeled=y_labeled,
+                    X_pool=state["X_pool"], gp=gp, scaler=scaler)
+        return {"n_samples": len(y_labeled), "length_scale": length_scale}
 
     @learner.active_learn_task(as_executable=False)
-    async def active_learn(sim_result, train_bundle, **kwargs):
-        import sys as _sys
-        if _REMO not in _sys.path:
-            _sys.path.insert(0, _REMO)
-        from dataset_utils import write_iteration_state
+    async def active_learn(*args, n_select: int = 1):
+        import numpy as np
 
-        it    = int(kwargs.get("iteration", train_bundle["simulation"]["iteration"]))
-        label = str(kwargs["learner_label"])
-        ns    = f"example_04/{label}"
-        surge = train_bundle["surge"]
-        decision = {
-            "iteration"    : it,
-            "learner_label": label,
-            "policy"       : "monitor_best_val_r2",
-            "val_r2"       : surge["val_r2"],
-            "val_rmse"     : surge["val_rmse"],
-            "splits"       : surge.get("splits", {}),
-        }
-        write_iteration_state(it, "active", decision, namespace=ns)
+        state              = _load_state()
+        gp, scaler, X_pool = state["gp"], state["scaler"], state["X_pool"]
+        _, std             = gp.predict(scaler.transform(X_pool), return_std=True)
+        best_i             = int(np.argmax(std))
+        next_params        = X_pool[best_i]
+
+        _write_nstxu_input_csv(next_params)
+        X_pool_new = np.delete(X_pool, best_i, axis=0)
+        _save_state(**{**state, "X_pool": X_pool_new})
+
         return {
-            "iteration"    : it,
-            "learner_label": label,
-            "train"        : train_bundle,
-            # Flatten surge metrics so ROSE exposes them as state.* attributes,
-            # letting _run_stream read them without touching the remote filesystem.
-            "val_r2"       : surge["val_r2"],
-            "val_rmse"     : surge["val_rmse"],
-            "splits"       : surge.get("splits", {}),
-            "run_tag"      : surge.get("run_tag", ""),
-            "workflow"     : surge.get("workflow", ""),
+            "unlabeled_count":  len(X_pool_new),
+            "mean_uncertainty": float(np.mean(std)),
+            "max_uncertainty":  float(np.max(std)),
+            "next_lqCN":        float(next_params[0]),
+            "next_P_MW":        float(next_params[3]),
         }
 
-    @learner.as_stop_criterion(
-        metric_name="val_r2",
-        threshold=r2_threshold,
-        operator=">=",
-        as_executable=False,
-    )
-    async def stop_on_r2(*args, **kwargs):
-        import sys as _sys
-        if _REMO not in _sys.path:
-            _sys.path.insert(0, _REMO)
-        from dataset_utils import read_iteration_state, write_iteration_state
+    @learner.as_stop_criterion(metric_name="mean_uncertainty",
+                               threshold=CONVERGENCE_THRESHOLD,
+                               operator="<",
+                               as_executable=False)
+    async def check_convergence(*args) -> float:
+        import numpy as np
 
-        it    = int(kwargs.get("iteration", 0))
-        label = str(kwargs["learner_label"])
-        ns    = f"example_04/{label}"
-        meta  = read_iteration_state(it, "surge_metrics", namespace=ns)
-        r2    = float(meta["val_r2"])
-        forced_stop = it >= max_iter - 1 and r2 < r2_threshold
-        write_iteration_state(
-            it,
-            "criterion",
-            {
-                "iteration"               : it,
-                "metric"                  : "val_r2",
-                "value"                   : r2,
-                "forced_stop_after_max_iter": forced_stop,
-            },
-            namespace=ns,
-        )
-        return r2_threshold if forced_stop else r2
+        state = _load_state()
+        if state["gp"] is None or state["X_labeled"] is None:
+            return 1.0
+        gp, scaler, X_pool = state["gp"], state["scaler"], state["X_pool"]
+        if len(X_pool) == 0:
+            return 0.0
+        if len(state["y_labeled"]) < 2:
+            return 1.0
+        y_std = float(state["y_labeled"].std())
+        if y_std < 1e-6:
+            return 1.0
+        _, std = gp.predict(scaler.transform(X_pool), return_std=True)
+        return float((std / y_std).mean())
 
-    # ── Active-learning loop ─────────────────────────────────────────────────
-    configs = _candidate_configs(dataset, candidates, max_iter, growing_pool)
-    rows: list[dict] = []
 
     learner.add_tracker(
         MLflowTracker(
-            experiment_name="ROSE-SURGE-Surrogate-0005",
-            run_name="surge_ensemble-run",
+            experiment_name="ROSE-HEAT-Surrogate-0000",
+            run_name= "rose_heat_run",
         )
     )
 
 
-    async def _run_stream(progress=None) -> None:
-        from orch_report import progress_bar
 
-        async for state in learner.start(
-            parallel_learners=len(candidates),
-            max_iter=max_iter,
-            learner_configs=configs,
-        ):
-            label = candidates[int(state.learner_id)]
-            # Read metrics from ROSE state (returned by active_learn on the
-            # remote side) — avoids reading remote filesystem from the client.
-            meta  = {
-                "val_r2"  : state.val_r2,
-                "val_rmse": state.val_rmse,
-                "splits"  : state.splits   or {},
-                "run_tag" : state.run_tag  or "",
-                "workflow": state.workflow or "",
-            }
-            rows.append({"learner": label, **meta})
-            if progress:
-                progress.update(
-                    1,
-                    learner=label,
-                    r2=f"{float(meta['val_r2']):.4f}",
-                    rmse=f"{float(meta['val_rmse']):.4g}",
-                )
-            else:
-                print(
-                    f"parallel {progress_bar(len(rows), len(candidates) * max_iter)} "
-                    f"learner={label} iter={state.iteration} "
-                    f"val_r2={float(meta['val_r2']):.5f} val_rmse={float(meta['val_rmse']):.5f} "
-                    f"split={meta.get('splits', {}).get('train', '?')}/"
-                    f"{meta.get('splits', {}).get('val', '?')}/"
-                    f"{meta.get('splits', {}).get('test', '?')}",
-                    flush=True,
-                )
-            if len(rows) >= len(candidates) * max_iter:
-                learner.stop()
-                break
+    # ── Active-learning loop ─────────────────────────────────────────────────
+    print('\nStarting HEAT surrogate loop\n' + '─' * 60, flush=True)
+    async for state in learner.start(max_iter=MAX_ITER):
+        print(f'[Iteration {state.iteration}]', flush=True)
+        print(f'  uncertainty: {state.metric_value:.4f}  (target <{CONVERGENCE_THRESHOLD})',
+              flush=True)
+        print(f'  labeled:     {state.n_samples}', flush=True)
+        print(f'  pool left:   {state.unlabeled_count}', flush=True)
+        print(f'  mean/max unc: {state.mean_uncertainty:.4f} / '
+              f'{state.max_uncertainty:.4f}', flush=True)
+        print(f'  next params: lqCN={state.next_lqCN:.2f} mm  '
+              f'P={state.next_P_MW:.1f} MW', flush=True)
 
-    if live_progress:
-        from live_report import LiveProgress, capture_output_to_log
-        with LiveProgress(
-            total=len(candidates) * max_iter,
-            desc="SURGE candidates",
-            enabled=True,
-            unit="model",
-        ) as progress:
-            with capture_output_to_log(log_path):
-                await _run_stream(progress)
-                await learner.shutdown()
-    else:
-        await _run_stream(None)
-        await learner.shutdown()
+        if state.mean_uncertainty and state.mean_uncertainty < 0.1:
+            learner.set_next_config(
+                LearnerConfig(active_learn=TaskConfig(kwargs={"n_select": 3}))
+            )
 
-    from dataset_utils import workspace_dir
-    rows.sort(key=lambda row: float(row["val_r2"]), reverse=True)
-    print("\nExample 4 summary")
-    print(f"Wall time: {timer.seconds():.1f}s")
-    print(f"{'rank':>4}  {'learner':<8}  {'workflow':<12}  {'val_r2':>9}  {'val_rmse':>10}  {'run_tag'}")
-    for rank, row in enumerate(rows, start=1):
-        print(
-            f"{rank:>4}  {row['learner']:<8}  {row['workflow']:<12}  "
-            f"{float(row['val_r2']):>9.5f}  {float(row['val_rmse']):>10.6f}  {row['run_tag']}",
-            flush=True,
-        )
-    print(f"Workspace: {workspace_dir('example_04')}")
-    print(f"Log file:  {log_path}")
+        if state.unlabeled_count is not None and state.unlabeled_count < 3:
+            print('Pool exhausted, stopping.', flush=True)
+            break
+
+    print('\n' + '=' * 60, flush=True)
+    print(state.to_dict())
+
+    await asyncflow.shutdown()
+
+    if _state_file.exists():
+        _state_file.unlink()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -826,52 +754,16 @@ def teardown(bc, created):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  Main — parse SURGE args, then run service infrastructure
+#  Main (unchanged from run_rose_via_service.py)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def main() -> None:
-    warnings.filterwarnings("ignore", message=".*GPflow.*", category=UserWarning)
-
-    # ── Parse SURGE workflow args ─────────────────────────────────────────────
-    from demo_common import add_dataset_cli, add_reporting_cli
-    parser = argparse.ArgumentParser(
-        description="Parallel ROSE/Rhapsody orchestration of SURGE candidates — edge service.")
-    add_dataset_cli(parser)
-    add_reporting_cli(parser)
-    parser.add_argument(
-        "--candidates",
-        default="rf,mlp",
-        help="Comma-separated model families: rf,mlp,gpr,gpflow_gpr.",
-    )
-    parser.add_argument("--max-iter",     type=int,   default=1)
-    parser.add_argument("--r2-threshold", type=float, default=0.95)
-    args       = parser.parse_args()
-    candidates = [x.strip() for x in args.candidates.split(",") if x.strip()]
-    invalid    = sorted(set(candidates) - {"rf", "mlp", "gpr", "gpflow_gpr"})
-    if invalid:
-        raise ValueError(f"Unsupported candidates: {invalid}; use rf and/or mlp.")
-    if len(candidates) < 2:
-        raise ValueError("Example 4 needs at least two candidates for ParallelActiveLearner.")
-
-    rose_kwargs = dict(
-        dataset=args.dataset,
-        candidates=candidates,
-        max_iter=args.max_iter,
-        r2_threshold=args.r2_threshold,
-        growing_pool=args.growing_pool,
-        live_progress=not args.no_live_progress,
-        log_file=args.log_file,
-        quiet=args.quiet,
-    )
-
-    # ── Single-instance guard ─────────────────────────────────────────────────
+def main():
     import fcntl
     _lock = open('/tmp/amsc.lock', 'w')
     try:    fcntl.flock(_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
         sys.exit('another instance is already running; kill it first.')
 
-    # ── Service infrastructure ────────────────────────────────────────────────
     bc         = BridgeClient()
     bridge_url = bc.url
     print(f'Bridge: {bridge_url}')
@@ -913,7 +805,7 @@ def main() -> None:
                 sys.exit('No targets launched successfully — nothing to run.')
             first = wait_for_first_edge(bc, expected_edges)
             print(f'\n— First edge up: {first} —')
-            asyncio.run(run_rose_workflow(bridge_url, first, **rose_kwargs))
+            asyncio.run(run_rose_workflow(bridge_url, first))
 
         finally:
             teardown(bc, created)
@@ -924,5 +816,5 @@ def main() -> None:
     print('\nDone.')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

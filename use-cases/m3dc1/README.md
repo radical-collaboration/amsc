@@ -1,15 +1,43 @@
 ### How To RUN M3DC1 via ROSE aaS
 
-1- Follow the steps in our service core layer [radical.edge](https://github.com/radical-cybertools/radical.edge/blob/feature/amsc/README_amsc.md)
+1- We assume you already finshed the [SETUP.md](../SETUP.md) (mandatory for all use cases).
 
-2- Once you have succefully created the env, setup your ceritficates and your bridge/tokens install SURGE from this repo: [SURGE](https://github.com/S-Villar/SURGE/tree/radical-integration/examples/rose_orchestration)
+2- Once you have succefully finished setting up the service part. You can navigate to [SURGE](https://github.com/S-Villar/SURGE/tree/radical-integration/examples/rose_orchestration) repo and install as follows:
 
-3- Once you finished 1 and 2 you are ready to run on aaS on Perlmutter using `python 04_example_parallel_model_race_service.py --max-iter 10 --growing-pool`
+```sh
+git clone --branch radical-integration https://github.com/S-Villar/SURGE.git
+cd SURGE/examples/rose_orchestration
 
-5- The `04_example_parallel_model_race_service.py` already has `MLFlow` and `ClearML` tracker.
+cd SURGE
+pip install .
+pip install -r requirements-rose-demo.txt
+```
+> [NOTE]
+> The setup of SURGE **MUST** be done on both **client** and **remote** side. Futher, you must change the path in `amsc.py` to the path
+> of your SURGE location on the remote resource: `_REMO = "/path/to/SURGE/examples/rose_orchestration"` 
 
-6- To use the `MLFlow` of the `AmSC` servers please setup yours following these instrcutions: [setup-mlflow-with-amsc](https://gist.github.com/AymenFJA/0db6dcd357889546fde17a717ec2b417)
+> [NOTE]
+> The deployment of ROSE aaS and its use cases will soon be fully automated.
 
+
+> [NOTE]
+> SURGE has no awareness of ML outer loop orchestration or resource distribution capabilities.
+> This is where ROSE aaS comes in. ROSE aaS enables SURGE workflows to be launched as a service and to scale and be distributed across N GPUs.
+
+3- Once you finished 1 and 2 you are ready to run on M3DC1 with ROSE aaS on Perlmutter:
+
+```sh
+python amsc.py --max-iter 10 --growing-pool
+```
+
+> [NOTE]
+> The example above shows multiple SURGE surrogate candidates being orchestrated concurrently in a race fashion. The example uses two different ML model architecutes
+> with grown pool of datasets with a finite number of AL training iterations.
+
+4- The `amsc.py` already has `MLFlow` and `ClearML` tracker.
+
+
+5- To use the `MLFlow` of the `AmSC` servers please setup yours following these instrcutions: [AMSC-MLFLOW-SETUP.md](../AMSC-MLFLOW-SETUP.md)
 ### Sample output of the client side (your machine):
 ```shell
 2026-05-01 23:53:52,807 | DEBUG    | [urllib3.connectionpool] | https://mlflow.american-science-cloud.org:443 "POST /api/2.0/mlflow/runs/set-tag HTTP/1.1" 200 2
@@ -43,8 +71,6 @@ rank  learner   workflow         val_r2    val_rmse  run_tag
   18  rf        m3dc1_rf        0.77148    0.009971  rose_parallel_0_rf_m3dc1_rf_iter_3
   19  rf        m3dc1_rf        0.60951    0.012579  rose_parallel_0_rf_m3dc1_rf_iter_1
   20  mlp       m3dc1_mlp       0.57626    0.013103  rose_parallel_1_mlp_m3dc1_mlp_iter_1
-Workspace: /home/aymen/RADICAL/M3CD1-AMSC-MAY-DEMO/SURGE/examples/rose_orchestration/workspace/example_04
-Log file:  /home/aymen/RADICAL/M3CD1-AMSC-MAY-DEMO/SURGE/examples/rose_orchestration/workspace/example_04/execution.log
 
 — Tearing down resources we created —
   cancelled PsiJ job 062b92f3-e175-4e8b-9c00-39025f96eff6 on perlmutter

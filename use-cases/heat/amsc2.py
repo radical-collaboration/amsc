@@ -8,6 +8,7 @@ Physics: Eich optical heat flux on NSTX-U geometry
 
 import asyncio
 import logging
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -17,6 +18,8 @@ from radical.asyncflow      import WorkflowEngine
 from rose.al.active_learner import SequentialActiveLearner
 from rose.learner           import LearnerConfig, TaskConfig
 from rose.integrations.mlflow_tracker import MLflowTracker
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import service_utils as service
 

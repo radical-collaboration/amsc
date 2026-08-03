@@ -102,7 +102,7 @@ Additional benefits:
 
 - the gateway's HTTP/SSE surface lets users submit and monitor DT graphs
   without being ORBIT participants (the hook for an AmSC portal);
-- co-location with a broker-backed pub/sub (§3.4, G1): science agents
+- co-location with a broker-backed pub/sub (§3.4, G1b): science agents
   subscribe without network hops.
 
 Open engineering items: the broker host needs the control-plane
@@ -283,10 +283,14 @@ The main new piece of the DT layer:
 - effort reallocation across investigators (v2; a static investigator set
   is fine for v1).
 
-Placement: the cross-model learner belongs in ROSE (it is a learner over
-learners and reuses ROSE's loop, metric, and tracking machinery); the
+Placement: the DT layer defines the cross-model learner as an abstract
+component — consume the investigators' iteration state and evaluation
+results, emit a selector — with pluggable implementations. A ROSE-based
+reference implementation reuses ROSE's loop, metric, and tracking
+machinery, but the DT core does not depend on ROSE; investigators need
+not be ROSE learners, any loop which reports evaluations fits. The
 science agent (stream subscription, selector publication, lifecycle)
-stays in the DT layer. That keeps ROSE free of pub/sub dependencies.
+lives in the DT layer as well.
 
 ### 3.4 Pub/sub component (edge streaming)
 
@@ -312,15 +316,17 @@ lost).
 
 | Option | What exists | Fit |
 |---|---|---|
-| **ORBIT broker as backend** (recommended first target) | Broker routes `event` frames between participants, tracks liveness; every DOE-site endpoint reaches it over a single outbound WSS, so the firewall problem is solved | Best alignment; needs an explicit pub/sub plugin (channel registry, fan-out, replay buffer) — today's events are point-to-point notifications, not channels |
+| **ORBIT broker as backend** (recommended target) | Broker routes `event` frames between participants, tracks liveness; every DOE-site endpoint reaches it over a single outbound WSS, so the firewall problem is solved | Best alignment; needs an explicit pub/sub plugin (channel registry, fan-out, replay buffer) — today's events are point-to-point notifications, not channels |
 | Managed Redis **Streams** (not pub/sub) | Streams give persistence, ack, and replay; raw Redis pub/sub is fire-and-forget and breaks ORBIT's liveness invariant | Good semantics; raw TCP 6379 egress is unverified at OLCF/ALCF (443/proxy-only risk) — a WSS-speaking middle may be required at DOE sites |
 | Kafka / MQTT / NATS | Standard ecosystem | Heavyweight (Kafka) or weaker semantics (MQTT QoS vs replay); one more service to operate at or near the edge; no DOE-egress advantage |
 
 **Missing**
 
-- the component as a whole: client API plus at least one backend (the
-  ORBIT pub/sub plugin). Largest new piece besides the cross-model
-  learner;
+- the client API: message classes, publish/subscribe, callback
+  registration, plus a simple dev backend (in-process or local Redis) —
+  most other new pieces build on this (G1a);
+- the ORBIT backend plugin: channel registry, fan-out, replay buffer —
+  needed once runs go multi-site or managed (G1b);
 - it should be its own package, client and backend separated, and stay
   out of ROSE to keep the layering clean.
 
@@ -421,29 +427,30 @@ notes).
 
 ## 4. Gap register
 
-Concrete missing pieces, smallest useful version first, with the proposed
-home for each. "New (DT)" = the new L5 package.
+Concrete missing pieces in build order, grouped in four phases:
+foundations → agents → graph → service. "New (DT)" = the new L5 package.
 
-| # | Piece | What exists today | What's missing | Home |
-|---|-------|-------------------|----------------|------|
-| G1 | Pub/sub client API + ORBIT backend plugin | Broker event routing, WSS ingress at DOE sites; Redis-Streams design notes | Channel registry, fan-out, replay, ack; client library embeddable in edge processes | New (DT) + ORBIT plugin |
-| G2 | Cross-model learner (cross-architecture) | `ParallelActiveLearner`, `selector`, `metrics`, `IterationState` observation hook | Cross-arch metric normalization; selector computation; (v2) effort reallocation | ROSE |
-| G3 | Model selector schema + publish path | — | Versioned `SelectorUpdate` message; edge-side application | New (DT), message on G1 |
-| G4 | Science agent runtime | AsyncFlow workflows, ROSE loops | Agent lifecycle: subscribe, run investigators, publish; degenerate agent for pre-existing sims | New (DT) |
-| G5 | Model investigator abstraction | ROSE learner instances | (arch × capability) identity + registry lineage on a learner | ROSE or New (DT) |
-| G6 | Inference/serving task template | Rhapsody service tasks; MLflow registry | Load-serve-watch-reload template; `ModelPublished` carrying registry refs | ROSE task type |
-| G7 | Edge callbacks | — | `on(event, callback)` registration on the pub/sub client | New (DT), part of G1 |
-| G8 | Capability graph spec + builder + stream resolver | `rose/spec` pattern (branch) | Graph schema (SPLIT/AGGREGATE, typed edges), builder, resolver | New (DT), extends `rose/spec` |
-| G9 | Merge consumability | `feature/yaml-spec`, `prototype/raas` branches | Land spec + RaaS work on ROSE `main` | ROSE |
-| G10 | Declarable data locality | Out-of-band mechanisms (FS, Globus, staging) | Per-edge locality declaration + reachability validation | Formal spec (open item) |
-| G11 | DT-as-a-service hosting (§2.2) | Broker plugin host; `task_dispatcher` as broker-hosted-control-loop precedent; gateway HTTP/SSE | Broker plugin embedding the DT builder/runtime; submit/monitor gateway routes; failure isolation + multi-tenant fairness | ORBIT plugin + New (DT) |
+| # | Phase | Piece | What exists today | What's missing | Home |
+|---|-------|-------|-------------------|----------------|------|
+| G9 | foundations | Merge consumability | `feature/yaml-spec`, `prototype/raas` branches | Land spec + RaaS work on ROSE `main` | ROSE |
+| G5 | foundations | Model investigator abstraction | ROSE learner instances | (arch × capability) identity + registry lineage on a learner | New (DT) |
+| G1a | foundations | Pub/sub client API | — | Message classes, publish/subscribe, channel namespacing; simple dev backend (in-process, local Redis) | New (DT) |
+| G7 | foundations | Edge callbacks | — | `on(event, callback)` registration on the pub/sub client | New (DT), part of G1a |
+| G6 | foundations | Inference/serving task template | Rhapsody service tasks; MLflow registry | Load-serve-watch-reload template; `ModelPublished` carrying registry refs | ROSE task type |
+| G2 | agents | Cross-model learner | `ParallelActiveLearner`, `selector`, `metrics`, `IterationState` observation hook | Learner interface in the DT layer; cross-arch metric normalization + selector computation in the reference impl; (v2) effort reallocation | New (DT) interface; ROSE-based reference impl |
+| G3 | agents | Model selector schema + publish path | — | Versioned `SelectorUpdate` message; edge-side application | New (DT), message on G1a |
+| G4 | agents | Science agent runtime | AsyncFlow workflows, ROSE loops | Agent lifecycle: subscribe, run investigators, publish; degenerate agent for pre-existing sims | New (DT) |
+| G8 | graph | Capability graph spec + builder + stream resolver | `rose/spec` pattern (branch) | Graph schema (SPLIT/AGGREGATE, typed edges), builder, resolver | New (DT), extends `rose/spec` |
+| G1b | service | ORBIT pub/sub backend plugin | Broker event routing, WSS ingress at DOE sites; Redis-Streams design notes | Channel registry, fan-out, replay buffer, ack | ORBIT plugin |
+| G11 | service | DT-as-a-service hosting (§2.2) | Broker plugin host; `task_dispatcher` as broker-hosted-control-loop precedent; gateway HTTP/SSE | Broker plugin embedding the DT builder/runtime; submit/monitor gateway routes; failure isolation + multi-tenant fairness | ORBIT plugin + New (DT) |
+| G10 | service | Declarable data locality | Out-of-band mechanisms (FS, Globus, staging) | Per-edge locality declaration + reachability validation | Formal spec (open item) |
+| G12 | service | A2A adapter | Capability contracts (typed input/output = agent-card material) | A2A endpoint per science agent: card from the capability contract, inference request as A2A task | New (DT), optional |
 
-Dependencies: G1 → {G3, G7}; G2 → G3; {G4, G5} → G8; G6 independent; G9
-unblocks building against released ROSE; G11 packages G4 + G8 behind the
-broker. The implementation plan (pptx) maps onto the register: phase 1
-(active learning via ROSE; callbacks + inference task) = G1, G6, G7;
-phase 2 (science-agent logic + multi-model selection) = G2–G5; phase 3
-(agent chaining, workflow builder, stream resolver) = G8.
+Dependencies: G1a underpins G3, G7, and G4; G2 → G3; {G4, G5} → G8; G6 is
+independent; G9 unblocks building against released ROSE; G1b swaps in
+under the unchanged client API; G11 packages G4 + G8 behind the broker.
+The implementation plan (pptx) phases match: phase 1 = G1a, G6, G7;
+phase 2 = G2–G5; phase 3 = G8.
 
 ---
 
@@ -460,5 +467,48 @@ phase 2 (science-agent logic + multi-model selection) = G2–G5; phase 3
    run — a Stellar-AI recipe (e.g. a streaming source feeding the
    fine-tuning or M3DC1 loop) with the edge simulated on a login or
    service node, or a use case with a real external streaming host?
-4. **Naming:** "science agent" vs an A2A-style agent framing — settle
-   vocabulary before the formal spec freezes it.
+4. **A2A:** the platform is A2A-shaped, and capability contracts double
+   as agent-card material; G12 keeps an adapter cheap without pinning the
+   internals (continuous streaming loops) to the A2A protocol
+   (request/response task lifecycle). Open: how far to adopt A2A
+   vocabulary in the spec — "science agent" vs "agent"?
+
+---
+
+## 6. Formal spec — sketch
+
+The spec extends the `rose/spec` pattern (schema → builder → adapters)
+one level up:
+
+```yaml
+twin:                # name, version
+sources:             # event sources: kind, channel, payload type
+sinks:               # data sinks, actuators
+capabilities:        # typed input/output contracts
+agents:              # one per capability
+  wind_field:
+    investigators:
+      - arch: fno    # + sim/train/policy task pointers (BYOF, the same
+        tasks: ...   #   function:/shell: references as rose/spec)
+        resources: ...
+    cross_model:     # criteria list, selector policy (argmax|weighted),
+      ...            #   cadence; impl: rose | custom (G2 interface)
+graph:               # edges source → capability → … → sink;
+                     #   SPLIT/AGGREGATE nodes; typed, resolver-checked
+deployment:          # profile (interactive|brokered); backend per agent;
+                     #   pub/sub backend; per-edge data locality (G10)
+tracking:            # mlflow | clearml
+```
+
+Principles:
+
+- BYOF pointers only, never inline logic — the same boundary as
+  `rose/spec`;
+- every graph edge resolves to a named pub/sub channel;
+- degenerate agents (fixed model, wrapped pre-existing sim) are a
+  first-class node kind;
+- the builder validates capability types and data-locality reachability;
+- capability contracts double as A2A agent-card material (G12);
+- graceful degradation: a v0 spec with one capability, one investigator,
+  and no `cross_model` section reduces to `rose/spec` plus a `sources:`
+  block — the first demo does not wait on the full schema.

@@ -3,6 +3,8 @@
 **Status:** draft for discussion.
 **Background reading:** `High_Level_DT_Framework.pptx`,
 `Digital_Twin_Design_Doc.pdf`.
+**Diagrams:** `diagrams/` — lifecycle and sequence diagrams (PlantUML
+sources + rendered SVGs).
 
 This document describes the architecture of the Digital Twin Framework:
 its components, their responsibilities and interfaces, their realization

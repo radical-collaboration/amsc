@@ -1,0 +1,30 @@
+@startuml seq-dtaas-submit
+title DTaaS — twin submission and task execution path
+
+actor User
+participant "Gateway\n(HTTP/SSE)" as GW
+box "ORBIT broker (DTaaS host)"
+  participant "DT Framework\nplugin" as DTP
+  participant "ROSE /\nAsyncFlow" as RA
+  participant "Rhapsody\n(control side)" as RHC
+  participant "Broker\nrouting" as BR
+end box
+box "HPC site"
+  participant "ORBIT endpoint\n(plugin_rhapsody)" as EP
+  participant "Rhapsody\n(compute side)" as RHE
+end box
+
+User -> GW : submit twin spec (YAML)
+GW -> DTP : create twin
+DTP -> DTP : build graph: validate,\nresolve channels
+DTP -> RA : start science agents
+RA -> RHC : submit tasks
+RHC -> BR : Session/Task API\n(OrbitExecutionBackend)
+BR -> EP : route (WSS, dialed\nout by endpoint)
+EP -> RHE : submit_tasks
+RHE --> EP : task states
+EP --> BR : event frames
+BR --> RHC : notifications
+RHC --> RA : task results
+GW --> User : status stream (SSE)
+@enduml

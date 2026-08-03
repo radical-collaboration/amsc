@@ -1,0 +1,18 @@
+@startuml lifecycle-model
+title Surrogate model — lifecycle
+hide empty description
+
+[*] --> Candidate : investigator defined\n(arch × capability)
+Candidate --> Training : learner loop iteration
+Training --> Evaluated : criterion task on\nshared validation data
+Evaluated --> Training : below objective,\nnext iteration
+Evaluated --> Registered : artifact + metrics\nto registry (MLflow)
+Registered --> Selected : cross-model learner\nupdates selector
+Registered --> Standby : not selected
+Standby --> Selected : SelectorUpdate
+Selected --> Serving : inference loop loads\nregistry reference
+Serving --> Superseded : newer model version\nselected
+Superseded --> Standby
+Standby --> Retired : investigator stopped
+Retired --> [*]
+@enduml

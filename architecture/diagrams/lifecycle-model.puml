@@ -2,7 +2,7 @@
 title Surrogate model — lifecycle
 hide empty description
 
-[*] --> Candidate : investigator defined\n(arch × capability)
+[*] --> Candidate : new model version, spawned\nby investigator iteration
 Candidate --> Training : learner loop iteration
 Training --> Evaluated : criterion task on\nshared validation data
 Evaluated --> Training : below objective,\nnext iteration
@@ -13,6 +13,12 @@ Standby --> Selected : SelectorUpdate
 Selected --> Serving : inference loop loads\nregistry reference
 Serving --> Superseded : newer model version\nselected
 Superseded --> Standby
-Standby --> Retired : investigator stopped
+Standby --> Retired : retention policy,\nsuperseded
 Retired --> [*]
+
+note right of Candidate
+  the investigator is permanent;
+  it emits a stream of model
+  versions, each with this lifecycle
+end note
 @enduml

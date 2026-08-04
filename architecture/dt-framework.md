@@ -46,9 +46,9 @@ source, evaluation criterion, or site topology.
   components do not depend on the kind of source.
 - The **inference loop** is the serving-side counterpart: it consumes
   events, applies the selector, runs inference, and feeds sinks and
-  actuators. It runs indefinitely; learner loops run until their objective
-  is met (and may adjust that objective). It often — not necessarily —
-  runs at the edge, near sources and actuators.
+  actuators. It runs indefinitely, often — not necessarily — at the edge,
+  near sources and actuators. Learner loops are separate loops: they run
+  until their objective is met (and may adjust that objective).
 
 ---
 
@@ -86,7 +86,7 @@ layers below.
 
 The control plane (DT framework, ROSE, AsyncFlow, control-side Rhapsody)
 is **placement-agnostic**: it speaks the ORBIT participant protocol
-wherever it runs. Two deployment profiles follow:
+wherever it runs. Two deployment profiles:
 
 | Profile | Control plane runs | Role |
 |---|---|---|
@@ -107,10 +107,14 @@ Additional benefits:
 - co-location with a broker-backed pub/sub (§3.4, G1b): science agents
   subscribe without network hops.
 
-Open engineering items: the broker host needs the control-plane
-dependencies installed (rose, asyncflow, rhapsody client — plugin
-dependencies are per-host anyway); DT loops must be failure-isolated from
-message routing; multiple twins on one broker need fair scheduling. The
+One broker hosts many twins: a DT instance maps onto an ORBIT session
+(plugins are session-scoped already), so isolation and cleanup ride the
+session lifecycle — no broker instance per twin, which would mean a
+process, port, cert, and socket set each. Each DT control loop runs in
+its own worker process under the plugin host; scheduling is the OS's.
+The client acts as a console: attach to the running twin, tweak
+parameters, detach. Open engineering items: control-plane dependencies
+on the broker host; the process-per-session worker model (G11). The
 interactive profile remains the dev/debug mode of the same, unchanged
 control plane.
 
@@ -160,9 +164,8 @@ Notes:
   band** (shared FS, Globus, SSH tunnels). That is an ORBIT invariant and
   the DT design keeps it (see §3.7).
 - The pub/sub component connects the inference loop with the science
-  agents.
-  It is a communication plane of its own, not an execution layer; the
-  broker-hosted plugin is one backend option (see §3.4).
+  agents. It is a communication plane of its own, not an execution layer;
+  the broker-hosted plugin is one backend option (see §3.4).
 
 ---
 
@@ -220,24 +223,25 @@ Nothing structural, two consumability items:
 
 **Responsibility**
 
-Bind one architecture to one capability: hold the learner loop (§3.1),
-the model artifact lineage, and the per-architecture inference task
-definition (§3.5).
+The complete (architecture × capability) unit: a wrapper around the
+learner loop (§3.1), the inference task (§3.5), and the learner-side
+callbacks through which the loop reacts to edge events (new data, drift,
+restart); plus the model artifact lineage.
 
 **Mapping**
 
 A thin wrapper, mostly exists: a model investigator is a ROSE learner
-instance plus metadata (`arch`, `capability`) plus a model-artifact
-pointer. `ParallelActiveLearner` already orchestrates N independent
-learner instances concurrently, but for N learners of the *same*
-architecture (ensembles).
+instance plus metadata (`arch`, `capability`) plus an inference-task
+handle plus a model-artifact pointer. `ParallelActiveLearner` already
+orchestrates N independent learner instances concurrently, but for N
+learners of the *same* architecture (ensembles).
 
 **Missing**
 
-- the investigator abstraction itself: (arch, capability) identity and
-  model registry lineage attached to a learner instance. Small; home is
-  the DT layer, or ROSE as a generalization of what
-  `ParallelActiveLearner` wraps.
+- the investigator abstraction itself: (arch, capability) identity,
+  registry lineage, inference-task handle, and learner-side callback
+  registration wrapped around a learner instance. Small; home is the DT
+  layer.
 
 ### 3.3 Science agent and cross-model learner
 
@@ -301,18 +305,20 @@ lives in the DT layer as well.
 Connect the two concurrent flows: trigger events from event sources to
 subscribed science agents; model and selector updates from agents back to
 inference loops. Fan-out, replay for late joiners, and delivery
-acknowledgment
-for control-relevant messages (selector updates must not be silently
-lost).
+acknowledgment for control-relevant messages (selector updates must not
+be silently lost).
 
 **Interfaces**
 
-- Client API (the stable surface): `publish(channel, msg)`,
-  `subscribe(channel, callback)`, channels namespaced per capability
-  graph instance. Message classes: `TriggerEvent` (any source kind:
-  sensor reading, user action, timer, sim/campaign milestone),
-  `ModelPublished`, `SelectorUpdate`, plus opaque app payloads.
-- Backend (pluggable): whatever transports those semantics.
+- Frontend (the stable surface): an abstract communicator class —
+  `publish(channel, msg)`, `subscribe(channel, callback)`, channels
+  namespaced per capability graph instance. It pins the *semantics*
+  (replay, ack, ordering), not just the API shape. Message classes:
+  `TriggerEvent` (any source kind: sensor reading, user action, timer,
+  sim/campaign milestone), `ModelPublished`, `SelectorUpdate`, plus
+  opaque app payloads.
+- Backend: transport adapters (ORBIT, Redis, MQTT, ZMQ, in-process)
+  behind the frontend; DT code never imports a transport.
 
 **Mapping**
 
@@ -324,13 +330,13 @@ lost).
 
 **Missing**
 
-- the client API: message classes, publish/subscribe, callback
-  registration, plus a simple dev backend (in-process or local Redis) —
+- the frontend: abstract communicator, message classes, callback
+  registration, plus a simple dev adapter (in-process or local Redis) —
   most other new pieces build on this (G1a);
-- the ORBIT backend plugin: channel registry, fan-out, replay buffer —
+- the ORBIT backend adapter: channel registry, fan-out, replay buffer —
   needed once runs go multi-site or managed (G1b);
-- it should be its own package, client and backend separated, and stay
-  out of ROSE to keep the layering clean.
+- it should be its own package, frontend and backends separated, and
+  stay out of ROSE to keep the layering clean.
 
 ### 3.5 Inference task and edge callbacks
 
@@ -339,9 +345,10 @@ lost).
 - Inference task: a long-running serving task which hosts the currently
   selected model(s) for a capability and answers inference requests — on
   the edge, on HPC near the data, or both.
-- Callbacks: user hooks on the edge side, fired on pub/sub events
-  (`ModelPublished`, `SelectorUpdate`, stream events), e.g. to hot-swap
-  the model used by the inference loop.
+- Callbacks: user hooks fired on pub/sub events, at two sites —
+  learner-side, owned by the investigator (§3.2), reacting to edge events
+  (new data, drift, loop restart); edge-side, registered on the pub/sub
+  frontend by the inference loop, e.g. hot-swap on `SelectorUpdate`.
 
 **Mapping**
 
@@ -351,15 +358,15 @@ lost).
 - Model registry and artifact exchange: MLflow is deployed in the AmSC
   context (`use-cases/AMSC-MLFLOW-SETUP.md`) and ROSE has an MLflow
   tracker. "Publish new models" leans on that registry: publish the
-  *reference* on the channel, move the *bytes* out of band (§2.1 notes).
+  *reference* on the channel, move the *bytes* out of band (§2.2 notes).
 - Edge-side callbacks have no RADICAL home today; they belong to the
-  pub/sub client (§3.4), which the edge process embeds.
+  pub/sub frontend (§3.4), which the edge process embeds.
 
 **Missing**
 
 - an inference-task template (load model ref → serve → watch
   `SelectorUpdate` → reload) as a reusable ROSE/DT task type;
-- the callback registration API on the pub/sub client;
+- the callback registration API on the pub/sub frontend;
 - a `ModelPublished` message which carries a registry reference rather
   than weights.
 
@@ -415,7 +422,7 @@ and streamed data to where learner loops run.
 Not automated by ROSE today: task code owns data movement. Available
 out-of-band mechanisms: shared FS within an allocation, ORBIT `staging`
 plugin, Globus (`plugin_globus`), SSH tunnels. The pub/sub channel must
-not become the data path — control messages and references only (§2.1
+not become the data path — control messages and references only (§2.2
 notes).
 
 **Missing**
@@ -435,24 +442,23 @@ foundations → agents → graph → service. "New (DT)" = the new L5 package.
 | # | Phase | Piece | What exists today | What's missing | Home |
 |---|-------|-------|-------------------|----------------|------|
 | G9 | foundations | Merge consumability | `feature/yaml-spec`, `prototype/raas` branches | Land spec + RaaS work on ROSE `main` | ROSE |
-| G5 | foundations | Model investigator abstraction | ROSE learner instances | (arch × capability) identity + registry lineage on a learner | New (DT) |
-| G1a | foundations | Pub/sub client API | — | Message classes, publish/subscribe, channel namespacing; simple dev backend (in-process, local Redis) | New (DT) |
-| G7 | foundations | Edge callbacks | — | `on(event, callback)` registration on the pub/sub client | New (DT), part of G1a |
+| G5 | foundations | Model investigator abstraction | ROSE learner instances | (arch × capability) identity, registry lineage, inference-task handle, learner-side callbacks on a learner | New (DT) |
 | G6 | foundations | Inference/serving task template | Rhapsody service tasks; MLflow registry | Load-serve-watch-reload template; `ModelPublished` carrying registry refs | ROSE task type |
+| G1a | foundations | Pub/sub frontend | — | Abstract communicator + message classes, `on(event, callback)` registration; simple dev adapter (in-process, local Redis) | New (DT) |
 | G2 | agents | Cross-model learner | `ParallelActiveLearner`, `selector`, `metrics`, `IterationState` observation hook | Learner interface in the DT layer; cross-arch metric normalization + selector computation in the reference impl; (v2) effort reallocation | New (DT) interface; ROSE-based reference impl |
 | G3 | agents | Model selector schema + publish path | — | Versioned `SelectorUpdate` message; edge-side application | New (DT), message on G1a |
 | G4 | agents | Science agent runtime | AsyncFlow workflows, ROSE loops | Agent lifecycle: subscribe, run investigators, publish; degenerate agent for pre-existing sims | New (DT) |
 | G8 | graph | Capability graph spec + builder + stream resolver | `rose/spec` pattern (branch) | Graph schema (SPLIT/AGGREGATE, typed edges), builder, resolver | New (DT), extends `rose/spec` |
-| G1b | service | ORBIT pub/sub backend plugin | Broker event routing, WSS ingress at DOE sites; Redis-Streams design notes | Channel registry, fan-out, replay buffer, ack | ORBIT plugin |
-| G11 | service | DT-as-a-service hosting (§2.2) | Broker plugin host; `task_dispatcher` as broker-hosted-control-loop precedent; gateway HTTP/SSE | Broker plugin embedding the DT builder/runtime; submit/monitor gateway routes; failure isolation + multi-tenant fairness | ORBIT plugin + New (DT) |
+| G1b | service | ORBIT pub/sub backend adapter | Broker event routing, WSS ingress at DOE sites; Redis-Streams design notes | Channel registry, fan-out, replay buffer, ack | ORBIT plugin |
+| G11 | service | DT-as-a-service hosting (§2.2) | Broker plugin host, session-scoped plugins; `task_dispatcher` as broker-hosted-control-loop precedent; gateway HTTP/SSE | Broker plugin embedding the DT builder/runtime; process-per-session DT workers; submit/monitor gateway routes | ORBIT plugin + New (DT) |
 | G10 | service | Declarable data locality | Out-of-band mechanisms (FS, Globus, staging) | Per-edge locality declaration + reachability validation | Formal spec (open item) |
 | G12 | service | A2A adapter | Capability contracts (typed input/output = agent-card material) | A2A endpoint per science agent: card from the capability contract, inference request as A2A task | New (DT), optional |
 
-Dependencies: G1a underpins G3, G7, and G4; G2 → G3; {G4, G5} → G8; G6 is
-independent; G9 unblocks building against released ROSE; G1b swaps in
-under the unchanged client API; G11 packages G4 + G8 behind the broker.
-The implementation plan (pptx) phases match: phase 1 = G1a, G6, G7;
-phase 2 = G2–G5; phase 3 = G8.
+Dependencies: G5 and G6 are pub/sub-free; G1a underpins G3 and G4;
+G2 → G3; {G4, G5} → G8; G9 unblocks building against released ROSE; G1b
+swaps in under the unchanged frontend; G11 packages G4 + G8 behind the
+broker. The implementation plan (pptx) phases match: phase 1 = G5, G6,
+G1a; phase 2 = G2–G4; phase 3 = G8.
 
 ---
 
@@ -464,11 +470,11 @@ phase 2 = G2–G5; phase 3 = G8.
    which would force an external broker early?
 2. **Selector semantics:** argmax (one winner per capability) vs weighted
    blend vs contextual (per-input-region) selection — v1 scope?
-3. **First demo:** which use case drives it, and where does its inference
-   loop
-   run — a Stellar-AI recipe (e.g. a streaming source feeding the
-   fine-tuning or M3DC1 loop) with the edge simulated on a login or
-   service node, or a use case with a real external streaming host?
+3. **First demo:** which use case drives it, and where does its
+   inference loop run — a Stellar-AI recipe (e.g. a streaming source
+   feeding the fine-tuning or M3DC1 loop) with the edge simulated on a
+   login or service node, or a use case with a real external streaming
+   host?
 4. **A2A:** the platform is A2A-shaped, and capability contracts double
    as agent-card material; G12 keeps an adapter cheap without pinning the
    internals (continuous streaming loops) to the A2A protocol
@@ -477,10 +483,15 @@ phase 2 = G2–G5; phase 3 = G8.
 
 ---
 
-## 6. Formal spec — sketch
+## 6. Spec — API first, YAML later
 
-The spec extends the `rose/spec` pattern (schema → builder → adapters)
-one level up:
+The programmatic API comes first: builder plus agent/investigator
+classes, proven against the first use case. The YAML spec is cast over
+that API afterwards — the `rose/spec` route, where the YAML wraps an
+already-working `LearnerBuilder`. One exception is declarative from day
+one: capability contracts (typed input/output) are data — the stream
+resolver and the A2A cards (G12) need them machine-readable. Target
+shape of the eventual spec, extending `rose/spec` one level up:
 
 ```yaml
 twin:                # name, version
@@ -488,7 +499,7 @@ sources:             # event sources: kind, channel, payload type
 sinks:               # data sinks, actuators
 capabilities:        # typed input/output contracts
 agents:              # one per capability
-  wind_field:
+  equilibrium:
     investigators:
       - arch: fno    # + sim/train/policy task pointers (BYOF, the same
         tasks: ...   #   function:/shell: references as rose/spec)
@@ -505,7 +516,9 @@ tracking:            # mlflow | clearml
 Principles:
 
 - BYOF pointers only, never inline logic — the same boundary as
-  `rose/spec`;
+  `rose/spec`; cmd/script tasks are first-class (`shell:` refs);
+- imports and anchors for reuse (capability libraries, site profiles) —
+  compose-like, not compose-compatible;
 - every graph edge resolves to a named pub/sub channel;
 - degenerate agents (fixed model, wrapped pre-existing sim) are a
   first-class node kind;

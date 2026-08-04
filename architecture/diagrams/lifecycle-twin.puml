@@ -11,7 +11,8 @@ state Running {
   state Learning {
     [*] --> Iterating
     Iterating --> Iterating : sim / train / policy
-    Iterating --> Drained : objectives met
+    Iterating --> Waiting : objectives met
+    Waiting --> Iterating : edge callback:\nnew data, drift
   }
   --
   state Serving {
@@ -34,6 +35,7 @@ Retired --> [*]
 
 note bottom of Running
   learning and serving run concurrently;
-  serving continues after learning drains
+  learning idles in Waiting until edge
+  callbacks restart it
 end note
 @enduml

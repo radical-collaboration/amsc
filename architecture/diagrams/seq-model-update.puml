@@ -1,0 +1,20 @@
+@startuml seq-model-update
+title Model update propagation — references on the channel, bytes out of band
+
+participant "Model investigator\n(learner loop)" as INV
+participant "Model registry\n(MLflow)" as REG
+participant "Cross-model learner" as CML
+participant "Pub/Sub" as PS
+participant "Inference loop" as INF
+participant "Inference task" as SRV
+
+INV -> REG : register model version\n+ eval metrics
+INV -> CML : iteration state,\nevaluation results
+CML -> CML : compare investigators\n(pluggable criteria)
+CML -> PS : publish ModelPublished (ref)
+CML -> PS : publish SelectorUpdate
+PS -> INF : callback: SelectorUpdate
+INF -> REG : fetch model by reference\n(bulk bytes out of band)
+REG --> INF : model artifact
+INF -> SRV : hot-swap model
+@enduml

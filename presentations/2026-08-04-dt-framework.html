@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Digital Twin Framework on the RADICAL stack</title>
+<style>
+  :root {
+    --bg:      #ffffff;
+    --fg:      #1a2330;
+    --muted:   #5a6a7a;
+    --accent:  #0b5fa5;
+    --accent2: #b3541e;
+    --line:    #d8dee6;
+    --codebg:  #f3f6f9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: var(--bg); color: var(--fg);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; overflow: hidden; }
+
+  .slide { display: none; height: 100vh; padding: 5vh 7vw;
+    flex-direction: column; justify-content: center; }
+  .slide.active { display: flex; }
+
+  h1 { font-size: 5.2vh; color: var(--accent); margin-bottom: 3.5vh;
+       border-bottom: 2px solid var(--line); padding-bottom: 1.5vh; }
+  .title h1 { font-size: 6.5vh; border: none; }
+  .title .sub  { font-size: 3vh; color: var(--muted); margin-top: 1vh; }
+  .title .tag  { font-size: 3.4vh; color: var(--accent2); margin-top: 6vh;
+                 font-style: italic; }
+
+  ul { list-style: none; }
+  li { font-size: 3vh; line-height: 1.45; margin-bottom: 2vh;
+       padding-left: 3.2vh; position: relative; }
+  li::before { content: "▸"; color: var(--accent); position: absolute; left: 0; }
+  li li { font-size: 2.6vh; margin: 0.8vh 0 0 0; }
+  li li::before { content: "–"; color: var(--muted); }
+  b, strong { color: var(--accent); }
+  em { color: var(--accent2); font-style: normal; font-weight: bold; }
+
+  pre { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 2.3vh;
+        line-height: 1.35; background: var(--codebg); border: 1px solid var(--line);
+        border-radius: 8px; padding: 2.2vh 2.5vw; margin: 1.5vh 0 2.5vh;
+        overflow-x: auto; }
+  pre .hi { color: var(--accent); font-weight: bold; }
+  pre .hi2 { color: var(--accent2); font-weight: bold; }
+
+  table { border-collapse: collapse; width: 100%; margin: 1vh 0 2vh; }
+  th, td { font-size: 2.5vh; line-height: 1.35; text-align: left;
+           padding: 1.2vh 1.2vw; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 2.1vh;
+       text-transform: uppercase; letter-spacing: 0.05em; }
+  td:first-child { color: var(--accent); font-weight: 600; white-space: nowrap; }
+
+  .imgrow { display: flex; gap: 2vw; align-items: flex-start;
+            justify-content: center; }
+  .imgrow figure { flex: 1; text-align: center; }
+  .imgrow img { max-width: 100%; max-height: 66vh; border: 1px solid var(--line);
+                border-radius: 8px; background: #fff; }
+  .imgrow figcaption { font-size: 2.1vh; color: var(--muted); margin-top: 1vh; }
+
+  .foot { position: absolute; bottom: 2.5vh; left: 7vw; right: 7vw;
+          font-size: 1.9vh; color: var(--muted); display: flex;
+          justify-content: space-between; }
+  .note { font-size: 2.1vh; color: var(--muted); margin-top: 2vh; }
+</style>
+</head>
+<body>
+
+<!-- 1 ────────────────────────────────────────────────────────────── -->
+<section class="slide title active">
+  <h1>A Digital Twin Framework<br>on the RADICAL stack</h1>
+  <div class="sub">Architecture proposal — draft for discussion &nbsp;·&nbsp; August 2026</div>
+  <div class="sub">RADICAL, Rutgers University</div>
+  <div class="tag">Models that keep learning against reality<br>
+       while serving inference — on DOE HPC.</div>
+</section>
+
+<!-- 2 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Architecture — concepts and stack</h1>
+  <ul>
+    <li><b>Capability</b>: typed input → output contract
+        (e.g. diagnostics → equilibrium). A digital twin is a
+        <em>graph of capabilities</em>, not of models.</li>
+    <li><b>Model investigator</b>: one architecture × capability —
+        learner loop + inference task + callbacks.</li>
+    <li><b>Science agent</b>: all investigators of one capability +
+        a <em>cross-model learner</em> which publishes the
+        <b>model selector</b> (what model to serve, now).</li>
+    <li>Two concurrent flows, coupled by pub/sub:
+        <b>learning</b> (until objective, restarts on new data) ∥
+        <b>inference</b> (forever, hot-swaps models).</li>
+  </ul>
+  <pre><span class="hi">L5 DT Framework</span> → L4 ROSE → L3 AsyncFlow → L2.5 ORBIT → L2 Rhapsody → L1 resources</pre>
+  <div class="note">New code is a thin L5 — everything below exists and runs today.</div>
+</section>
+
+<!-- 3 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>The twin at runtime</h1>
+  <div class="imgrow">
+    <figure>
+      <img src="../architecture/diagrams/lifecycle-twin.svg" alt="twin lifecycle">
+      <figcaption>Twin lifecycle — learning and serving run concurrently;
+        learning waits on edge callbacks between rounds.</figcaption>
+    </figure>
+    <figure>
+      <img src="../architecture/diagrams/seq-model-update.svg" alt="model update">
+      <figcaption>Model update — references on the channel,
+        bytes out of band via the registry.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 4 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Map to the AmSC use cases</h1>
+  <table>
+    <tr><th>DT component</th><th>Realization (Stellar-AI recipes)</th></tr>
+    <tr><td>Event source</td>
+        <td>simulation / campaign output stream, user trigger, timer</td></tr>
+    <tr><td>Capability</td>
+        <td>e.g. equilibrium reconstruction (M3DC1), fusion surrogate (MATEY fine-tuning)</td></tr>
+    <tr><td>Investigator</td>
+        <td>ROSE active-learning loop; training via Rhapsody on Frontier / Perlmutter</td></tr>
+    <tr><td>Model registry</td>
+        <td>AmSC MLflow — deployed, ROSE tracker integration merged</td></tr>
+    <tr><td>Inference task</td>
+        <td>Rhapsody <em>service task</em> inside the allocation</td></tr>
+    <tr><td>Access / execution</td>
+        <td>ORBIT broker + endpoint (RaaS) — m3dc1-rose-aas, heat-rose-aas run this today</td></tr>
+  </table>
+  <div class="note">Use-case independent by design: sources, evaluation criteria,
+    and site topology are open — the same architecture serves xGFabric-style
+    edge pipelines unchanged.</div>
+</section>
+
+<!-- 5 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Map to xGFabric</h1>
+  <table>
+    <tr><th>DT component</th><th>Realization (three-site closed loop)</th></tr>
+    <tr><td>Event source</td>
+        <td>CSPOT wind-sensor stream (UCSB)</td></tr>
+    <tr><td>Capability</td>
+        <td>wind field — the multi-architecture case: PCR / PINN / FNO
+            investigators under one science agent</td></tr>
+    <tr><td>Investigator</td>
+        <td>OpenFOAM CFD sims (Notre Dame) feed surrogate training
+            (Perlmutter GPUs)</td></tr>
+    <tr><td>Selector</td>
+        <td>cross-model learner picks the surrogate the edge serves —
+            today a manual, per-architecture choice</td></tr>
+    <tr><td>Access / execution</td>
+        <td>ORBIT broker + endpoints — one outbound WebSocket per site,
+            zero inbound firewall exceptions</td></tr>
+  </table>
+  <div class="note">Same architecture as the Stellar-AI mapping — different
+    sources, sites, and criteria; nothing changes in the framework.</div>
+</section>
+
+<!-- 6 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Features</h1>
+  <ul>
+    <li><b>Multi-architecture learning</b> per capability, with
+        <em>inference-time model selection</em> and hot-swap serving.</li>
+    <li><b>Event-driven</b>: any trigger kind — sensor, user, timer, sim,
+        service; learning restarts on callbacks, criteria are pluggable
+        (metrics, cost, UQ, human/agent).</li>
+    <li><b>Transport-agnostic pub/sub</b>: abstract frontend, adapters for
+        ORBIT / Redis / MQTT / in-process; references on the channel,
+        bulk data out of band.</li>
+    <li><b>DT-as-a-service</b>: one ORBIT broker hosts many twins
+        (session per twin, worker process each); the client is a
+        <em>console</em> — attach, tweak, detach, the twin keeps running.</li>
+    <li><b>Composition</b>: capabilities chain into graphs
+        (SPLIT / AGGREGATE); pre-existing sims wrap as fixed-model nodes.</li>
+  </ul>
+</section>
+
+<!-- 7 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Implementation plan</h1>
+  <table>
+    <tr><th>Phase</th><th>Builds</th><th>When</th></tr>
+    <tr><td>foundations</td>
+        <td>investigator abstraction · inference-task template ·
+            pub/sub frontend (+ dev adapter) · land ROSE spec/RaaS branches</td>
+        <td>Aug – mid Sep</td></tr>
+    <tr><td>agents</td>
+        <td>cross-model learner (DT interface, ROSE reference impl) ·
+            selector schema + publish path · science-agent runtime</td>
+        <td>mid Sep – Oct</td></tr>
+    <tr><td>graph</td>
+        <td>capability-graph builder + stream resolver, extending rose/spec</td>
+        <td>Nov – Dec</td></tr>
+    <tr><td>service</td>
+        <td>ORBIT pub/sub adapter · DTaaS hosting (broker plugin, session
+            per twin) · A2A adapter (optional)</td>
+        <td>Q1 2027</td></tr>
+  </table>
+  <ul>
+    <li><b>Demo — late October</b>: one capability, two investigators,
+        selector + hot-swap serving, on a Stellar-AI recipe; dev pub/sub
+        adapter, no graph composition.</li>
+    <li><b>API first, YAML later</b> — cast the spec over a proven builder
+        API, the rose/spec route; capability contracts are data from day one.</li>
+  </ul>
+</section>
+
+<div class="foot">
+  <span>Digital Twin Framework · AmSC · 2026-08-04</span>
+  <span id="pagenum"></span>
+</div>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  let cur = 0;
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle('active', k === cur));
+    document.getElementById('pagenum').textContent = (cur + 1) + ' / ' + slides.length;
+  }
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) show(cur + 1);
+    else if (['ArrowLeft', 'PageUp'].includes(e.key))    show(cur - 1);
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End')  show(slides.length - 1);
+    else if (e.key === 'f')    document.documentElement.requestFullscreen?.();
+  });
+  document.addEventListener('click', () => show(cur + 1));
+  show(0);
+</script>
+</body>
+</html>

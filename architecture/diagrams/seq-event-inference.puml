@@ -1,0 +1,21 @@
+@startuml seq-event-inference
+title Trigger event → inference, and training signal fan-out
+
+participant "Event source" as SRC
+participant "Pub/Sub" as PS
+participant "Inference loop" as INF
+participant "Inference task" as SRV
+participant "Data sink /\nactuator" as SINK
+participant "Science agent\n(capability)" as AGT
+
+SRC -> PS : publish TriggerEvent
+PS -> INF : deliver (subscriber)
+activate INF
+INF -> INF : apply model selector
+INF -> SRV : inference request
+SRV --> INF : prediction
+INF -> SINK : result
+deactivate INF
+PS -> AGT : deliver (subscriber)
+note right : the same event fans out as\ntraining / drift signal
+@enduml

@@ -1,0 +1,41 @@
+@startuml lifecycle-twin
+title Digital twin instance — lifecycle
+hide empty description
+left to right direction
+
+state Defined
+state Validated
+state Deploying
+
+state Running {
+  state Learning {
+    [*] --> Iterating
+    Iterating --> Iterating : sim / train / policy
+    Iterating --> Waiting : objectives met
+    Waiting --> Iterating : edge callback:\nnew data, drift
+  }
+  --
+  state Serving {
+    [*] --> Inferring
+    Inferring --> Inferring : events → inference → sinks;\nselector updates hot-swap models
+  }
+}
+
+state Updating
+state Retired
+
+[*] --> Defined : spec submitted
+Defined --> Validated : builder checks capability\ntypes and data locality
+Validated --> Deploying : instantiate agents,\nresolve channels
+Deploying --> Running : all agents up,\nchannels wired
+Running --> Updating : spec change,\nnew investigator
+Updating --> Validated
+Running --> Retired : teardown
+Retired --> [*]
+
+note bottom of Running
+  learning and serving run concurrently;
+  learning idles in Waiting until edge
+  callbacks restart it
+end note
+@enduml

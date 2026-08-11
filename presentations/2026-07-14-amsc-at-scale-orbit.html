@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ORBIT — user-space services for at-scale AI workflows</title>
+<style>
+  :root {
+    --bg:      #ffffff;
+    --fg:      #1a2330;
+    --muted:   #5a6a7a;
+    --accent:  #0b5fa5;
+    --accent2: #b3541e;
+    --line:    #d8dee6;
+    --codebg:  #f3f6f9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: var(--bg); color: var(--fg);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; overflow: hidden; }
+
+  .slide { display: none; height: 100vh; padding: 5vh 7vw;
+    flex-direction: column; justify-content: center; }
+  .slide.active { display: flex; }
+
+  h1 { font-size: 5.2vh; color: var(--accent); margin-bottom: 3.5vh;
+       border-bottom: 2px solid var(--line); padding-bottom: 1.5vh; }
+  .title h1 { font-size: 6.5vh; border: none; }
+  .title .sub  { font-size: 3vh; color: var(--muted); margin-top: 1vh; }
+  .title .tag  { font-size: 3.4vh; color: var(--accent2); margin-top: 6vh;
+                 font-style: italic; }
+
+  ul { list-style: none; }
+  li { font-size: 3.2vh; line-height: 1.45; margin-bottom: 2.4vh;
+       padding-left: 3.2vh; position: relative; }
+  li::before { content: "▸"; color: var(--accent); position: absolute; left: 0; }
+  li li { font-size: 2.7vh; margin: 0.8vh 0 0 0; }
+  li li::before { content: "–"; color: var(--muted); }
+  b, strong { color: var(--accent); }
+  em { color: var(--accent2); font-style: normal; font-weight: bold; }
+
+  pre { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 2.3vh;
+        line-height: 1.35; background: var(--codebg); border: 1px solid var(--line);
+        border-radius: 8px; padding: 2.2vh 2.5vw; margin: 1.5vh 0 2.5vh;
+        overflow-x: auto; }
+  pre .hi { color: var(--accent); font-weight: bold; }
+  pre .hi2 { color: var(--accent2); font-weight: bold; }
+
+  table { border-collapse: collapse; width: 100%; margin: 1vh 0 2vh; }
+  th, td { font-size: 2.6vh; line-height: 1.35; text-align: left;
+           padding: 1.4vh 1.2vw; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 2.2vh;
+       text-transform: uppercase; letter-spacing: 0.05em; }
+  td:first-child { font-family: Menlo, Consolas, monospace; font-size: 2.4vh;
+                   color: var(--accent); white-space: nowrap; }
+  td em { font-weight: bold; }
+  a { color: var(--accent); text-decoration: underline;
+      text-decoration-color: var(--line); text-underline-offset: 0.4vh; }
+
+  .foot { position: absolute; bottom: 2.5vh; left: 7vw; right: 7vw;
+          font-size: 1.9vh; color: var(--muted); display: flex;
+          justify-content: space-between; }
+  .note { font-size: 2.1vh; color: var(--muted); margin-top: 2vh; }
+  .url  { font-family: Menlo, Consolas, monospace; color: var(--accent2); }
+</style>
+</head>
+<body>
+
+<!-- 1 ────────────────────────────────────────────────────────────── -->
+<section class="slide title active">
+  <h1>ORBIT — user-space services<br>for at-scale AI workflows</h1>
+  <div class="sub">AmSC At-Scale Services Working Group &nbsp;·&nbsp; July 14, 2026</div>
+  <div class="sub">Andre Merzky &nbsp;—&nbsp; RADICAL, Rutgers University</div>
+  <div class="tag">From your laptop to Perlmutter GPUs —<br>
+       no login, no public IP, no ops ticket.</div>
+</section>
+
+<!-- 2 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>HPC services scale — <em>changing</em> them is what's costly</h1>
+  <ul>
+    <li>Facility-deployed services scale well — that's not the problem
+      <ul>
+        <li>the problem is <b>change</b>: adapting to per-user demands is costly and slow</li>
+        <li>user-level configurability — <em>which</em> AI models, service
+            parameters, versions — doesn't fit the deployment cycle</li>
+      </ul>
+    </li>
+    <li>Meanwhile users <b>already embed AI</b> in their own small-scale,
+        local workflows
+      <ul>
+        <li>a PyTorch instance here, a vLLM server there, custom(ized) models</li>
+        <li>fully under their control — but not at facility scale</li>
+      </ul>
+    </li>
+    <li>And deploying their own services at the facility?
+        <em>"a no-go for end users"</em></li>
+    <li>What we are aiming for: <b>user-instantiated, user-configured</b>
+        AI backends — at scale, with nothing but an allocation</li>
+  </ul>
+</section>
+
+<!-- 3 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>The stack — what does what</h1>
+<pre>
+  your science workflow — or a campaign of them
+  ──────────────────────────────────────────────────────────────────
+  <span class="hi">ROSE</span>        learn      simulation + surrogate training + model
+                         selection loops (active / reinforcement learning)
+  <span class="hi">AsyncFlow</span>   compose    async workflows, task dependencies, campaigns
+  <span class="hi">RHAPSODY</span>    execute    ComputeTask + AITask in one allocation;
+                         embedded AI backends (vLLM serving, …)
+  <span class="hi">ORBIT</span>       connect    HPC resources ⇄ one workflow / campaign
+  ──────────────────────────────────────────────────────────────────
+  Perlmutter / NERSC  ·  Odo, Frontier / OLCF  ·  …
+</pre>
+  <ul>
+    <li><b>Embedded AI services</b> are RHAPSODY's and ROSE's job —
+        models served <em>inside</em> the allocation, learning loops as a service</li>
+    <li><b>ORBIT connects</b> — multiple HPC resources become one workflow,
+        or one campaign of workflows</li>
+    <li>…and keeps the layers <em>configurable on the fly</em>: which
+        RHAPSODY / ROSE services run where, with which models and parameters</li>
+  </ul>
+</section>
+
+<!-- 4 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>ORBIT: scalable, embedded AI backends in user land</h1>
+<pre>
+  laptop / workstation ····· HTTPS (outbound) ·····▶ ╔══════════╗
+    └─ driver script                                 ║  <span class="hi">BROKER</span>  ║   the only public component
+                                                     ╚══════════╝
+                                                          ▲
+                                  outbound WebSocket ·····┘
+  HPC compute nodes ······································┘
+    └─ <span class="hi">endpoint</span>  (a normal batch job, spawned on demand via <span class="hi2">IRI / SFAPI / Slurm / …</span>)
+         └─ RHAPSODY ▸ your tasks — GPU + CPU, pinned per device
+</pre>
+  <ul>
+    <li>Everything connects <b>out</b> to the broker — firewall-friendly by construction</li>
+    <li>The compute-side service lives <b>inside the user's allocation</b>:
+        spawned on demand, torn down when done</li>
+    <li>No root, no facility deployment, no inbound port —
+        <em>scales with users, not with ops</em></li>
+  </ul>
+  <div class="note">Formerly <i>bridge</i>/<i>edge</i> — renamed broker/endpoint mid-2026;
+       older demo material shows the legacy names.</div>
+</section>
+
+<!-- 5 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>What runs on AmSC</h1>
+  <table>
+    <tr><th>recipe</th><th>what it shows</th><th>scale / result</th></tr>
+    <tr><td><a href="https://gitlab.com/amsc2/partner-integration/stellar-ai/-/blob/recipes-initial/recipes/hello-world/README.md">hello-world</a></td>
+        <td>end-to-end infrastructure test via NERSC IRI</td>
+        <td>2 nodes, task pinned per node, full chain green</td></tr>
+    <tr><td><a href="https://gitlab.com/amsc2/partner-integration/stellar-ai/-/blob/recipes-initial/recipes/fine-tuning-matey/README.md">fine-tuning / MATEY</a></td>
+        <td>surrogate-model inference at scale, laptop-driven</td>
+        <td>16 nodes × 4 GPUs → <em>192 tasks</em>, one per GPU slot</td></tr>
+    <tr><td><a href="https://gitlab.com/amsc2/partner-integration/stellar-ai/-/blob/recipes-initial/recipes/m3dc1-rose-aas/README.md">m3dc1 / ROSE-aaS</a></td>
+        <td>SURGE active-learning race, 2 model architectures</td>
+        <td>20 candidates, best <em>val_r2 = 0.90</em>, MLflow-tracked</td></tr>
+    <tr><td><a href="https://gitlab.com/amsc2/partner-integration/stellar-ai/-/blob/recipes-initial/recipes/heat-rose-aas/README.md">heat / ROSE-aaS</a></td>
+        <td>containerized workload via podman-hpc</td>
+        <td>zero user-side container handling</td></tr>
+  </table>
+  <div class="note">All real runs on Perlmutter/NERSC and Odo/OLCF · demo videos on the
+       AmSC shared drive · tracked in the shared AmSC MLflow server</div>
+</section>
+
+<!-- 6 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>AI-workflow integration</h1>
+  <ul>
+    <li><b>Heterogeneous tasks in one allocation</b> — train, infer, simulate
+        run <em>concurrently</em>, GPU + CPU side by side, pinned per device
+        (RHAPSODY on Dragon)</li>
+    <li><b>Resource slicing</b> — nodes shared between services and tasks
+        (<i>horizontal</i>) or partitioned per service (<i>vertical</i>):
+        one config switch</li>
+    <li><b>ROSE-aaS</b> — active-learning &amp; model-service orchestration as a
+        service (the outer ML loop SURGE et al. don't have)</li>
+    <li><b>Experiment tracking</b> — MLflow / ClearML wired into the drivers,
+        reporting to the AmSC MLflow server</li>
+    <li><b>Bring your own workload</b> — in the fine-tuning recipe only
+        <em>3 things are MATEY-specific</em>: application paths, env wrapper
+        script, task command line — swap those, keep the machinery</li>
+  </ul>
+</section>
+
+<!-- 7 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Recipes — live now</h1>
+  <ul>
+    <li><span class="url">gitlab.com/amsc2/partner-integration/stellar-ai</span>
+      <ul>
+        <li>a recipe = architecture README + SETUP + RUN + FAQ + driver + contacts</li>
+        <li>4 recipes: <b>hello-world</b> (start here) · fine-tuning-matey ·
+            m3dc1-rose-aas · heat-rose-aas</li>
+        <li>shared docs: setup · troubleshooting · MLflow hookup · facility connectivity</li>
+      </ul>
+    </li>
+    <li>Next steps
+      <ul>
+        <li><b>direct-SFAPI launch path</b> — validated end-to-end on Perlmutter</li>
+        <li><b>2 IRI issues are WIP</b></li>
+        <li><b>broker embedded on the client</b> — zero-deployment uptake for end users</li>
+        <li>more facilities — OLCF path documented (needs login-side tunnel setup)</li>
+      </ul>
+    </li>
+    <li>Contact: RADICAL — A. Merzky · A. Alsaadi · issues on the GitLab project</li>
+  </ul>
+</section>
+
+<div class="foot">
+  <span>ORBIT · AmSC At-Scale Services WG · 2026-07-14</span>
+  <span id="pagenum"></span>
+</div>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  let cur = 0;
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle('active', k === cur));
+    document.getElementById('pagenum').textContent = (cur + 1) + ' / ' + slides.length;
+  }
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) show(cur + 1);
+    else if (['ArrowLeft', 'PageUp'].includes(e.key))    show(cur - 1);
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End')  show(slides.length - 1);
+    else if (e.key === 'f')    document.documentElement.requestFullscreen?.();
+  });
+  document.addEventListener('click', () => show(cur + 1));
+  show(0);
+</script>
+</body>
+</html>

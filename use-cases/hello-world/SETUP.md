@@ -133,15 +133,21 @@ chmod 600 "$AMSC_DIR/token_nersc"
 Obtain the token per NERSC's IRI / Globus documentation. The token is
 short-lived; if a run fails to connect, refresh it (see [FAQ.md](FAQ.md)).
 
-## Point `hello_world.py` at your account
+## Point the driver at your account
 
-Edit the constants at the top of `hello_world.py`:
+The account / target settings live in the shared
+[`../service_utils.py`](../service_utils.py), in the
+`IRI_DEFAULTS['nersc']` block:
 
-- `ACCOUNT` — your Perlmutter allocation / project.
-- `LOGIN_HOST` — the login host for the forward SSH tunnel
+- `account` — your Perlmutter allocation / project.
+- `login_host` — the login host for the forward SSH tunnel
   (`perlmutter.nersc.gov`).
-- `HOME_DIR` — your `$HOME` on Perlmutter (used to build the wrapper path).
-- `N_NODES` — allocation size (default 2).
-- `QUEUE` / `WALLTIME_MIN` — queue and walltime.
+- `home_dir` — your `$HOME` on Perlmutter (used to build the wrapper path).
+- `n_nodes` — allocation size.
+- `queue_name` / `walltime_min` — queue and walltime.
+
+You can either edit the defaults there once, or leave them and answer the
+interactive prompts: at launch the driver asks for each of these values,
+offering the `IRI_DEFAULTS` entry as the default.
 
 Once all of the above is in place, continue to **[RUN.md](RUN.md)**.

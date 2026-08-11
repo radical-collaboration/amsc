@@ -23,7 +23,8 @@ Run on the laptop, with the bridge already running on the bridge host:
 """
 import asyncio
 import base64
-import os
+import sys
+from pathlib import Path
 
 import cloudpickle
 import rhapsody
@@ -31,63 +32,20 @@ import rhapsody
 from rhapsody.api        import ComputeTask, Session
 from radical.edge.client import BridgeClient
 
-# === adjust to your NERSC account / layout ==================================
-ACCOUNT      = 'm5290'                  # Perlmutter allocation / project
-LOGIN_HOST   = 'perlmutter.nersc.gov'   # login host for the forward SSH tunnel
-HOME_DIR     = '/global/u2/m/merzky'    # your $HOME on Perlmutter
-N_NODES      = 2
-WALLTIME_MIN = 30
-QUEUE        = 'debug'
-AMSC_DIR     = os.environ.get('AMSC_DIR', os.path.expanduser('~/.amsc'))
-# ============================================================================
-
-EDGE_NAME = 'hello.0'
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import service_utils as service
 
 
-def main():
-    token = open(f'{AMSC_DIR}/token_nersc').read().strip()
-
-    bc  = BridgeClient()                          # URL + cert from env / files
-    cx  = bc.get_edge_client('bridge').get_plugin('iri_connect')
-    iri = cx.connect(endpoint='nersc', token=token)
-
-    wrapper  = f'{HOME_DIR}/.amsc/ve/bin/radical-edge-wrapper.sh'
-    job_spec = {
-        'executable' : wrapper,
-        'arguments'  : ['--name', EDGE_NAME, '--url', bc.url,
-                        '--tunnel', 'forward', '--tunnel-via', LOGIN_HOST],
-        'name'       : EDGE_NAME,
-        'resources'  : {'node_count': N_NODES},
-        'attributes' : {'queue_name': QUEUE,
-                        'duration'  : WALLTIME_MIN * 60,
-                        'account'   : ACCOUNT},
-        'environment': {'RADICAL_BRIDGE_URL': bc.url,
-                        'RADICAL_EDGE_SETUP': 'module load openmpi'},
-    }
-
-    print(f'submitting IRI job (nersc -> perlmutter, edge {EDGE_NAME}) ...')
-    job = iri.submit_job('perlmutter', job_spec)
-    print(f'  job_id: {job["job_id"]}')
-
+async def run_workflow(bridge_url, edge_name):
+    bc = BridgeClient()
     try:
-        print('waiting for the edge (queue + boot)', end='', flush=True)
-        bc.wait_for_edge([EDGE_NAME],
-                         on_heartbeat=lambda: print('.', end='', flush=True))
-        print(f'\nedge {EDGE_NAME} is up')
-
-        nodelist = bc.get_edge_client(EDGE_NAME) \
+        nodelist = bc.get_edge_client(edge_name) \
                      .get_plugin('queue_info').nodelist()
-        print(f'allocation ({len(nodelist)} nodes): {nodelist}')
-
-        asyncio.run(_run(bc.url, EDGE_NAME, nodelist))
-
     finally:
-        print('tearing down ...')
-        try:    iri.cancel_job('perlmutter', job['job_id'])
-        except Exception as e: print(f'  cancel failed: {e}')
-        try:    cx.disconnect('nersc')
-        except Exception as e: print(f'  disconnect failed: {e}')
         bc.close()
+
+    print(f'allocation ({len(nodelist)} nodes): {nodelist}')
+    await _run(bridge_url, edge_name, nodelist)
 
 
 async def _run(bridge_url, edge_name, nodelist):
@@ -133,4 +91,4 @@ async def _run(bridge_url, edge_name, nodelist):
 
 
 if __name__ == '__main__':
-    main()
+    service.run(run_workflow)

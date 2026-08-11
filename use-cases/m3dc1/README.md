@@ -31,6 +31,12 @@ python amsc.py --max-iter 10 --growing-pool
 ```
 
 > [NOTE]
+> The driver is interactive: it discovers the available targets and asks
+> you to pick one; launch defaults (account, queue, nodes, …) come from
+> the shared [`../service_utils.py`](../service_utils.py)
+> (`IRI_DEFAULTS` / `MACHINE_DEFAULTS`) and are offered at each prompt.
+
+> [NOTE]
 > The example above shows multiple SURGE surrogate candidates being orchestrated concurrently in a race fashion. The example uses two different ML model architecutes
 > with grown pool of datasets with a finite number of AL training iterations.
 

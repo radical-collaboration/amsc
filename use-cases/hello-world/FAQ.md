@@ -104,7 +104,7 @@ fix (the `feature/edge` branch used in [SETUP.md](SETUP.md) does).
 On Perlmutter, per-edge logs are under:
 
 ```
-~/.radical/edge/logs/<edge-name>.log      # e.g. hello.0.log
+~/.radical/edge/logs/<edge-name>.log      # e.g. amsc-nersc-a1b2c3.log
 ```
 
 It captures both radical.edge and rhapsody output (including Dragon V3

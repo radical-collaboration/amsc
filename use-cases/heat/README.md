@@ -25,6 +25,12 @@ mkdir -p HEAT-WORK && mkdir -p HEAT-WORK/HEATrun HEAT-WORK/output
 python amsc.py
 ```
 
+> [NOTE]
+> The driver is interactive: it discovers the available targets and asks
+> you to pick one; launch defaults (account, queue, nodes, …) come from
+> the shared [`../service_utils.py`](../service_utils.py)
+> (`IRI_DEFAULTS` / `MACHINE_DEFAULTS`) and are offered at each prompt.
+
 5. The `amsc.py` already has `MLFlow` and `ClearML` tracker.
 
 

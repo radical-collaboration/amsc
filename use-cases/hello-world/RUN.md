@@ -3,8 +3,10 @@
 This assumes [SETUP.md](SETUP.md) is complete: all three roles installed,
 the TLS cert generated on the bridge host and its `bridge_cert.pem`
 distributed to the laptop and Perlmutter, `token_nersc` written on the
-laptop, and the constants at the top of `hello_world.py` edited for your
-account.
+laptop, and the `IRI_DEFAULTS['nersc']` block in
+[`../service_utils.py`](../service_utils.py) pointed at your account (or
+left as is — the driver prompts for each value at launch, with those
+defaults offered).
 
 The bridge launches on the **bridge host**; the driver runs on the
 **laptop**.
@@ -49,13 +51,20 @@ The driver resolves the bridge URL and cert via env
 (`RADICAL_BRIDGE_URL` / `RADICAL_BRIDGE_CERT`) > the files under
 `~/.radical/edge`.
 
+The driver is interactive: it discovers the available targets, asks you
+to pick one (choose the `[iri] nersc` entry), and walks through the
+endpoint configuration (account, queue, nodes, …) with the
+`service_utils.py` defaults offered at each prompt.
+
 ## 3. Read the result
 
 ```
-submitting IRI job (nersc -> perlmutter, edge hello.0) ...
-  job_id: <id>
-waiting for the edge (queue + boot) ......        (dots during the queue wait)
-edge hello.0 is up
+— Configure IRI endpoint: nersc —          (prompts, defaults in brackets)
+  submitting IRI job (nersc → perlmutter, edge name: amsc-nersc-a1b2c3)…
+  IRI job_id: <id>
+
+— Waiting for first edge to come up (any of: amsc-nersc-a1b2c3) —
+— First edge up: amsc-nersc-a1b2c3 —
 allocation (2 nodes): ['nidXXXXXX', 'nidYYYYYY']
 submitting 2 hostname task(s), one per node ...
 
@@ -87,10 +96,11 @@ by task UID:
 <edge cwd>/<rhapsody-session-id>/hello.NN.sh     # the generated wrapper
 ```
 
-To locate `<rhapsody-session-id>` on Perlmutter, grep the edge log:
+To locate `<rhapsody-session-id>` on Perlmutter, grep the edge log — the
+edge name (`amsc-nersc-<suffix>`) is printed at submit time:
 
 ```sh
-grep "Registered session" ~/.radical/edge/logs/hello.0.log
+grep "Registered session" ~/.radical/edge/logs/<edge-name>.log
 ```
 
 The files are under that session id beneath the edge's working directory.

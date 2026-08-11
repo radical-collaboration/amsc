@@ -45,10 +45,11 @@ to it over a WebSocket (tunnelled compute → login → bridge).
 ## What success looks like
 
 ```
-submitting IRI job (nersc -> perlmutter, edge hello.0) ...
-  job_id: <id>
-waiting for the edge (queue + boot) ......
-edge hello.0 is up
+  submitting IRI job (nersc → perlmutter, edge name: amsc-nersc-a1b2c3)…
+  IRI job_id: <id>
+
+— Waiting for first edge to come up (any of: amsc-nersc-a1b2c3) —
+— First edge up: amsc-nersc-a1b2c3 —
 allocation (2 nodes): ['nidXXXXXX', 'nidYYYYYY']
 submitting 2 hostname task(s), one per node ...
 
@@ -81,3 +82,4 @@ tearing down ...
 | `RUN.md` | Launch the bridge, run the driver, read the result. |
 | `FAQ.md` | Common snags and how to diagnose them. |
 | `hello_world.py` | The minimal smoke-test driver. |
+| [`../service_utils.py`](../service_utils.py) | Shared service machinery (target discovery, IRI/PsiJ launch, teardown) used by all use-case drivers; holds the `IRI_DEFAULTS` account settings. |

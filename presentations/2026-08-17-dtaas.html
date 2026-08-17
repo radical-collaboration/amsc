@@ -102,7 +102,7 @@
     <li>One broker hosts <b>multiple sessions</b> (name spaces); each
         session holds <b>multiple DTs</b>.</li>
     <li>Compute is acquired <b>on demand</b>: inference and training tasks
-        run in HPC allocations through the RADICAL stack.</li>
+        run in HPC allocations through the AmSC/RADICAL stack.</li>
     <li>Instrument streams feed the DT continuously; all connections are
         <em>outbound</em>, the facility opens no inbound ports.</li>
   </ul>
@@ -212,9 +212,12 @@
 <section class="slide">
   <h1>What this offers NSTX-U</h1>
   <ul>
-    <li>A surrogate on NSTX-U geometry <b>already runs on this stack</b>:
-        the heat recipe learns the Eich optical heat flux with active
-        learning, as a service, on Perlmutter.</li>
+    <li>A surrogate on NSTX-U geometry <b>has been demonstrated on this
+        stack</b>: the heat recipe learns the Eich optical heat flux with
+        active learning on Perlmutter.</li>
+    <li>No standing service is required: the compute side is <b>spawned on
+        demand</b> into a normal allocation and torn down after the
+        run.</li>
     <li>Diagnostics become <b>event sources</b>: any stream feeds the DT,
         live or from shot archives.</li>
     <li>Models <b>learn between shots</b> and <b>serve between and during

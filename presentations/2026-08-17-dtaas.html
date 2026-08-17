@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DT-as-a-Service on the RADICAL stack</title>
+<style>
+  :root {
+    --bg:      #ffffff;
+    --fg:      #1a2330;
+    --muted:   #5a6a7a;
+    --accent:  #0b5fa5;
+    --accent2: #b3541e;
+    --line:    #d8dee6;
+    --codebg:  #f3f6f9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: var(--bg); color: var(--fg);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; overflow: hidden; }
+
+  .slide { display: none; height: 100vh; padding: 5vh 7vw;
+    flex-direction: column; justify-content: center; }
+  .slide.active { display: flex; }
+
+  h1 { font-size: 5.2vh; color: var(--accent); margin-bottom: 3.5vh;
+       border-bottom: 2px solid var(--line); padding-bottom: 1.5vh; }
+  .title h1 { font-size: 6.5vh; border: none; }
+  .title .sub  { font-size: 3vh; color: var(--muted); margin-top: 1vh; }
+  .title .tag  { font-size: 3.4vh; color: var(--accent2); margin-top: 6vh;
+                 font-style: italic; }
+
+  ul { list-style: none; }
+  li { font-size: 3vh; line-height: 1.45; margin-bottom: 2vh;
+       padding-left: 3.2vh; position: relative; }
+  li::before { content: "▸"; color: var(--accent); position: absolute; left: 0; }
+  li li { font-size: 2.6vh; margin: 0.8vh 0 0 0; }
+  li li::before { content: "–"; color: var(--muted); }
+  b, strong { color: var(--accent); }
+  em { color: var(--accent2); font-style: normal; font-weight: bold; }
+
+  pre { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 2.3vh;
+        line-height: 1.35; background: var(--codebg); border: 1px solid var(--line);
+        border-radius: 8px; padding: 2.2vh 2.5vw; margin: 1.5vh 0 2.5vh;
+        overflow-x: auto; }
+  pre .hi { color: var(--accent); font-weight: bold; }
+  pre .hi2 { color: var(--accent2); font-weight: bold; }
+
+  table { border-collapse: collapse; width: 100%; margin: 1vh 0 2vh; }
+  th, td { font-size: 2.4vh; line-height: 1.35; text-align: left;
+           padding: 1vh 1.2vw; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 2vh;
+       text-transform: uppercase; letter-spacing: 0.05em; }
+  td:first-child { color: var(--accent); font-weight: 600; white-space: nowrap; }
+
+  .fig { text-align: center; }
+  .fig svg { width: 100%; max-height: 72vh; border: 1px solid var(--line);
+             border-radius: 10px; background: #080818; }
+  .fig figcaption { font-size: 2.1vh; color: var(--muted); margin-top: 1.2vh; }
+
+  .foot { position: absolute; bottom: 2.5vh; left: 7vw; right: 7vw;
+          font-size: 1.9vh; color: var(--muted); display: flex;
+          justify-content: space-between; }
+  .note { font-size: 2.1vh; color: var(--muted); margin-top: 2vh; }
+  .ok   { color: #1d7a3e; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- 1 ────────────────────────────────────────────────────────────── -->
+<section class="slide title active">
+  <h1>DT-as-a-Service<br>on the RADICAL stack</h1>
+  <div class="sub">Architecture · implementation · use-case mapping &nbsp;·&nbsp; August 2026</div>
+  <div class="sub">RADICAL, Rutgers University</div>
+  <div class="tag">Digital twins as long-running services on DOE HPC.<br>
+       v1 is implemented and measured.</div>
+</section>
+
+<!-- 2 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>From framework to service</h1>
+  <ul>
+    <li>The DT <b>framework</b> defines the digital twin: a capability graph
+        whose models <em>keep learning</em> while <em>serving inference</em>.</li>
+    <li>A digital twin outlives any interactive session: the inference loop
+        runs <b>indefinitely</b>, learner loops span <b>many allocations</b>.</li>
+    <li><b>DTaaS</b>: the digital twin's control plane runs as an ORBIT
+        plugin on a <em>standalone, persistent broker</em>.</li>
+    <li>One broker hosts <b>multiple sessions</b> (name spaces); each session
+        holds <b>multiple DTs</b>. The client is a <em>console</em>:
+        attach, steer, detach, while the DT keeps running.</li>
+    <li>Digital twins are defined <b>programmatically</b> in v1 (builder API);
+        the declarative YAML spec comes later, cast over the proven API.</li>
+  </ul>
+  <pre><span class="hi">L5 DT framework</span> → L4 ROSE → L3 AsyncFlow → <span class="hi2">L2.5 ORBIT</span> → L2 Rhapsody → L1 resources</pre>
+</section>
+
+<!-- 3 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Architecture — roles</h1>
+  <figure class="fig">
+  <svg viewBox="0 0 1280 560" font-family="Inter, 'Segoe UI', Roboto, sans-serif">
+    <defs>
+      <marker id="a-cy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#40c8e8"/></marker>
+      <marker id="a-gr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5acd83"/></marker>
+      <marker id="a-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#e8a040"/></marker>
+      <marker id="a-dm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#7080a0"/></marker>
+    </defs>
+    <rect x="0" y="0" width="1280" height="560" fill="#080818"/>
+
+    <!-- client -->
+    <rect x="50" y="70" width="290" height="180" rx="10" fill="#0d1525" stroke="#40c8e8"/>
+    <text x="70" y="102" fill="#94a3b8" font-size="13" letter-spacing="2">CLIENT HOST</text>
+    <text x="70" y="136" fill="#40c8e8" font-size="20" font-weight="600">DTClient</text>
+    <text x="70" y="166" fill="#e6ecf6" font-size="15">create · steer · observe</text>
+    <text x="70" y="192" fill="#7080a0" font-size="14">attach / detach / reattach</text>
+    <text x="70" y="218" fill="#7080a0" font-size="14">no HPC login, no public IP</text>
+
+    <!-- instruments -->
+    <rect x="50" y="330" width="290" height="160" rx="10" fill="#0d1525" stroke="#5acd83"/>
+    <text x="70" y="362" fill="#94a3b8" font-size="13" letter-spacing="2">INSTRUMENTS</text>
+    <text x="70" y="396" fill="#5acd83" font-size="20" font-weight="600">sensors · streams</text>
+    <text x="70" y="426" fill="#e6ecf6" font-size="15">continuous input to the DT</text>
+    <text x="70" y="452" fill="#7080a0" font-size="14">OPC-UA / MQTT / demo feeds</text>
+
+    <!-- broker -->
+    <rect x="470" y="70" width="380" height="420" rx="10" fill="#0d1525" stroke="#e8a040"/>
+    <text x="490" y="102" fill="#94a3b8" font-size="13" letter-spacing="2">BROKER HOST — DTAAS</text>
+    <text x="490" y="140" fill="#e8a040" font-size="20" font-weight="600">ORBIT broker · plugin: dt</text>
+    <text x="490" y="172" fill="#e6ecf6" font-size="15">the digital twins live here</text>
+    <text x="490" y="198" fill="#7080a0" font-size="14">persistent sessions · n DTs each</text>
+    <rect x="490" y="222" width="340" height="70" rx="8" fill="#080818" stroke="#40c8e8"/>
+    <text x="506" y="250" fill="#40c8e8" font-size="16" font-weight="600">DT = capability graph</text>
+    <text x="506" y="276" fill="#7080a0" font-size="13">sensor → agent → investigator → sink</text>
+    <rect x="490" y="312" width="340" height="58" rx="8" fill="#080818" stroke="#5acd83"/>
+    <text x="506" y="338" fill="#5acd83" font-size="16" font-weight="600">stream data plane</text>
+    <text x="506" y="360" fill="#7080a0" font-size="13">pub/sub: sensors in, windows out</text>
+    <text x="490" y="412" fill="#7080a0" font-size="14">the only public component</text>
+    <text x="490" y="438" fill="#7080a0" font-size="14">token-gated WS ingress · HTTP/SSE gateway</text>
+    <text x="490" y="464" fill="#7080a0" font-size="14">runs only the control plane, no user compute</text>
+
+    <!-- HPC -->
+    <rect x="980" y="70" width="250" height="190" rx="10" fill="#0d1525" stroke="#40c8e8"/>
+    <text x="1000" y="102" fill="#94a3b8" font-size="13" letter-spacing="2">HPC / LOCAL</text>
+    <text x="1000" y="136" fill="#40c8e8" font-size="19" font-weight="600">endpoint: task</text>
+    <text x="1000" y="166" fill="#e6ecf6" font-size="15">in-situ inference</text>
+    <text x="1000" y="192" fill="#7080a0" font-size="14">co-located with broker</text>
+    <text x="1000" y="218" fill="#7080a0" font-size="14">~20 ms per prediction</text>
+
+    <rect x="980" y="300" width="250" height="190" rx="10" fill="#0d1525" stroke="#5acd83"/>
+    <text x="1000" y="332" fill="#94a3b8" font-size="13" letter-spacing="2">HPC ALLOCATION</text>
+    <text x="1000" y="366" fill="#5acd83" font-size="19" font-weight="600">endpoint: exsitu</text>
+    <text x="1000" y="396" fill="#e6ecf6" font-size="15">ROSE training · AL</text>
+    <text x="1000" y="422" fill="#7080a0" font-size="14">dragon / flux, HPC scale</text>
+    <text x="1000" y="448" fill="#7080a0" font-size="14">train where the data lives</text>
+
+    <!-- arrows -->
+    <line x1="342" y1="130" x2="466" y2="130" stroke="#40c8e8" stroke-width="2" marker-end="url(#a-cy)"/>
+    <text x="404" y="118" text-anchor="middle" fill="#40c8e8" font-size="13">verbs (HTTPS/WS)</text>
+    <line x1="466" y1="175" x2="342" y2="175" stroke="#7080a0" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-dm)"/>
+    <text x="404" y="198" text-anchor="middle" fill="#7080a0" font-size="13">state (poll)</text>
+    <line x1="342" y1="405" x2="486" y2="352" stroke="#5acd83" stroke-width="2" marker-end="url(#a-gr)"/>
+    <text x="400" y="392" fill="#5acd83" font-size="13">sensor streams</text>
+    <line x1="852" y1="150" x2="976" y2="150" stroke="#40c8e8" stroke-width="2" marker-end="url(#a-cy)"/>
+    <text x="914" y="138" text-anchor="middle" fill="#40c8e8" font-size="13">inference</text>
+    <line x1="852" y1="390" x2="976" y2="390" stroke="#5acd83" stroke-width="2" marker-end="url(#a-gr)"/>
+    <text x="914" y="378" text-anchor="middle" fill="#5acd83" font-size="13">train / AL</text>
+    <path d="M 980 440 C 920 460, 880 420, 856 372" fill="none" stroke="#e8a040" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#a-am)"/>
+    <text x="880" y="462" fill="#e8a040" font-size="13">publish model</text>
+
+    <text x="640" y="536" text-anchor="middle" fill="#4a5670" font-size="13" font-style="italic">every connection is outbound to the broker; roles may share one physical host</text>
+  </svg>
+  <figcaption>Four roles: the client steers, instruments feed, the broker hosts the digital twins,
+    endpoints compute. The broker is the only publicly reachable component.</figcaption>
+  </figure>
+</section>
+
+<!-- 4 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Architecture — software</h1>
+  <figure class="fig">
+  <svg viewBox="0 0 1280 600" font-family="Inter, 'Segoe UI', Roboto, sans-serif">
+    <defs>
+      <marker id="b-cy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#40c8e8"/></marker>
+      <marker id="b-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#e8a040"/></marker>
+    </defs>
+    <rect x="0" y="0" width="1280" height="600" fill="#080818"/>
+
+    <!-- broker process column -->
+    <rect x="150" y="46" width="460" height="470" rx="10" fill="#0d1525" stroke="#1e3a5f"/>
+    <text x="170" y="76" fill="#94a3b8" font-size="13" letter-spacing="2">BROKER PROCESS — CONTROL PLANE</text>
+
+    <rect x="180" y="96" width="400" height="46" rx="7" fill="#080818" stroke="#e8a040"/>
+    <text x="196" y="126" fill="#e8a040" font-size="16" font-weight="600">ORBIT broker
+      <tspan fill="#7080a0" font-weight="400" font-size="13">— L2.5 · ingress, sessions, plugins</tspan></text>
+
+    <rect x="180" y="156" width="400" height="46" rx="7" fill="#080818" stroke="#e8a040"/>
+    <text x="196" y="186" fill="#e8a040" font-size="16" font-weight="600">plugin dt
+      <tspan fill="#7080a0" font-weight="400" font-size="13">— PluginDT · DTSession · routes</tspan></text>
+
+    <rect x="180" y="216" width="400" height="46" rx="7" fill="#080818" stroke="#40c8e8"/>
+    <text x="196" y="246" fill="#40c8e8" font-size="16" font-weight="600">TwinInstance · DTRuntime
+      <tspan fill="#7080a0" font-weight="400" font-size="13">— L5 · the graph</tspan></text>
+
+    <rect x="180" y="276" width="400" height="46" rx="7" fill="#080818" stroke="#5acd83"/>
+    <text x="196" y="306" fill="#5acd83" font-size="16" font-weight="600">StreamingLearnerInvestigator
+      <tspan fill="#7080a0" font-weight="400" font-size="13">— L4 ROSE</tspan></text>
+
+    <rect x="180" y="336" width="400" height="46" rx="7" fill="#080818" stroke="#1e3a5f"/>
+    <text x="196" y="366" fill="#e6ecf6" font-size="16" font-weight="600">engines: task | exsitu
+      <tspan fill="#7080a0" font-weight="400" font-size="13">— L3 AsyncFlow, per session</tspan></text>
+
+    <rect x="180" y="396" width="400" height="46" rx="7" fill="#080818" stroke="#94a3b8"/>
+    <text x="196" y="426" fill="#e6ecf6" font-size="16" font-weight="600">OrbitExecutionBackend
+      <tspan fill="#7080a0" font-weight="400" font-size="13">— L2 Rhapsody, control side</tspan></text>
+
+    <text x="180" y="486" fill="#7080a0" font-size="13">+ embedded stream broker (ZMQ, supervised) or ORBIT eventing</text>
+
+    <!-- endpoint process column -->
+    <rect x="700" y="96" width="430" height="360" rx="10" fill="#0d1525" stroke="#1e3a5f"/>
+    <text x="720" y="126" fill="#94a3b8" font-size="13" letter-spacing="2">ENDPOINT PROCESS — COMPUTE</text>
+
+    <rect x="730" y="146" width="370" height="46" rx="7" fill="#080818" stroke="#e8a040"/>
+    <text x="746" y="176" fill="#e8a040" font-size="16" font-weight="600">ORBIT endpoint
+      <tspan fill="#7080a0" font-weight="400" font-size="13">— registered at the broker</tspan></text>
+
+    <rect x="730" y="206" width="370" height="46" rx="7" fill="#080818" stroke="#94a3b8"/>
+    <text x="746" y="236" fill="#e6ecf6" font-size="16" font-weight="600">rhapsody plugin
+      <tspan fill="#7080a0" font-weight="400" font-size="13">— L2, compute side</tspan></text>
+
+    <rect x="730" y="266" width="370" height="46" rx="7" fill="#080818" stroke="#94a3b8"/>
+    <text x="746" y="296" fill="#e6ecf6" font-size="16" font-weight="600">backends
+      <tspan fill="#7080a0" font-weight="400" font-size="13">— concurrent · dragon · flux</tspan></text>
+
+    <rect x="730" y="326" width="370" height="46" rx="7" fill="#080818" stroke="#1e3a5f"/>
+    <text x="746" y="356" fill="#e6ecf6" font-size="16" font-weight="600">tasks
+      <tspan fill="#7080a0" font-weight="400" font-size="13">— L1 · inference / training / AL</tspan></text>
+
+    <text x="730" y="426" fill="#7080a0" font-size="13">one endpoint per engine role; co-located or remote HPC</text>
+
+    <!-- arrow between columns -->
+    <line x1="584" y1="419" x2="726" y2="230" stroke="#e8a040" stroke-width="2" marker-end="url(#b-am)"/>
+    <text x="656" y="316" fill="#e8a040" font-size="13" transform="rotate(-53 656 316)">orbit calls</text>
+
+    <!-- layer ribbon -->
+    <g font-size="14">
+      <rect x="150"  y="540" width="200" height="40" rx="5" fill="#0d1525" stroke="#40c8e8" stroke-opacity="0.6"/>
+      <text x="250" y="565" text-anchor="middle" fill="#e6ecf6">L5 <tspan fill="#40c8e8">DT framework</tspan></text>
+      <rect x="358" y="540" width="140" height="40" rx="5" fill="#0d1525" stroke="#5acd83" stroke-opacity="0.6"/>
+      <text x="428" y="565" text-anchor="middle" fill="#e6ecf6">L4 <tspan fill="#5acd83">ROSE</tspan></text>
+      <rect x="506" y="540" width="160" height="40" rx="5" fill="#0d1525" stroke="#1e3a5f"/>
+      <text x="586" y="565" text-anchor="middle" fill="#e6ecf6">L3 <tspan fill="#94a3b8">AsyncFlow</tspan></text>
+      <rect x="674" y="540" width="160" height="40" rx="5" fill="#0d1525" stroke="#e8a040" stroke-opacity="0.6"/>
+      <text x="754" y="565" text-anchor="middle" fill="#e6ecf6">L2.5 <tspan fill="#e8a040">ORBIT</tspan></text>
+      <rect x="842" y="540" width="160" height="40" rx="5" fill="#0d1525" stroke="#94a3b8" stroke-opacity="0.6"/>
+      <text x="922" y="565" text-anchor="middle" fill="#e6ecf6">L2 <tspan fill="#94a3b8">Rhapsody</tspan></text>
+      <rect x="1010" y="540" width="120" height="40" rx="5" fill="#0d1525" stroke="#1e3a5f"/>
+      <text x="1070" y="565" text-anchor="middle" fill="#e6ecf6">L1 <tspan fill="#94a3b8">resources</tspan></text>
+    </g>
+    <text x="640" y="36" text-anchor="middle" fill="#4a5670" font-size="13" font-style="italic">Rhapsody appears twice: control-side engines in the broker, compute-side backends in the endpoints</text>
+  </svg>
+  <figcaption>New v1 code is the dt plugin and the hardened L5 runtime;
+    the layers below are reused unchanged.</figcaption>
+  </figure>
+</section>
+
+<!-- 5 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Lifecycle — DT states and sessions</h1>
+  <figure class="fig">
+  <svg viewBox="0 0 1280 540" font-family="Inter, 'Segoe UI', Roboto, sans-serif">
+    <defs>
+      <marker id="c-cy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#40c8e8"/></marker>
+      <marker id="c-dm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#7080a0"/></marker>
+      <marker id="c-gr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5acd83"/></marker>
+    </defs>
+    <rect x="0" y="0" width="1280" height="540" fill="#080818"/>
+
+    <!-- state machine -->
+    <text x="60" y="60" fill="#94a3b8" font-size="13" letter-spacing="2">DT STATE MACHINE</text>
+    <g font-size="17" font-weight="600">
+      <rect x="60"  y="90" width="190" height="52" rx="8" fill="#0d1525" stroke="#7080a0"/>
+      <text x="155" y="122" text-anchor="middle" fill="#e6ecf6">initializing</text>
+      <rect x="330" y="90" width="150" height="52" rx="8" fill="#0d1525" stroke="#40c8e8"/>
+      <text x="405" y="122" text-anchor="middle" fill="#40c8e8">ready</text>
+      <rect x="560" y="90" width="160" height="52" rx="8" fill="#0d1525" stroke="#5acd83"/>
+      <text x="640" y="122" text-anchor="middle" fill="#5acd83">running</text>
+      <rect x="800" y="90" width="160" height="52" rx="8" fill="#0d1525" stroke="#7080a0"/>
+      <text x="880" y="122" text-anchor="middle" fill="#e6ecf6">stopped</text>
+      <rect x="1040" y="90" width="160" height="52" rx="8" fill="#0d1525" stroke="#e8a040"/>
+      <text x="1120" y="122" text-anchor="middle" fill="#e8a040">failed</text>
+    </g>
+    <line x1="252" y1="116" x2="326" y2="116" stroke="#7080a0" stroke-width="2" marker-end="url(#c-dm)"/>
+    <line x1="482" y1="116" x2="556" y2="116" stroke="#7080a0" stroke-width="2" marker-end="url(#c-dm)"/>
+    <text x="519" y="104" text-anchor="middle" fill="#7080a0" font-size="13">start</text>
+    <line x1="722" y1="116" x2="796" y2="116" stroke="#7080a0" stroke-width="2" marker-end="url(#c-dm)"/>
+    <text x="759" y="104" text-anchor="middle" fill="#7080a0" font-size="13">stop</text>
+    <path d="M 700 146 C 800 200, 980 190, 1060 146" fill="none" stroke="#e8a040" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#c-dm)"/>
+    <text x="880" y="196" text-anchor="middle" fill="#e8a040" font-size="13">endpoint loss · task error</text>
+
+    <text x="60"  y="180" fill="#7080a0" font-size="13">twin_create returns at once;</text>
+    <text x="60"  y="200" fill="#7080a0" font-size="13">engines initialize in background</text>
+    <text x="330" y="180" fill="#7080a0" font-size="13">poll twin_list to here;</text>
+    <text x="330" y="200" fill="#7080a0" font-size="13">graph verbs fast-fail before</text>
+    <text x="820" y="230" fill="#7080a0" font-size="13">stop is terminal in v1; restart is v2</text>
+
+    <!-- session timeline -->
+    <text x="60" y="300" fill="#94a3b8" font-size="13" letter-spacing="2">SESSION TIMELINE</text>
+
+    <line x1="90" y1="360" x2="1200" y2="360" stroke="#5acd83" stroke-width="3" marker-end="url(#c-gr)"/>
+    <text x="96" y="348" fill="#5acd83" font-size="14" font-weight="600">DT: runs for days, no idle expiry</text>
+
+    <rect x="140" y="400" width="280" height="40" rx="6" fill="#0d1525" stroke="#40c8e8"/>
+    <text x="280" y="426" text-anchor="middle" fill="#40c8e8" font-size="14">client A: create · start · detach</text>
+    <line x1="280" y1="398" x2="280" y2="366" stroke="#40c8e8" stroke-width="1.5" marker-end="url(#c-cy)"/>
+
+    <rect x="620" y="400" width="300" height="40" rx="6" fill="#0d1525" stroke="#40c8e8"/>
+    <text x="770" y="426" text-anchor="middle" fill="#40c8e8" font-size="14">client B: reattach by sid · observe</text>
+    <line x1="770" y1="398" x2="770" y2="366" stroke="#40c8e8" stroke-width="1.5" marker-end="url(#c-cy)"/>
+
+    <text x="470" y="470" fill="#7080a0" font-size="14">sessions are forced persistent · sid acts as a bearer capability</text>
+    <text x="470" y="494" fill="#7080a0" font-size="14">orphans discoverable via admin/sessions · explicit lifecycle only</text>
+    <text x="640" y="524" text-anchor="middle" fill="#4a5670" font-size="13" font-style="italic">the client-supplied twin uuid makes twin_create retry-idempotent; start/stop/close are safe no-ops in the target state</text>
+  </svg>
+  <figcaption>twin_create is the only asynchronous verb; all other verbs are short and
+    synchronous. Clients attach and detach; the digital twin continues to run.</figcaption>
+  </figure>
+</section>
+
+<!-- 6 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Data plane — streams and learning</h1>
+  <figure class="fig">
+  <svg viewBox="0 0 1280 540" font-family="Inter, 'Segoe UI', Roboto, sans-serif">
+    <defs>
+      <marker id="d-gr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5acd83"/></marker>
+      <marker id="d-cy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#40c8e8"/></marker>
+      <marker id="d-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#e8a040"/></marker>
+    </defs>
+    <rect x="0" y="0" width="1280" height="540" fill="#080818"/>
+
+    <rect x="50" y="120" width="230" height="120" rx="10" fill="#0d1525" stroke="#5acd83"/>
+    <text x="70" y="152" fill="#94a3b8" font-size="13" letter-spacing="2">INSTRUMENTS</text>
+    <text x="70" y="186" fill="#5acd83" font-size="18" font-weight="600">sensor feed</text>
+    <text x="70" y="214" fill="#7080a0" font-size="14">continuous events</text>
+
+    <rect x="380" y="90" width="300" height="180" rx="10" fill="#0d1525" stroke="#5acd83"/>
+    <text x="400" y="122" fill="#94a3b8" font-size="13" letter-spacing="2">STREAM PLANE — PLUGGABLE</text>
+    <rect x="400" y="140" width="260" height="46" rx="7" fill="#080818" stroke="#5acd83"/>
+    <text x="416" y="170" fill="#e6ecf6" font-size="15"><tspan font-weight="600">ZMQ broker</tspan> — loopback, 0.98 ms/hop</text>
+    <rect x="400" y="196" width="260" height="46" rx="7" fill="#080818" stroke="#e8a040"/>
+    <text x="416" y="226" fill="#e6ecf6" font-size="15"><tspan font-weight="600">ORBIT eventing</tspan> — 2.09 ms/hop</text>
+    <text x="400" y="292" fill="#7080a0" font-size="13">DT_STREAM_BACKEND=zmq|orbit selects the backend;</text>
+    <text x="400" y="312" fill="#7080a0" font-size="13">components above the seam are unaffected</text>
+
+    <rect x="790" y="70" width="440 " height="140" rx="10" fill="#0d1525" stroke="#40c8e8"/>
+    <text x="810" y="102" fill="#94a3b8" font-size="13" letter-spacing="2">IN-SITU — SERVE</text>
+    <text x="810" y="136" fill="#40c8e8" font-size="17" font-weight="600">sensor task → investigator predict</text>
+    <text x="810" y="164" fill="#e6ecf6" font-size="14">every event → model inference, ~20 ms</text>
+    <text x="810" y="188" fill="#7080a0" font-size="13">runs on the task endpoint, results to sinks</text>
+
+    <rect x="790" y="290" width="440" height="150" rx="10" fill="#0d1525" stroke="#5acd83"/>
+    <text x="810" y="322" fill="#94a3b8" font-size="13" letter-spacing="2">EX-SITU — LEARN</text>
+    <text x="810" y="356" fill="#5acd83" font-size="17" font-weight="600">stream windows → ROSE learner</text>
+    <text x="810" y="384" fill="#e6ecf6" font-size="14">train / active-learn per window, HPC endpoint</text>
+    <text x="810" y="408" fill="#7080a0" font-size="13">convergence metric vs target → twin_list metrics</text>
+
+    <line x1="282" y1="180" x2="376" y2="180" stroke="#5acd83" stroke-width="2" marker-end="url(#d-gr)"/>
+    <text x="329" y="168" text-anchor="middle" fill="#5acd83" font-size="13">publish</text>
+    <line x1="682" y1="140" x2="786" y2="120" stroke="#40c8e8" stroke-width="2" marker-end="url(#d-cy)"/>
+    <text x="734" y="112" text-anchor="middle" fill="#40c8e8" font-size="13">events</text>
+    <line x1="682" y1="230" x2="786" y2="330" stroke="#5acd83" stroke-width="2" marker-end="url(#d-gr)"/>
+    <text x="710" y="296" fill="#5acd83" font-size="13">windows</text>
+    <line x1="1150" y1="286" x2="1150" y2="216" stroke="#e8a040" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#d-am)"/>
+    <text x="1140" y="256" text-anchor="end" fill="#e8a040" font-size="13">model update</text>
+
+    <text x="60" y="480" fill="#7080a0" font-size="14">per-DT topic namespaces isolate the DTs' streams</text>
+    <text x="60" y="506" fill="#7080a0" font-size="14">ZMQ binds loopback by default; the ORBIT backend moves the data plane inside the token trust domain and is the production choice</text>
+  </svg>
+  <figcaption>One stream feeds two loops: serving runs on every event, learning on every
+    window; the model update closes the learning cycle.</figcaption>
+  </figure>
+</section>
+
+<!-- 7 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Implementation status</h1>
+  <table>
+    <tr><th>Milestone</th><th>Delivers</th><th>State</th></tr>
+    <tr><td>M0 hardening</td>
+        <td>stop/teardown, per-DT topic namespaces, embeddable stream
+            broker, packaging, pytest/tox</td>
+        <td class="ok">PR ready</td></tr>
+    <tr><td>M1 ORBIT plugin</td>
+        <td><em>dt</em> plugin: persistent sessions, sid reattach, async
+            twin_create + short sync verbs, admin listing</td>
+        <td class="ok">PR ready</td></tr>
+    <tr><td>M2 ROSE ex-situ</td>
+        <td>StreamingLearnerInvestigator, dual-engine DTs (task | exsitu),
+            endpoint-loss visibility</td>
+        <td class="ok">PR ready</td></tr>
+    <tr><td>M3 data plane</td>
+        <td>ORBIT-pubsub backend: stream traffic inside the token domain</td>
+        <td class="ok">PR ready</td></tr>
+  </table>
+  <ul>
+    <li><b>126 tests</b>, including live-broker integration. Demos verified
+        with both stream backends: service DT and streaming learner;
+        <em>calibration converges</em>.</li>
+    <li>Upstream: two ORBIT PRs <b>merged</b>; one AsyncFlow fix + one ROSE
+        dependency in review.</li>
+    <li>Live <b>viz dashboard</b>: convergence bars and activity lanes, in
+        the ORBIT Explorer and standalone, with live and replay modes.</li>
+  </ul>
+</section>
+
+<!-- 8 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Measured performance</h1>
+  <table>
+    <tr><th>Measurement</th><th>Result</th><th>Decision it settled</th></tr>
+    <tr><td>in-situ prediction</td>
+        <td>~20 ms p50 via endpoint vs ~11 ms in-process; endpoint wins
+            under concurrency</td>
+        <td><em>all</em> compute goes through Rhapsody, without an
+            in-process pool; a co-located endpoint is the "local" deployment</td></tr>
+    <tr><td>stream hop</td>
+        <td>0.98 ms ZMQ · 2.09 ms ORBIT</td>
+        <td>the secure ORBIT data plane costs ~1 ms per hop and becomes
+            the production default</td></tr>
+    <tr><td>sequential latency</td>
+        <td>261 ms → 20 ms after fixing the rhapsody notify batcher</td>
+        <td>fixed upstream as an endpoint configuration knob</td></tr>
+  </table>
+  <div class="note">Benchmarks live in the repo (perf/) and rerun against the demos.</div>
+</section>
+
+<!-- 9 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Map to use-case requirements</h1>
+  <table>
+    <tr><th>Requirement (AmSC · xGFabric)</th><th>DTaaS v1 answer</th></tr>
+    <tr><td>DT outlives any login session</td>
+        <td class="ok">persistent sessions; DTs survive clients, reattach by sid</td></tr>
+    <tr><td>drive from a laptop</td>
+        <td class="ok">outbound-only ORBIT connectivity; no HPC login, no public IP</td></tr>
+    <tr><td>train where the data lives</td>
+        <td class="ok">exsitu engine → Rhapsody endpoint in the HPC allocation
+            (dragon / flux)</td></tr>
+    <tr><td>continuous sensor streams</td>
+        <td class="ok">stream plane with per-DT namespaces; ZMQ or ORBIT backend</td></tr>
+    <tr><td>serve inference continuously</td>
+        <td class="ok">in-situ loop on the task endpoint, ~20 ms per prediction</td></tr>
+    <tr><td>DOE-site security posture</td>
+        <td class="ok">token-gated ingress; M3 puts stream traffic in the same
+            trust domain</td></tr>
+    <tr><td>many DTs, many users</td>
+        <td>n DTs per session, admin listing; <em>per-tenant auth is v2</em></td></tr>
+    <tr><td>model selection · capability graphs · recovery</td>
+        <td><em>v2</em>: cross-model selector, declarative graph spec,
+            restart across broker loss</td></tr>
+  </table>
+</section>
+
+<!-- 10 ───────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Next</h1>
+  <ul>
+    <li><b>Merge path</b>: the four stacked PRs are under review; upstream
+        AsyncFlow / ROSE merges unpin the last dependencies.</li>
+    <li><b>First real DTs</b>: the MATEY fine-tuning stream and the
+        xGFabric wind pipeline (after a smoke pass).</li>
+    <li><b>v2 candidates</b>: DT recovery/restart, per-tenant auth,
+        capability-graph spec, scale-out (endpoint-hosted DTs).</li>
+  </ul>
+  <div class="note">Plan and measurements: digital_twins/docs/dtaas-v1-plan.md ·
+    architecture: amsc/architecture/dt-framework.md</div>
+</section>
+
+<div class="foot">
+  <span>DT-as-a-Service · AmSC · 2026-08-17</span>
+  <span id="pagenum"></span>
+</div>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  let cur = 0;
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle('active', k === cur));
+    document.getElementById('pagenum').textContent = (cur + 1) + ' / ' + slides.length;
+  }
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) show(cur + 1);
+    else if (['ArrowLeft', 'PageUp'].includes(e.key))    show(cur - 1);
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End')  show(slides.length - 1);
+    else if (e.key === 'f')    document.documentElement.requestFullscreen?.();
+  });
+  document.addEventListener('click', () => show(cur + 1));
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>

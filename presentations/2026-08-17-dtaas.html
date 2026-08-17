@@ -66,35 +66,49 @@
 </head>
 <body>
 
-<!-- 1 ────────────────────────────────────────────────────────────── -->
 <section class="slide title active">
   <h1>DT-as-a-Service<br>on the RADICAL stack</h1>
-  <div class="sub">Architecture · implementation · use-case mapping &nbsp;·&nbsp; August 2026</div>
+  <div class="sub">What DT-as-a-Service means for NSTX-U &nbsp;·&nbsp; scoping the first use case &nbsp;·&nbsp; August 2026</div>
   <div class="sub">RADICAL, Rutgers University</div>
   <div class="tag">Digital twins as long-running services on DOE HPC.<br>
        v1 is implemented and measured.</div>
 </section>
 
-<!-- 2 ────────────────────────────────────────────────────────────── -->
 <section class="slide">
-  <h1>From framework to service</h1>
+  <h1>What is a digital twin (here)</h1>
   <ul>
-    <li>The DT <b>framework</b> defines the digital twin: a capability graph
-        whose models <em>keep learning</em> while <em>serving inference</em>.</li>
-    <li>A digital twin outlives any interactive session: the inference loop
-        runs <b>indefinitely</b>, learner loops span <b>many allocations</b>.</li>
-    <li><b>DTaaS</b>: the digital twin's control plane runs as an ORBIT
-        plugin on a <em>standalone, persistent broker</em>.</li>
-    <li>One broker hosts <b>multiple sessions</b> (name spaces); each session
-        holds <b>multiple DTs</b>. The client is a <em>console</em>:
-        attach, steer, detach, while the DT keeps running.</li>
-    <li>Digital twins are defined <b>programmatically</b> in v1 (builder API);
-        the declarative YAML spec comes later, cast over the proven API.</li>
+    <li>A digital twin is a computational counterpart of a physical system:
+        its models <em>keep learning</em> against reality while
+        <em>serving inference</em>.</li>
+    <li>The DT is a <b>graph of capabilities</b>: typed input → output
+        contracts (e.g. diagnostics → heat flux), each realized by one or
+        more learned models.</li>
+    <li>Two concurrent loops: <b>learning</b> runs until its objective is
+        met and restarts on new data; <b>inference</b> runs indefinitely
+        and hot-swaps models as they improve.</li>
+    <li>Event sources drive the DT: sensors, shot data, simulation output,
+        users, timers.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <h1>What "as a service" adds</h1>
+  <ul>
+    <li>The DT control plane runs as a plugin on a <b>persistent ORBIT
+        broker</b>; the DT runs for months, independent of any login
+        session.</li>
+    <li>Scientists <b>attach from a laptop</b>, steer, and detach; the DT
+        keeps running. Reattach later, from anywhere.</li>
+    <li>One broker hosts <b>multiple sessions</b> (name spaces); each
+        session holds <b>multiple DTs</b>.</li>
+    <li>Compute is acquired <b>on demand</b>: inference and training tasks
+        run in HPC allocations through the RADICAL stack.</li>
+    <li>Instrument streams feed the DT continuously; all connections are
+        <em>outbound</em>, the facility opens no inbound ports.</li>
   </ul>
   <pre><span class="hi">L5 DT framework</span> → L4 ROSE → L3 AsyncFlow → <span class="hi2">L2.5 ORBIT</span> → L2 Rhapsody → L1 resources</pre>
 </section>
 
-<!-- 3 ────────────────────────────────────────────────────────────── -->
 <section class="slide">
   <h1>Architecture — roles</h1>
   <figure class="fig">
@@ -178,7 +192,77 @@
   </figure>
 </section>
 
-<!-- 4 ────────────────────────────────────────────────────────────── -->
+<section class="slide">
+  <h1>Status</h1>
+  <ul>
+    <li><b>DTaaS v1 is implemented</b> on the RADICAL stack and under
+        review: the ORBIT dt plugin, a streaming learner, and two stream
+        backends.</li>
+    <li><b>126 tests</b>, including live-broker integration; demos run end
+        to end and <em>calibration converges</em>.</li>
+    <li>Latencies are <b>measured</b>: ~20 ms per served prediction,
+        1–2 ms per stream hop.</li>
+    <li>A live <b>viz dashboard</b> shows convergence and activity, with
+        live and replay modes.</li>
+  </ul>
+  <div class="note">Architecture, lifecycle, benchmarks, and the requirements map
+    are in the backup slides.</div>
+</section>
+
+<section class="slide">
+  <h1>What this offers NSTX-U</h1>
+  <ul>
+    <li>A surrogate on NSTX-U geometry <b>already runs on this stack</b>:
+        the heat recipe learns the Eich optical heat flux with active
+        learning, as a service, on Perlmutter.</li>
+    <li>Diagnostics become <b>event sources</b>: any stream feeds the DT,
+        live or from shot archives.</li>
+    <li>Models <b>learn between shots</b> and <b>serve between and during
+        shots</b>; they improve continuously as data arrives.</li>
+    <li>Compute runs on DOE HPC; PPPL deploys <em>no services</em> and
+        opens <em>no inbound ports</em>.</li>
+    <li>Every run is tracked (MLflow); results and models stay
+        inspectable.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <h1>First use case — a World Model for the NSTX-U DT</h1>
+  <ul>
+    <li>Proposal: scope this together, starting from five questions.</li>
+    <li><b>Meaning</b>: is the world model one learned model of the machine
+        state which serves many capabilities, or a graph of per-capability
+        surrogates around a shared state estimate?</li>
+    <li><b>Signals</b>: which diagnostics come first, and at what rate?</li>
+    <li><b>Data</b>: shot archives, live shots, simulation (XGC, M3DC1),
+        or a mix?</li>
+    <li><b>Placement and latency</b>: where does learning run; must serving
+        keep up between shots or within a shot?</li>
+    <li><b>Success</b>: what does a first demo have to show?</li>
+  </ul>
+  <div class="note">The framework is use-case independent; these choices configure
+    it and do not change it.</div>
+</section>
+
+<section class="slide">
+  <h1>Discussion · next steps</h1>
+  <ul>
+    <li>Agree on the world-model scope and the first capability.</li>
+    <li>Identify data access: which archives and streams, and who provides
+        them.</li>
+    <li>Pick a first demo target and date; the service stack is ready to
+        host it.</li>
+  </ul>
+  <div class="note">References: dtaas-v1-plan.md (implementation) ·
+    amsc/architecture/dt-framework.md (architecture) ·
+    use-cases/heat (NSTX-U heat-flux recipe)</div>
+</section>
+
+<section class="slide title">
+  <h1>Backup</h1>
+  <div class="sub">Architecture detail · lifecycle · data plane · implementation · benchmarks · requirements</div>
+</section>
+
 <section class="slide">
   <h1>Architecture — software</h1>
   <figure class="fig">
@@ -269,7 +353,6 @@
   </figure>
 </section>
 
-<!-- 5 ────────────────────────────────────────────────────────────── -->
 <section class="slide">
   <h1>Lifecycle — DT states and sessions</h1>
   <figure class="fig">
@@ -335,7 +418,6 @@
   </figure>
 </section>
 
-<!-- 6 ────────────────────────────────────────────────────────────── -->
 <section class="slide">
   <h1>Data plane — streams and learning</h1>
   <figure class="fig">
@@ -393,7 +475,6 @@
   </figure>
 </section>
 
-<!-- 7 ────────────────────────────────────────────────────────────── -->
 <section class="slide">
   <h1>Implementation status</h1>
   <table>
@@ -425,7 +506,6 @@
   </ul>
 </section>
 
-<!-- 8 ────────────────────────────────────────────────────────────── -->
 <section class="slide">
   <h1>Measured performance</h1>
   <table>
@@ -446,7 +526,6 @@
   <div class="note">Benchmarks live in the repo (perf/) and rerun against the demos.</div>
 </section>
 
-<!-- 9 ────────────────────────────────────────────────────────────── -->
 <section class="slide">
   <h1>Map to use-case requirements</h1>
   <table>
@@ -471,21 +550,6 @@
         <td><em>v2</em>: cross-model selector, declarative graph spec,
             restart across broker loss</td></tr>
   </table>
-</section>
-
-<!-- 10 ───────────────────────────────────────────────────────────── -->
-<section class="slide">
-  <h1>Next</h1>
-  <ul>
-    <li><b>Merge path</b>: the four stacked PRs are under review; upstream
-        AsyncFlow / ROSE merges unpin the last dependencies.</li>
-    <li><b>First real DTs</b>: the MATEY fine-tuning stream and the
-        xGFabric wind pipeline (after a smoke pass).</li>
-    <li><b>v2 candidates</b>: DT recovery/restart, per-tenant auth,
-        capability-graph spec, scale-out (endpoint-hosted DTs).</li>
-  </ul>
-  <div class="note">Plan and measurements: digital_twins/docs/dtaas-v1-plan.md ·
-    architecture: amsc/architecture/dt-framework.md</div>
 </section>
 
 <div class="foot">

@@ -36,13 +36,6 @@ from rose.al import ParallelActiveLearner
 import redis
 from dtypes import M3DC1_PREDICTION
 
-# ── Row-budget policy (mirrors amsc.py's growing-pool logic) ─────────────────
-# At iteration i, the simulation task requests N_BASE + i * N_STEP rows from
-# the buffer.  Increase N_STEP to consume more data per iteration.
-N_BASE = 100
-N_STEP = 100
-
-
 # Workspace for iteration artefacts (parquet snapshots, metric JSON)
 _HERE = Path(__file__).resolve().parent
 _WORKSPACE = _HERE / "workspace"
@@ -121,7 +114,6 @@ class M3DC1_Investigator(ModelInvestigator):
 
             it = int(kwargs.get("iteration", 0))
             label = str(kwargs["learner_label"])
-            n_rows = N_BASE + it * N_STEP
             family = str(kwargs["model_family"])
 
             host, port_str = redis_endpoint.rsplit(":", 1)
@@ -129,14 +121,16 @@ class M3DC1_Investigator(ModelInvestigator):
                 host=host, port=int(port_str), decode_responses=True
             )
 
-            print(f"  [sim {label} iter={it}] waiting for {n_rows} rows …", flush=True)
+            print(
+                f"  [sim {label} iter={it}] waiting for {window_size} rows", flush=True
+            )
             deadline = time.monotonic() + 600.0
             while not redis_client.exists(
                 redis_key + "/MAIN"
             ) or not redis_client.exists(f"{redis_key}/{family}"):
                 time.sleep(0.5)
                 if time.monotonic() > deadline:
-                    raise TimeoutError(f"Timeout waiting for {n_rows} sensor rows")
+                    raise TimeoutError(f"Timeout waiting for {window_size} sensor rows")
 
             resp = redis_client.get(redis_key + "/MAIN")
             assert resp is not None

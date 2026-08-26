@@ -7,7 +7,7 @@ M3DC1_SENSOR = DataType("M3DC1")
 
 # Buffer event
 BUFFER_EVENT = DataType("BUFFER_EVENT")
-SYNC_SENSOR = DataType("M3DC1_SYNC")
+SYNC_SENSOR = DataType("SYNC_SENSOR")
 
 
 # Modeling

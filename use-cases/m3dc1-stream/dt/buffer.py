@@ -37,14 +37,15 @@ class BufferEventEmit(SplitTask):
 
     async def main_loop(self, runtime, in_data: TypedData):
         self.counter += 1
-        out_data = TypedData(
-            SYNC_SENSOR,
-        )
+        out_data = TypedData(SYNC_SENSOR, in_data.data)
         if self.counter >= self.buffer_length:
             # emit event
-            return in_data, TypedData(BUFFER_EVENT, time.time())
+            print("EMIT!!")
+            self.counter = 0
+            return out_data, TypedData(BUFFER_EVENT, time.time())
 
-        return in_data, None
+        print(f"Buffer counter: {self.counter} / {self.buffer_length}")
+        return out_data, None
 
 
 # this is needed to

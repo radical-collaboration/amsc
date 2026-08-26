@@ -9,24 +9,17 @@ property, it's simplest to use just a single DT model investigator (no need for
 a ScienceAgent. The point of a science agent is in the event you have various
 surrogates with separate ALs)
 
-Also, in the M3DC1 streaming example, it assumes a ThreadedPoolExecutor, and all
-tasks running on the same machine. This is due to the use of "buffer" inside the
-simulation task. However, we want to demonstrate this code working across
-machines, so this restriction must be lifted.
-
-A key point here is that the simulation task "waits" for new data. As the
-ParallelActiveLearner is used, we don't have the flexibility to trigger the
-simulation when we want to ourselves.
-
-Currently, the purpose of the simulation is to simply wait until the data is
-available. So,
+One tricky part is that the simulation task itself is waiting for streaming data
+(opposed to the pipeline waiting and then launching the sim.). This requires a
+way to transfer data from the investigator to the simulation task as the
+simulation task is running. This example uses REDIS from the Rhapsody Data
+Backend.
 
 """
 
 import asyncio
 import json
 from pathlib import Path
-import shlex
 
 import cloudpickle
 from digitaltwin import (
@@ -34,7 +27,6 @@ from digitaltwin import (
     RuntimeAPI,
     TypedData,
     UtilityTask,
-    WindowedTypeData,
 )
 import numpy as np
 import pandas as pd
@@ -87,9 +79,11 @@ class M3DC1_Investigator(ModelInvestigator):
     def __init__(
         self,
         flow: WorkflowEngine,
+        *,
         candidates: list[str],
         max_iter: int,
         buffer_max: int,
+        window_size: int,
         r2_threshold: float,
         redis_endpoint: str,
         redis_key: str,
@@ -101,8 +95,9 @@ class M3DC1_Investigator(ModelInvestigator):
         self.max_iter = max_iter
         self.r2_threshold = r2_threshold
         self.buffer_max = buffer_max
-
+        self.window_size = window_size
         self.all_data: list[dict] = []
+        self.input_counter = 0
 
         # use REDIS for communication from the investigator to the Simulation.
         # see note at top of file. This is required as the simulation task
@@ -287,7 +282,7 @@ class M3DC1_Investigator(ModelInvestigator):
             return r2_threshold if forced else r2
 
         @self.flow.function_task
-        async def do_inference(in_data: WindowedTypeData, model=None):
+        async def do_inference(in_data: TypedData, model=None):
             # the ASMC_stream.py demo doesn't tackle streaming inference.
             # Put streaming inference code here.
             if model is None:
@@ -296,7 +291,7 @@ class M3DC1_Investigator(ModelInvestigator):
             with open(model, "rb") as f:
                 model_obj = cloudpickle.load(f)
 
-            df = pd.DataFrame(in_data.sequence)
+            df = pd.DataFrame([in_data.data])
 
             X = df.drop(columns=["output_gamma"]).values
             out = model_obj.predict(X)
@@ -305,18 +300,20 @@ class M3DC1_Investigator(ModelInvestigator):
 
         self.inference = do_inference
 
-    async def input_callback(self, in_data: WindowedTypeData):
+    async def input_callback(self, in_data: TypedData):
         # add the data to large database
-        self.all_data += in_data.sequence
-        # trigger event
-        # put all_data onto redis
+        self.all_data.append(in_data.data)
 
         if len(self.all_data) > self.buffer_max:
-            self.all_data = self.all_data[-self.buffer_max :]
+            self.all_data.pop(0)
 
-        self.redis.set(self.redis_key + "/MAIN", json.dumps(self.all_data))
-        for c in self.candidates:
-            self.redis.set(f"{self.redis_key}/{c}", 1)
+        self.input_counter += 1
+
+        if self.input_counter > self.window_size:
+            self.input_counter = 0
+            self.redis.set(self.redis_key + "/MAIN", json.dumps(self.all_data))
+            for c in self.candidates:
+                self.redis.set(f"{self.redis_key}/{c}", 1)
 
     async def main_loop(self, runtime: RuntimeAPI):
         # call the pipeline
@@ -343,7 +340,7 @@ class M3DC1_Investigator(ModelInvestigator):
                 }
             )
             print(
-                "\nMODEL PUBLISHED -----------------------------------"
+                "\nMODEL PUBLISHED -----------------------------------\n"
                 f"  learner={label}  iter={state.iteration}\n"
                 f"  val_r2={state.val_r2:.5f}  val_rmse={state.val_rmse:.5f}\n"
                 f"  buffer={len(self.all_data)} obs\n"
@@ -364,4 +361,6 @@ class OutputSink(UtilityTask):
         super().__init__(flow)
 
     async def main_loop(self, runtime, in_data: TypedData):
+        if in_data.data is None:
+            return  # don't print out None... that means there wasn't a model ready yet
         print("Received: ", in_data.data)

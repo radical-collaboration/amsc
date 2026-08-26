@@ -10,6 +10,10 @@ Other:
 `dt/run_me.py`
 `dt/dtypes.py`
 
+The digital twin framework handles sensor streams directly, so the demo defers
+in-stream data movement to the digital twin framework. (Data is small enough where
+this works).
+
 
 ## To run:
 

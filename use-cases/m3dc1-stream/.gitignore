@@ -4,3 +4,4 @@ rhapsody.data.*
 workspace/
 __pycache__/
 dump.rdb
+.vscode/

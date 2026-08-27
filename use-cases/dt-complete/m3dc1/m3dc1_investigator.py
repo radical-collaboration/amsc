@@ -17,6 +17,8 @@ Backend.
 
 """
 
+DO_PRINT = False
+
 import asyncio
 import json
 from pathlib import Path
@@ -123,10 +125,11 @@ class M3DC1_Investigator(ModelInvestigator):
                 host=host, port=int(port_str), decode_responses=True
             )
 
-            print(
-                f"  [sim {label} iter={it}] waiting for {window_size} more rows",
-                flush=True,
-            )
+            if DO_PRINT:
+                print(
+                    f"[M3DC1 Investigator]: [sim {label} iter={it}] waiting for {window_size} more rows",
+                    flush=True,
+                )
             deadline = time.monotonic() + 600.0
             while not redis_client.exists(
                 redis_key + "/MAIN"
@@ -138,10 +141,11 @@ class M3DC1_Investigator(ModelInvestigator):
             resp = redis_client.get(redis_key + "/MAIN")
             assert resp is not None
             rows = json.loads(resp)
-            print(
-                f"  [sim {label} iter={it}] Received {window_size} rows. Total: {len(rows)}",
-                flush=True,
-            )
+            if DO_PRINT:
+                print(
+                    f"[M3DC1 Investigator]:  [sim {label} iter={it}] Received {window_size} rows. Total: {len(rows)}",
+                    flush=True,
+                )
             redis_client.delete(f"{redis_key}/{family}")
 
             df = pd.DataFrame(rows)
@@ -289,7 +293,6 @@ class M3DC1_Investigator(ModelInvestigator):
             if model is None:
                 return TypedData(M3DC1_PREDICTION, None)
 
-            print(f"Using model: {label}-iter:{iter}")
             with open(model, "rb") as f:
                 model_obj = cloudpickle.load(f)
 
@@ -341,14 +344,11 @@ class M3DC1_Investigator(ModelInvestigator):
                     "val_rmse": state.val_rmse,
                 }
             )
-            print(
-                "\nMODEL PUBLISHED -----------------------------------\n"
-                f"  learner={label}  iter={state.iteration}\n"
-                f"  val_r2={state.val_r2:.5f}  val_rmse={state.val_rmse:.5f}\n"
-                f"  buffer={len(self.all_data)} obs\n"
-                f" ---------------------------------------------------\n",
-                flush=True,
-            )
+            if DO_PRINT:
+                print(
+                    f"[M3DC1 Investigator]: Model Publish: {label}-{state.iteration}",
+                    flush=True,
+                )
 
             # publish model with stats
             runtime.publish_new_model(

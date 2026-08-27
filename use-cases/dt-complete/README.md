@@ -13,7 +13,7 @@ Three physical entities:
 - M3DC1 Investigator
 - Runs a M3DC1 Investigator
 - Runs a DEMO_AGENT Agent (a simple pass through)
-- Runs a NEG_AGENT Agent (simply computes the negative of sensor input)
+- Runs a NEGATIVE_Agent Agent (simply computes the negative of sensor input)
 
 > *Technically, the M3DC1 trains two surrogates and then picks the best one.
 
@@ -23,8 +23,8 @@ Three physical entities:
 
 M3DC1 Mock sensor --> M3DC1 Investigator --
                                            \ 
-                                            --(JOIN)--> DEMO Agent --> OUT                                     
-RAND_VAL sensor  ---> PN_AGENT -----------/
+                                            --(JOIN)--> DEMO Agent --> OUT  
+RAND_VAL sensor  ---> NEGATIVE_Agent ------/
 
 ```
 

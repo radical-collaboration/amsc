@@ -1,9 +1,12 @@
 """
-M3DC1 Digital Twin - a DT wrapper of the M3DC1 streaming surrogate example
+Complete Digital Twin - a DT wrapper of the M3DC1 streaming surrogate example
 
 Complete Digital Twin graph:
 
-MOCK_SENSOR --> M3DC1_Investigator --> OUTPUT TASK
+M3DC1 Mock sensor --> M3DC1 Investigator --
+                                           \\ 
+                                             --(JOIN)--> DEMO Agent --> OUT  
+RAND_VAL sensor  ---> NEGATIVE_Agent ------//
 
 
 """
@@ -23,6 +26,9 @@ from digitaltwin.components import NULL_DTYPE
 
 # User code imports
 from m3dc1.m3dc1_investigator import M3DC1_Investigator
+from negative_agent.neg_agent import NEGATIVE_Agent
+from demo_agent.demo_agent import DEMO_Agent
+
 from out import OutputSink
 from dtypes import *
 
@@ -64,14 +70,31 @@ async def main(m3dc1_candidates, other_args):
         redis_endpoint=redis_endpoint,
         redis_key="M3DC1",
     )
+
+    neg_agent = NEGATIVE_Agent(flow)
+
+    demo_agent = DEMO_Agent(flow)
+
     output_sink = OutputSink(flow)
 
     ##########################
     # Create Digital Twin description graph
 
+    # sensors
     runtime.add_input(M3DC1_SENSOR, M3DC1_MOCK_CHANNEL)
+    runtime.add_input(RAND_SENSOR, RAND_SENSOR_CHANNEL)
+
+    # investigator and agents
     runtime.add_investigator(m3dc1, M3DC1_SENSOR, M3DC1_PREDICTION)
-    runtime.add_task(output_sink, M3DC1_PREDICTION, NULL_DTYPE)
+    runtime.add_agent(neg_agent, RAND_SENSOR, NEG_PREDICTION)
+
+    # JOIN
+    runtime.add_data_join(JOIN_NEG_M3DC1)
+
+    runtime.add_agent(demo_agent, JOIN_NEG_M3DC1, DEMO_PREDICTION)
+
+    # output
+    runtime.add_task(output_sink, DEMO_PREDICTION, NULL_DTYPE)
 
     runtime.print_graph()
     runtime.start()

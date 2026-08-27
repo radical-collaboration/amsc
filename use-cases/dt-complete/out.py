@@ -1,5 +1,8 @@
-
 from digitaltwin.components import UtilityTask, TypedData
+
+GREEN = "\033[92m"
+RESET = "\033[0m"
+
 
 # this is needed to
 class OutputSink(UtilityTask):
@@ -7,6 +10,12 @@ class OutputSink(UtilityTask):
         super().__init__(flow)
 
     async def main_loop(self, runtime, in_data: TypedData):
-        if in_data.data is None:
-            return  # don't print out None... that means there wasn't a model ready yet
-        print("Received: ", in_data.data)
+
+        prediction = in_data.data[0].data
+        neg_val = in_data.data[1].data
+
+        if prediction is not None:
+            prediction = prediction[0]
+            print(f"{GREEN}[OUT]: Gamma: {prediction}. NEGATIVE: {neg_val}{RESET}")
+        else:
+            print(f"{GREEN}[OUT]: Gamma model not ready. NEGATIVE: {neg_val}{RESET}")

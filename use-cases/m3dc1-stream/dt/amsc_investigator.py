@@ -310,7 +310,7 @@ class M3DC1_Investigator(ModelInvestigator):
                 self.redis.set(f"{self.redis_key}/{c}", 1)
 
     async def main_loop(self, runtime: RuntimeAPI):
-        # call the pipeline
+        # run the pipeline
 
         runtime.subscribe_to_topic(runtime.ON_INPUT, self.input_callback)
         runtime.set_inference_task(self.inference)

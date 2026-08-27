@@ -104,7 +104,8 @@ class M3DC1_Investigator(ModelInvestigator):
             self.redis.delete(f"{redis_key}/{candidate}")
 
         # ── Simulation task ───────────────────────────────────────────────────────
-        # KEY CHANGE vs amsc_stream. Buffered inputs come in from the DT.
+        # KEY CHANGE vs amsc_stream. Buffered inputs come in from the investigator's 
+        # input callback
 
         @self.learner.simulation_task(as_executable=False)
         async def simulation(*args, **kwargs) -> dict:

@@ -12,7 +12,8 @@ import asyncio
 
 from digitaltwin import ChannelPublisher
 import numpy as np
-from dtypes import *
+
+from m3dc1_dtypes import *
 
 # ── Physical parameter ranges for SPARC M3DC1 D1 ────────────────────────────
 # Derived from sparc_m3dc1_D1_metadata.yaml (inputs + output_gamma).

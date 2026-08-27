@@ -1,6 +1,6 @@
 
 
-# The M3DC1-stream (aka spark-stream) ported over to the Digital Twin framework.
+# The M3DC1-stream (aka SPARC-stream) ported over to the Digital Twin framework.
 
 Items:
 - `sensor_daemon.py` --> `dt/sensor.py`

@@ -90,6 +90,28 @@ class M3DC1_Investigator(ModelInvestigator):
         super().__init__(flow)
 
         self.learner = Learner(flow)
+
+        # Route the ROSE window tasks (simulation/training/active_learn/
+        # criterion) over the session's 'learning' engine, so the dashboard's
+        # learning lane shows the training pipeline.  Same seam the framework
+        # used pre-#25: labels ride as decor_kwargs into function_task; a
+        # session without a learning engine aliases them back to inference,
+        # so this is safe either way.  Installed BEFORE the task decorators
+        # below run.
+        inner_register = self.learner._register_task
+
+        def _labeled(task_obj, *args, **kwargs):
+            decor = task_obj.setdefault("decor_kwargs", {})
+            decor.setdefault("backend", "learning")
+            return inner_register(task_obj, *args, **kwargs)
+
+        self.learner._register_task = _labeled
+
+        # Convergence reporting: the runtime duck-types a `metrics` dict off
+        # any component (see DTRuntime.metrics); the dashboard renders it as
+        # the convergence bar.
+        self.metrics: dict = {}
+        self._metric_history: list = []
         self.candidates = candidates
         self.max_iter = max_iter
         self.r2_threshold = r2_threshold
@@ -326,6 +348,19 @@ class M3DC1_Investigator(ModelInvestigator):
             model = self.train_task(sim, **kwargs)
 
             out = await self.active_learn_task(sim, model, **kwargs)
+
+            val_r2 = float(out["val_r2"])
+            self._metric_history.append(val_r2)
+            self.metrics = {
+                "val_r2": {
+                    "value": val_r2,
+                    "threshold": float(self.r2_threshold),
+                    "operator": ">",
+                    "should_stop": val_r2 >= float(self.r2_threshold),
+                    "windows": iteration + 1,
+                    "history": self._metric_history[-24:],
+                }
+            }
 
             runtime.publish_new_model(
                 {"model": out["model"]},

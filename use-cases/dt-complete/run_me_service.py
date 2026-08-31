@@ -78,7 +78,10 @@ TASK_ENDPOINT = os.environ.get("DT_INFERENCE_ENDPOINT") or None
 ENGINES = {
     "engines": {
         "inference": {"endpoint_name": "hpc", "backends": ["dragon_v3"]},
-        # "learning": {"endpoint_name": "hpc", "backends": ["dragon"]},
+        # learning on the same endpoint, concurrent executor: the lane gets
+        # its own engine (visible in the dashboard) without a second dragon
+        # runtime, and the training tasks stay clear of dragon's mp bridge.
+        "learning": {"endpoint_name": "hpc", "backends": ["concurrent"]},
     }
 }
 

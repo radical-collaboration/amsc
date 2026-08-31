@@ -172,8 +172,12 @@ class M3DC1_Investigator(ModelInvestigator):
             )
 
             _models = {
+                # n_jobs=1: joblib's ThreadPool is broken under Dragon's
+                # multiprocessing bridge (dragon.mpbridge patches the pool
+                # classes; stdlib ThreadPool then dies in DragonPool's
+                # super().__init__).  Sequential fit is fine at window size.
                 "rf": RandomForestRegressor(
-                    n_estimators=100, random_state=42, n_jobs=-1
+                    n_estimators=100, random_state=42, n_jobs=1
                 ),
                 "mlp": Pipeline(
                     [

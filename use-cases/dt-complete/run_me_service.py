@@ -77,7 +77,7 @@ TASK_ENDPOINT = os.environ.get("DT_INFERENCE_ENDPOINT") or None
 
 ENGINES = {
     "engines": {
-        "inference": {"endpoint_name": "hpc", "backends": ["dragon"]},
+        "inference": {"endpoint_name": "hpc", "backends": ["dragon_v3"]},
         # "learning": {"endpoint_name": "hpc", "backends": ["dragon"]},
     }
 }

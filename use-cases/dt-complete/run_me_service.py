@@ -24,7 +24,6 @@ import time
 
 from radical.orbit import EndpointRuntime
 from digitaltwin.service import register_user_modules
-from rhapsody.backends.data.redis import RedisDataBackend
 
 # Digital Twin imports
 from digitaltwin.components import NULL_DTYPE
@@ -78,8 +77,8 @@ TASK_ENDPOINT = os.environ.get("DT_INFERENCE_ENDPOINT") or None
 
 ENGINES = {
     "engines": {
-        "inference": {"endpoint_name": "small", "backends": ["concurrent"]},
-        "learning": {"endpoint_name": "hpc", "backends": ["dragon"]},
+        "inference": {"endpoint_name": "hpc", "backends": ["dragon"]},
+        # "learning": {"endpoint_name": "hpc", "backends": ["dragon"]},
     }
 }
 
@@ -94,9 +93,6 @@ def main(m3dc1_candidates, other_args):
 
     # Start redis -- needed by M3DC1. This later would be moved to more of an
     # as-a-service approach.
-    redis_backend = RedisDataBackend()
-    endpoint = redis_backend.endpoints[0]
-    redis_endpoint = endpoint.serialize()
 
     try:
         dt = runtime.get_plugin(DT_HOST, "dt", config=ENGINES)
@@ -115,8 +111,6 @@ def main(m3dc1_candidates, other_args):
             buffer_max=other_args.m3dc1_buffer_maxlen,
             window_size=other_args.m3dc1_window_size,
             r2_threshold=other_args.m3dc1_r2_threshold,
-            redis_endpoint=redis_endpoint,
-            redis_key="M3DC1",
         )
 
         neg_agent = dt.package(NEGATIVE_Agent)
@@ -144,12 +138,12 @@ def main(m3dc1_candidates, other_args):
         # output
         dt.add_task(twin, output_sink, DEMO_PREDICTION, NULL_DTYPE)
 
-        dt.print_graph()
+        # dt.print_graph()
 
         dt.start(twin)
 
         # let it run
-        time.sleep(45)
+        time.sleep(240)
         print("SHUTDOWN")
         dt.twin_close(twin)
 

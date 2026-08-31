@@ -34,7 +34,8 @@ import numpy as np
 import pandas as pd
 from radical.asyncflow import WorkflowEngine
 from rose import LearnerConfig, TaskConfig
-from rose import Learner
+from rose.al import ParallelActiveLearner
+import redis
 
 from .m3dc1_dtypes import *
 
@@ -80,10 +81,12 @@ class M3DC1_Investigator(ModelInvestigator):
         buffer_max: int,
         window_size: int,
         r2_threshold: float,
+        redis_endpoint: str,
+        redis_key: str,
     ):
         super().__init__(flow)
 
-        self.learner = Learner(flow)
+        self.learner = ParallelActiveLearner(flow)
         self.candidates = candidates
         self.max_iter = max_iter
         self.r2_threshold = r2_threshold
@@ -92,30 +95,58 @@ class M3DC1_Investigator(ModelInvestigator):
         self.all_data: list[dict] = []
         self.input_counter = 0
 
-        self.all_data_update = asyncio.Event()
+        # use REDIS for communication from the investigator to the Simulation.
+        # see note at top of file. This is required as the simulation task
+        # itself it waiting for data. (Other DT examples have it where the
+        # simulation task is fired after receiving the data.)
+        host, port = redis_endpoint.rsplit(":", 1)
+        self.redis = redis.Redis(host=host, port=int(port), decode_responses=True)
+        self.redis_key = redis_key
+        # ensure start clear
+        for candidate in self.candidates:
+            self.redis.delete(f"{redis_key}/{candidate}")
 
         # ── Simulation task ───────────────────────────────────────────────────────
         # KEY CHANGE vs amsc_stream. Buffered inputs come in from the investigator's
         # input callback
 
         @self.learner.simulation_task(as_executable=False)
-        async def simulation(rows, **kwargs) -> dict:
+        async def simulation(*args, **kwargs) -> dict:
+            import time
+            import redis as _redis
             import pandas as pd
 
             it = int(kwargs.get("iteration", 0))
             label = str(kwargs["learner_label"])
+            family = str(kwargs["model_family"])
+
+            host, port_str = redis_endpoint.rsplit(":", 1)
+            redis_client = _redis.Redis(
+                host=host, port=int(port_str), decode_responses=True
+            )
 
             if DO_PRINT:
                 print(
                     f"[M3DC1 Investigator]: [sim {label} iter={it}] waiting for {window_size} more rows",
                     flush=True,
                 )
+            deadline = time.monotonic() + 600.0
+            while not redis_client.exists(
+                redis_key + "/MAIN"
+            ) or not redis_client.exists(f"{redis_key}/{family}"):
+                time.sleep(0.5)
+                if time.monotonic() > deadline:
+                    raise TimeoutError(f"Timeout waiting for {window_size} sensor rows")
 
+            resp = redis_client.get(redis_key + "/MAIN")
+            assert resp is not None
+            rows = json.loads(resp)
             if DO_PRINT:
                 print(
                     f"[M3DC1 Investigator]:  [sim {label} iter={it}] Received {window_size} rows. Total: {len(rows)}",
                     flush=True,
                 )
+            redis_client.delete(f"{redis_key}/{family}")
 
             df = pd.DataFrame(rows)
 
@@ -128,6 +159,7 @@ class M3DC1_Investigator(ModelInvestigator):
                 "learner_label": label,
                 "dataset": str(parquet),
                 "n_rows": len(df),
+                "source": "redis_stream",
             }
             (out_dir / "simulation.json").write_text(json.dumps(meta, indent=2))
             return meta
@@ -136,11 +168,8 @@ class M3DC1_Investigator(ModelInvestigator):
         # Fits a surrogate model locally using sklearn.
         # Replace with subprocess to surge_train.py if running on HPC.
 
-        self.sim_task = simulation
-
         @self.learner.training_task(as_executable=False)
         async def training(sim_result: str, **kwargs) -> dict:
-            print("TRAIN ..........................")
             import pandas as pd
             from sklearn.ensemble import (
                 GradientBoostingRegressor,
@@ -215,8 +244,6 @@ class M3DC1_Investigator(ModelInvestigator):
                 cloudpickle.dump(model, f)
             return {"simulation": sim_result, "surge": metrics, "model": model_path}
 
-        self.train_task = training
-
         # ── Active-learning task ──────────────────────────────────────────────────
         @self.learner.active_learn_task(as_executable=False)
         async def active_learn(sim_result: dict, train_bundle: dict, **kwargs) -> dict:
@@ -243,20 +270,21 @@ class M3DC1_Investigator(ModelInvestigator):
                 "model": train_bundle["model"],
             }
 
-        self.active_learn_task = active_learn
-
         # ── Stop criterion ────────────────────────────────────────────────────────
-        @self.learner.utility_task(as_executable=False)
-        async def stop_on_r2(*args, **kwargs) -> dict:
+        @self.learner.as_stop_criterion(
+            metric_name="val_r2",
+            threshold=r2_threshold,
+            operator=">=",
+            as_executable=False,
+        )
+        async def stop_on_r2(*args, **kwargs) -> float:
             it = int(kwargs.get("iteration", 0))
             label = str(kwargs["learner_label"])
             path = _workspace_iter(it, label) / "surge_metrics.json"
             meta = json.loads(path.read_text())
             r2 = float(meta["val_r2"])
             forced = it >= max_iter - 1 and r2 < r2_threshold
-            return {"val_r2": r2_threshold if forced else r2}
-
-        self.stop_criterion = stop_on_r2
+            return r2_threshold if forced else r2
 
         @self.flow.function_task
         async def do_inference(in_data: TypedData, model=None, iter=0, label=""):
@@ -279,7 +307,6 @@ class M3DC1_Investigator(ModelInvestigator):
 
     async def input_callback(self, in_data: TypedData):
         # add the data to large database
-        print(f"GOT : {in_data.data}")
         self.all_data.append(in_data.data)
 
         if len(self.all_data) > self.buffer_max:
@@ -289,37 +316,45 @@ class M3DC1_Investigator(ModelInvestigator):
 
         if self.input_counter >= self.window_size:
             self.input_counter = 0
-            self.all_data_update.set()
+            self.redis.set(self.redis_key + "/MAIN", json.dumps(self.all_data))
+            for c in self.candidates:
+                self.redis.set(f"{self.redis_key}/{c}", 1)
 
     async def main_loop(self, runtime: RuntimeAPI):
         # run the pipeline
-        print("START ..........................")
 
         runtime.subscribe_to_topic(runtime.ON_INPUT, self.input_callback)
         runtime.set_inference_task(self.inference)
         runtime.publish_new_model({"model": None})
 
+        configs = _candidate_configs(self.candidates, self.max_iter)
         rows: list[dict] = []
 
-        iteration = 0
-        while True:
-            await self.all_data_update.wait()
-            rows = self.all_data
-            # do pipeline
-            kwargs = {
-                "iteration": iteration,
-                "learner_label": self.candidates[0],
-                "model_family": self.candidates[0],
-            }
-            sim = self.sim_task(rows, **kwargs)
+        async for state in self.learner.start(
+            parallel_learners=len(self.candidates),
+            max_iter=self.max_iter,
+            learner_configs=configs,
+        ):
+            label = self.candidates[int(state.learner_id)]
+            rows.append(
+                {
+                    "learner": label,
+                    "iter": state.iteration,
+                    "val_r2": state.val_r2,
+                    "val_rmse": state.val_rmse,
+                }
+            )
+            if DO_PRINT:
+                print(
+                    f"[M3DC1 Investigator]: Model Publish: {label}-{state.iteration}",
+                    flush=True,
+                )
 
-            model = self.train_task(sim, **kwargs)
-
-            out = await self.active_learn_task(sim, model, **kwargs)
-
+            # publish model with stats
             runtime.publish_new_model(
-                {"model": out["model"]},
-                {"acc": out["val_r2"]},
+                {"model": state.model, "iter": state.iteration, "label": label},
+                rows[-1],
             )
 
-            self.all_data_update.clear()
+            if len(rows) >= len(self.candidates) * self.max_iter:
+                break

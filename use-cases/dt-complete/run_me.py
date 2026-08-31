@@ -40,9 +40,6 @@ logger = logging.getLogger(__name__)
 async def main(m3dc1_candidates, other_args):
 
     # Start engine
-    redis_backend = await RedisDataBackend()
-    endpoint = redis_backend.endpoints[0]
-    redis_endpoint = endpoint.serialize()
 
     init_default_logger(logging.WARNING)
     logging.getLogger("radical.asyncflow").setLevel(logging.WARNING)
@@ -67,8 +64,6 @@ async def main(m3dc1_candidates, other_args):
         buffer_max=other_args.m3dc1_buffer_maxlen,
         window_size=other_args.m3dc1_window_size,
         r2_threshold=other_args.m3dc1_r2_threshold,
-        redis_endpoint=redis_endpoint,
-        redis_key="M3DC1",
     )
 
     neg_agent = NEGATIVE_Agent(flow)

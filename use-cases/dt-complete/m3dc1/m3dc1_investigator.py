@@ -21,6 +21,7 @@ DO_PRINT = False
 
 import asyncio
 import json
+import os
 from pathlib import Path
 
 import cloudpickle
@@ -38,13 +39,18 @@ from rose import Learner
 
 from .m3dc1_dtypes import *
 
-# Workspace for iteration artefacts (parquet snapshots, metric JSON)
-_HERE = Path(__file__).resolve().parent
-_WORKSPACE = _HERE / "workspace"
+# Workspace for iteration artefacts (parquet snapshots, metric JSON).
+# Resolved INSIDE the function, at task runtime: this module ships by
+# value to the service and its tasks run on the remote endpoint, so a
+# module-global path (evaluated on the client) would name a directory
+# that does not exist there.  M3DC1_WORKSPACE overrides (e.g. $SCRATCH
+# on an HPC endpoint); the default lands in the executing host's home.
 
 
 def _workspace_iter(iteration: int, label: str) -> Path:
-    d = _WORKSPACE / f"{label}" / f"iter_{iteration:03d}"
+    base = Path(os.environ.get("M3DC1_WORKSPACE", "")
+                or Path.home() / "m3dc1_workspace")
+    d = base / f"{label}" / f"iter_{iteration:03d}"
     d.mkdir(parents=True, exist_ok=True)
     return d
 

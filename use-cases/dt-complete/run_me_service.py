@@ -26,7 +26,7 @@ from radical.orbit import EndpointRuntime
 from digitaltwin.service import register_user_modules
 
 # Digital Twin imports
-from digitaltwin.components import NULL_DTYPE
+from digitaltwin.components import NULL_DTYPE, TypedData
 
 # User code imports
 from m3dc1.m3dc1_investigator import M3DC1_Investigator
@@ -142,8 +142,38 @@ def main(m3dc1_candidates, other_args):
 
         dt.start(twin)
 
-        # let it run
-        time.sleep(240)
+        # Client-side feedback while the twin runs: the demo is stream
+        # driven, so all component output lands on the service.  Poll the
+        # twin and probe inference so the client terminal shows lifecycle
+        # and predictions too -- and a stuck twin is visible immediately.
+        import sys
+
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "m3dc1"))
+        from m3dc1_mock_sensor import MockM3DC1Sensor
+
+        probe = MockM3DC1Sensor()  # samples only, no pacing
+        deadline = time.time() + 240
+        while time.time() < deadline:
+            time.sleep(10)
+
+            info = dt.twin(twin)
+            print(
+                f"[ORBIT Client]: state={info['state']}"
+                f" calls={info.get('calls') or {}}"
+                f" metrics={list((info.get('metrics') or {}).keys())}"
+            )
+
+            obs = probe._sample()
+            answer = dt.get_inference(
+                twin, TypedData(M3DC1_SENSOR, obs), M3DC1_PREDICTION,
+                timeout=30,
+            )
+            print(
+                f"[ORBIT Client]: inference"
+                f" gamma_true={obs['output_gamma']:.4f}"
+                f" -> prediction={answer.data}"
+            )
+
         print("SHUTDOWN")
         dt.twin_close(twin)
 

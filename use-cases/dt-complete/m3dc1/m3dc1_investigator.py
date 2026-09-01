@@ -86,26 +86,19 @@ class M3DC1_Investigator(ModelInvestigator):
         buffer_max: int,
         window_size: int,
         r2_threshold: float,
+        learn_backend: str | None = "learning",
     ):
         super().__init__(flow)
 
         self.learner = Learner(flow)
 
-        # Route the ROSE window tasks (simulation/training/active_learn/
-        # criterion) over the session's 'learning' engine, so the dashboard's
-        # learning lane shows the training pipeline.  Same seam the framework
-        # used pre-#25: labels ride as decor_kwargs into function_task; a
-        # session without a learning engine aliases them back to inference,
-        # so this is safe either way.  Installed BEFORE the task decorators
-        # below run.
-        inner_register = self.learner._register_task
-
-        def _labeled(task_obj, *args, **kwargs):
-            decor = task_obj.setdefault("decor_kwargs", {})
-            decor.setdefault("backend", "learning")
-            return inner_register(task_obj, *args, **kwargs)
-
-        self.learner._register_task = _labeled
+        # The ROSE window tasks (simulation/training/active_learn/criterion)
+        # carry this engine-role label, so a session with a 'learning'
+        # engine runs them there and the dashboard's learning lane shows
+        # the training pipeline.  A session without one aliases the label
+        # back to inference, so the default is safe either way; None drops
+        # the label entirely.
+        _learn = {"backend": learn_backend} if learn_backend else {}
 
         # Convergence reporting: the runtime duck-types a `metrics` dict off
         # any component (see DTRuntime.metrics); the dashboard renders it as
@@ -126,7 +119,7 @@ class M3DC1_Investigator(ModelInvestigator):
         # KEY CHANGE vs amsc_stream. Buffered inputs come in from the investigator's
         # input callback
 
-        @self.learner.simulation_task(as_executable=False)
+        @self.learner.simulation_task(as_executable=False, **_learn)
         async def simulation(rows, **kwargs) -> dict:
             import pandas as pd
 
@@ -166,7 +159,7 @@ class M3DC1_Investigator(ModelInvestigator):
 
         self.sim_task = simulation
 
-        @self.learner.training_task(as_executable=False)
+        @self.learner.training_task(as_executable=False, **_learn)
         async def training(sim_result: str, **kwargs) -> dict:
             print("TRAIN ..........................")
             import pandas as pd
@@ -250,7 +243,7 @@ class M3DC1_Investigator(ModelInvestigator):
         self.train_task = training
 
         # ── Active-learning task ──────────────────────────────────────────────────
-        @self.learner.active_learn_task(as_executable=False)
+        @self.learner.active_learn_task(as_executable=False, **_learn)
         async def active_learn(sim_result: dict, train_bundle: dict, **kwargs) -> dict:
             it = int(kwargs.get("iteration", train_bundle["simulation"]["iteration"]))
             label = str(kwargs["learner_label"])
@@ -278,7 +271,7 @@ class M3DC1_Investigator(ModelInvestigator):
         self.active_learn_task = active_learn
 
         # ── Stop criterion ────────────────────────────────────────────────────────
-        @self.learner.utility_task(as_executable=False)
+        @self.learner.utility_task(as_executable=False, **_learn)
         async def stop_on_r2(*args, **kwargs) -> dict:
             it = int(kwargs.get("iteration", 0))
             label = str(kwargs["learner_label"])

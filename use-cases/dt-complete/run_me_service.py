@@ -20,7 +20,12 @@ RAND_VAL sensor  ---> NEGATIVE_Agent ------//
 import argparse
 import asyncio
 import os
+import sys
 import time
+
+# the sensor modules are script-style (flat imports); make them importable
+# from here for the client-side inference probe
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "m3dc1"))
 
 from radical.orbit import EndpointRuntime
 from digitaltwin.service import register_user_modules
@@ -73,15 +78,21 @@ register_user_modules(
 logger = logging.getLogger(__name__)
 
 DT_HOST = os.environ.get("DT_SERVICE_HOST", "broker")
-TASK_ENDPOINT = os.environ.get("DT_INFERENCE_ENDPOINT") or None
+
+# Engine placement, overridable per deployment.  Defaults match the HPC
+# demo: inference on the dragon-launched endpoint, learning on the same
+# endpoint with the concurrent executor -- its own dashboard lane and no
+# second dragon runtime, and the training tasks stay clear of dragon's
+# multiprocessing bridge.
+INFERENCE_EP = os.environ.get("DT_INFERENCE_ENDPOINT", "hpc")
+INFERENCE_BE = os.environ.get("DT_INFERENCE_BACKEND", "dragon_v3")
+LEARNING_EP = os.environ.get("DT_LEARNING_ENDPOINT", INFERENCE_EP)
+LEARNING_BE = os.environ.get("DT_LEARNING_BACKEND", "concurrent")
 
 ENGINES = {
     "engines": {
-        "inference": {"endpoint_name": "hpc", "backends": ["dragon_v3"]},
-        # learning on the same endpoint, concurrent executor: the lane gets
-        # its own engine (visible in the dashboard) without a second dragon
-        # runtime, and the training tasks stay clear of dragon's mp bridge.
-        "learning": {"endpoint_name": "hpc", "backends": ["concurrent"]},
+        "inference": {"endpoint_name": INFERENCE_EP, "backends": [INFERENCE_BE]},
+        "learning": {"endpoint_name": LEARNING_EP, "backends": [LEARNING_BE]},
     }
 }
 
@@ -141,21 +152,16 @@ def main(m3dc1_candidates, other_args):
         # output
         dt.add_task(twin, output_sink, DEMO_PREDICTION, NULL_DTYPE)
 
-        # dt.print_graph()
-
         dt.start(twin)
 
         # Client-side feedback while the twin runs: the demo is stream
         # driven, so all component output lands on the service.  Poll the
         # twin and probe inference so the client terminal shows lifecycle
         # and predictions too -- and a stuck twin is visible immediately.
-        import sys
-
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "m3dc1"))
         from m3dc1_mock_sensor import MockM3DC1Sensor
 
         probe = MockM3DC1Sensor()  # samples only, no pacing
-        deadline = time.time() + 240
+        deadline = time.time() + other_args.runtime
         while time.time() < deadline:
             time.sleep(10)
 
@@ -192,6 +198,12 @@ if __name__ == "__main__":
         help="Comma-separated model families: rf, mlp, gbr, ridge.",
     )
     parser.add_argument("--m3dc1-max-iter", type=int, default=3)
+    parser.add_argument(
+        "--runtime",
+        type=int,
+        default=240,
+        help="Seconds to keep the twin running before teardown.",
+    )
     parser.add_argument("--m3dc1-r2-threshold", type=float, default=0.80)
     parser.add_argument(
         "--m3dc1-buffer-maxlen",

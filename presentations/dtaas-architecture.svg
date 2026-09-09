@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" font-family="Inter, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <!-- DTaaS high-level architecture (v1, as implemented).
+       Idiom: AmSC deck flow-diagram family.
+       Level colors, used consistently in legend, term coloring and boxes:
+         L5 DT framework #40c8e8 (cyan)   L4 ROSE     #5acd83 (green)
+         L3 AsyncFlow    #a78bfa (violet) L2.5 ORBIT  #e8a040 (amber)
+         L2 Rhapsody     #e878a8 (pink)   L1 resources #c89a6b (bronze) -->
+  <defs>
+    <marker id="ah-cyan"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#40c8e8"/></marker>
+    <marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5acd83"/></marker>
+    <marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#e8a040"/></marker>
+    <marker id="ah-dim"   viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7080a0"/></marker>
+  </defs>
+
+  <rect x="0" y="0" width="1280" height="720" fill="#080818"/>
+
+  <!-- title -->
+  <text x="640" y="36" text-anchor="middle" fill="#e6ecf6" font-size="20" font-weight="600">DT-as-a-Service — architecture</text>
+  <text x="640" y="56" text-anchor="middle" fill="#7080a0" font-size="12">digital twins run as long-lived services on a persistent ORBIT broker (v1)</text>
+
+  <!-- ============================== CLIENT ============================== -->
+  <rect x="36" y="76" width="264" height="380" rx="8" fill="#0d1525" stroke="#1e3a5f"/>
+  <text x="52" y="98" fill="#94a3b8" font-size="11" letter-spacing="1.5">CLIENT HOST</text>
+
+  <rect x="56" y="112" width="224" height="92" rx="6" fill="#080818" stroke="#40c8e8"/>
+  <text x="68" y="134" fill="#40c8e8" font-size="14" font-weight="600">DTClient</text>
+  <text x="68" y="156" fill="#e6ecf6" font-size="11">• create_twin(uuid) · add_* · start</text>
+  <text x="68" y="174" fill="#7080a0" font-size="11">• verbs are synchronous</text>
+  <text x="68" y="192" fill="#7080a0" font-size="11">• twin_create: poll to ready</text>
+
+  <rect x="56" y="224" width="224" height="76" rx="6" fill="#080818" stroke="#1e3a5f"/>
+  <text x="68" y="246" fill="#e6ecf6" font-size="13" font-weight="600">sessions</text>
+  <text x="68" y="266" fill="#7080a0" font-size="11">• attach, detach, reattach by sid</text>
+  <text x="68" y="284" fill="#7080a0" font-size="11">• twin_list reports current state</text>
+
+  <rect x="56" y="320" width="224" height="76" rx="6" fill="#080818" stroke="#1e3a5f" stroke-dasharray="4 3"/>
+  <text x="68" y="342" fill="#e6ecf6" font-size="13" font-weight="600">viz dashboard</text>
+  <text x="68" y="362" fill="#7080a0" font-size="11">• Explorer or standalone page</text>
+  <text x="68" y="380" fill="#7080a0" font-size="11">• live + replay (work in progress)</text>
+
+  <!-- ============================ INSTRUMENTS =========================== -->
+  <rect x="36" y="480" width="264" height="150" rx="8" fill="#0d1525" stroke="#1e3a5f"/>
+  <text x="52" y="502" fill="#94a3b8" font-size="11" letter-spacing="1.5">INSTRUMENTS</text>
+  <rect x="56" y="516" width="224" height="90" rx="6" fill="#080818" stroke="#5acd83"/>
+  <text x="68" y="540" fill="#5acd83" font-size="14" font-weight="600">sensors · streams</text>
+  <text x="68" y="562" fill="#7080a0" font-size="11">• OPC-UA / MQTT / demo feeds</text>
+  <text x="68" y="580" fill="#7080a0" font-size="11">• continuous input streams</text>
+
+  <!-- ============================== BROKER ============================== -->
+  <rect x="336" y="76" width="560" height="554" rx="8" fill="#0d1525" stroke="#1e3a5f"/>
+  <text x="352" y="98" fill="#94a3b8" font-size="11" letter-spacing="1.5">BROKER HOST — DTAAS</text>
+  <text x="352" y="116" fill="#7080a0" font-size="11">persistent sessions; reattach by sid; twins survive client disconnects</text>
+
+  <rect x="356" y="128" width="520" height="44" rx="6" fill="#080818" stroke="#e8a040"/>
+  <text x="366" y="148" fill="#e8a040" font-size="13" font-weight="600">ORBIT broker</text>
+  <text x="366" y="164" fill="#7080a0" font-size="11">• token-gated WS ingress&#160;&#160;&#160;• gateway (HTTP, SSE)</text>
+
+  <!-- plugin frame -->
+  <rect x="356" y="184" width="520" height="388" rx="6" fill="#0d1525" stroke="#e8a040" stroke-opacity="0.55"/>
+  <text x="370" y="204" fill="#e8a040" font-size="11" letter-spacing="1.5">PLUGIN: DT</text>
+
+  <rect x="376" y="216" width="480" height="52" rx="6" fill="#080818" stroke="#1e3a5f"/>
+  <text x="388" y="236" fill="#e6ecf6" font-size="13" font-weight="600">DTSession <tspan fill="#7080a0" font-weight="400" font-size="11">(n twins)</tspan></text>
+  <text x="388" y="256" fill="#7080a0" font-size="11">• <tspan fill="#a78bfa">AsyncFlow</tspan> engines task | exsitu, via OrbitExecutionBackend (<tspan fill="#e878a8">Rhapsody</tspan>)</text>
+
+  <!-- twin card -->
+  <rect x="376" y="282" width="480" height="152" rx="6" fill="#080818" stroke="#40c8e8"/>
+  <text x="388" y="304" fill="#40c8e8" font-size="13" font-weight="600">TwinInstance — DTRuntime</text>
+  <!-- graph chain -->
+  <g font-size="11" fill="#e6ecf6">
+    <rect x="392" y="318" width="94" height="28" rx="4" fill="#0d1525" stroke="#5acd83"/>
+    <text x="439" y="336" text-anchor="middle">sensor task</text>
+    <rect x="510" y="318" width="94" height="28" rx="4" fill="#0d1525" stroke="#1e3a5f"/>
+    <text x="557" y="336" text-anchor="middle">sci agent</text>
+    <rect x="628" y="318" width="104" height="28" rx="4" fill="#0d1525" stroke="#40c8e8"/>
+    <text x="680" y="336" text-anchor="middle">investigator</text>
+    <rect x="756" y="318" width="84" height="28" rx="4" fill="#0d1525" stroke="#1e3a5f"/>
+    <text x="798" y="336" text-anchor="middle">sink</text>
+    <line x1="486" y1="332" x2="508" y2="332" stroke="#7080a0" marker-end="url(#ah-dim)"/>
+    <line x1="604" y1="332" x2="626" y2="332" stroke="#7080a0" marker-end="url(#ah-dim)"/>
+    <line x1="732" y1="332" x2="754" y2="332" stroke="#7080a0" marker-end="url(#ah-dim)"/>
+  </g>
+  <text x="388" y="374" fill="#e6ecf6" font-size="11">• StreamingLearnerInvestigator (<tspan fill="#5acd83">ROSE</tspan>): in-situ predict, ex-situ learn</text>
+  <text x="388" y="394" fill="#7080a0" font-size="11">• convergence metrics per window, reported via twin_list</text>
+  <text x="388" y="418" fill="#4a5670" font-size="10">initializing → ready → running → stopped | failed</text>
+
+  <!-- stream plane -->
+  <rect x="376" y="496" width="480" height="56" rx="6" fill="#080818" stroke="#5acd83"/>
+  <text x="388" y="518" fill="#5acd83" font-size="13" font-weight="600">stream data plane</text>
+  <text x="388" y="538" fill="#7080a0" font-size="11">• ZMQ broker (local, loopback)&#160;&#160;&#160;• ORBIT eventing (token domain)</text>
+
+  <!-- =============================== HPC ================================ -->
+  <rect x="932" y="76" width="312" height="554" rx="8" fill="#0d1525" stroke="#1e3a5f"/>
+  <text x="948" y="98" fill="#94a3b8" font-size="11" letter-spacing="1.5">HPC RESOURCES</text>
+
+  <rect x="952" y="112" width="272" height="230" rx="6" fill="#080818" stroke="#40c8e8"/>
+  <text x="964" y="134" fill="#40c8e8" font-size="13" font-weight="600">endpoint: task</text>
+  <text x="964" y="154" fill="#7080a0" font-size="11">• typically co-located with the broker</text>
+  <text x="964" y="172" fill="#e878a8" font-size="11">• rhapsody plugin</text>
+  <text x="964" y="190" fill="#c89a6b" font-size="11">• backend: concurrent · dragon · flux</text>
+  <text x="964" y="210" fill="#e6ecf6" font-size="11">• in-situ inference tasks</text>
+  <text x="964" y="228" fill="#7080a0" font-size="11">• about 20 ms per prediction</text>
+  <g fill="#15384a" stroke="#40c8e8" stroke-opacity="0.6">
+    <rect x="964" y="248" width="40" height="22" rx="3"/>
+    <rect x="1012" y="248" width="40" height="22" rx="3"/>
+    <rect x="1060" y="248" width="40" height="22" rx="3"/>
+  </g>
+
+  <rect x="952" y="368" width="272" height="230" rx="6" fill="#080818" stroke="#5acd83"/>
+  <text x="964" y="390" fill="#5acd83" font-size="13" font-weight="600">endpoint: exsitu</text>
+  <text x="964" y="410" fill="#7080a0" font-size="11">• remote HPC allocation or cluster</text>
+  <text x="964" y="428" fill="#e878a8" font-size="11">• rhapsody plugin</text>
+  <text x="964" y="446" fill="#c89a6b" font-size="11">• backend: dragon · flux (HPC scale)</text>
+  <text x="964" y="466" fill="#e6ecf6" font-size="11">• ROSE training + active-learning tasks</text>
+  <text x="964" y="484" fill="#7080a0" font-size="11">• aliases task if unconfigured</text>
+  <g fill="#1a4028" stroke="#5acd83" stroke-opacity="0.6">
+    <rect x="964" y="504" width="40" height="22" rx="3"/>
+    <rect x="1012" y="504" width="40" height="22" rx="3"/>
+    <rect x="1060" y="504" width="40" height="22" rx="3"/>
+  </g>
+
+  <!-- ============================== ARROWS ============================== -->
+  <!-- client -> broker control -->
+  <line x1="302" y1="138" x2="332" y2="138" stroke="#40c8e8" stroke-width="1.5" marker-end="url(#ah-cyan)"/>
+  <text x="317" y="128" text-anchor="middle" fill="#40c8e8" font-size="10">verbs</text>
+  <!-- broker -> client state (dashed return) -->
+  <line x1="332" y1="170" x2="302" y2="170" stroke="#7080a0" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#ah-dim)"/>
+  <text x="317" y="186" text-anchor="middle" fill="#7080a0" font-size="10">state</text>
+
+  <!-- instruments -> stream plane -->
+  <path d="M 302 560 C 340 560, 348 540, 374 526" fill="none" stroke="#5acd83" stroke-width="1.5" marker-end="url(#ah-green)"/>
+  <text x="310" y="590" fill="#5acd83" font-size="10">sensor streams</text>
+
+  <!-- broker -> task endpoint (inference) -->
+  <line x1="898" y1="242" x2="950" y2="242" stroke="#40c8e8" stroke-width="1.5" marker-end="url(#ah-cyan)"/>
+  <text x="924" y="232" text-anchor="middle" fill="#40c8e8" font-size="10">inference</text>
+
+  <!-- broker -> exsitu endpoint (training) -->
+  <line x1="898" y1="456" x2="950" y2="456" stroke="#5acd83" stroke-width="1.5" marker-end="url(#ah-green)"/>
+  <text x="924" y="446" text-anchor="middle" fill="#5acd83" font-size="10">train / AL</text>
+
+  <!-- exsitu -> twin (publish model, dashed amber return) -->
+  <path d="M 952 490 C 908 490, 900 410, 860 396" fill="none" stroke="#e8a040" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah-amber)"/>
+  <text x="912" y="514" fill="#e8a040" font-size="10">publish model</text>
+
+  <!-- ============================ LAYER RIBBON ========================== -->
+  <g font-size="11">
+    <rect x="36"  y="652" width="252" height="36" rx="4" fill="#0d1525" stroke="#40c8e8" stroke-opacity="0.55"/>
+    <text x="162" y="674" text-anchor="middle" fill="#e6ecf6">L5 <tspan fill="#40c8e8">DT framework</tspan></text>
+    <rect x="296" y="652" width="160" height="36" rx="4" fill="#0d1525" stroke="#5acd83" stroke-opacity="0.55"/>
+    <text x="376" y="674" text-anchor="middle" fill="#e6ecf6">L4 <tspan fill="#5acd83">ROSE</tspan></text>
+    <rect x="464" y="652" width="180" height="36" rx="4" fill="#0d1525" stroke="#a78bfa" stroke-opacity="0.55"/>
+    <text x="554" y="674" text-anchor="middle" fill="#e6ecf6">L3 <tspan fill="#a78bfa">AsyncFlow</tspan></text>
+    <rect x="652" y="652" width="180" height="36" rx="4" fill="#0d1525" stroke="#e8a040" stroke-opacity="0.55"/>
+    <text x="742" y="674" text-anchor="middle" fill="#e6ecf6">L2.5 <tspan fill="#e8a040">ORBIT</tspan></text>
+    <rect x="840" y="652" width="180" height="36" rx="4" fill="#0d1525" stroke="#e878a8" stroke-opacity="0.55"/>
+    <text x="930" y="674" text-anchor="middle" fill="#e6ecf6">L2 <tspan fill="#e878a8">Rhapsody</tspan></text>
+    <rect x="1028" y="652" width="216" height="36" rx="4" fill="#0d1525" stroke="#c89a6b" stroke-opacity="0.55"/>
+    <text x="1136" y="674" text-anchor="middle" fill="#e6ecf6">L1 <tspan fill="#c89a6b">resources</tspan></text>
+  </g>
+  <text x="640" y="708" text-anchor="middle" fill="#4a5670" font-size="10">layer stack per amsc/architecture/dt-framework.md; Rhapsody appears twice: control-side engines on the broker, compute-side backends on the endpoints</text>
+</svg>

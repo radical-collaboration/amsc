@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="660" viewBox="0 0 1280 660" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1280" height="660" fill="#ffffff"/>
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+      <path d="M0,0 L7,3.2 L0,6.4 z" fill="#37474f"/>
+    </marker>
+  </defs>
+
+  <!-- client -->
+  <rect x="60" y="30" width="560" height="72" rx="8" fill="#eceff1" stroke="#607d8b" stroke-width="2"/>
+  <text x="80" y="60" font-size="21" font-weight="bold" fill="#263238">Client — fine-tune campaign</text>
+  <text x="80" y="86" font-size="17" fill="#37474f">base model · data sources · evaluation criterion · stopping rule</text>
+
+  <!-- FT loop -->
+  <rect x="680" y="30" width="540" height="72" rx="8" fill="#fff3e0" stroke="#ef6c00" stroke-width="2"/>
+  <text x="700" y="60" font-size="21" font-weight="bold" fill="#e65100">FTaaS core loop</text>
+  <text x="700" y="86" font-size="17" fill="#bf360c">ingest → train → evaluate → decide → checkpoint &amp; publish</text>
+
+  <line x1="340" y1="102" x2="340" y2="140" stroke="#37474f" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="950" y1="102" x2="950" y2="140" stroke="#37474f" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- IRI -->
+  <rect x="60" y="140" width="1160" height="58" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="80" y="177" font-size="20" fill="#0d47a1"><tspan font-weight="bold">IRI-API</tspan>  ·  federated identity · facility status · job scheduling · file-system ops</text>
+
+  <line x1="640" y1="198" x2="640" y2="232" stroke="#37474f" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- broker -->
+  <rect x="60" y="232" width="1160" height="96" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="80" y="264" font-size="21" font-weight="bold" fill="#1b5e20">RHAPSODY-Service — central broker (AmSC platform)</text>
+  <text x="80" y="292" font-size="17" fill="#2e7d32">REST + WebSocket · allocation requests → Slurm/PBS · endpoint registry &amp; discovery · session management</text>
+  <text x="80" y="316" font-size="17" fill="#2e7d32">MLflow / ClearML — experiments, model catalog, lineage</text>
+
+  <line x1="250" y1="328" x2="250" y2="372" stroke="#37474f" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="640" y1="328" x2="640" y2="372" stroke="#37474f" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="1030" y1="328" x2="1030" y2="372" stroke="#37474f" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- facilities -->
+  <g>
+    <rect x="60" y="372" width="380" height="230" rx="8" fill="#ffffff" stroke="#455a64" stroke-width="2"/>
+    <text x="80" y="402" font-size="20" font-weight="bold" fill="#263238">Perlmutter</text>
+    <text x="80" y="426" font-size="16" fill="#546e7a">private RHAPSODY instance</text>
+    <rect x="80" y="440" width="340" height="42" rx="6" fill="#f3e5f5" stroke="#6a1b9a"/>
+    <text x="96" y="467" font-size="17" fill="#4a148c">simulation tasks — Dragon partition</text>
+    <rect x="80" y="492" width="340" height="42" rx="6" fill="#e1f5fe" stroke="#0277bd"/>
+    <text x="96" y="519" font-size="17" fill="#01579b">training tasks — Flux partition</text>
+    <rect x="80" y="544" width="340" height="42" rx="6" fill="#fce4ec" stroke="#ad1457"/>
+    <text x="96" y="571" font-size="17" fill="#880e4f">vLLM inference service</text>
+  </g>
+  <g>
+    <rect x="450" y="372" width="380" height="230" rx="8" fill="#ffffff" stroke="#455a64" stroke-width="2"/>
+    <text x="470" y="402" font-size="20" font-weight="bold" fill="#263238">Frontier</text>
+    <text x="470" y="426" font-size="16" fill="#546e7a">private RHAPSODY instance</text>
+    <rect x="470" y="440" width="340" height="42" rx="6" fill="#f3e5f5" stroke="#6a1b9a"/>
+    <text x="486" y="467" font-size="17" fill="#4a148c">simulation tasks — Dragon partition</text>
+    <rect x="470" y="492" width="340" height="42" rx="6" fill="#e1f5fe" stroke="#0277bd"/>
+    <text x="486" y="519" font-size="17" fill="#01579b">training tasks — Flux partition</text>
+    <rect x="470" y="544" width="340" height="42" rx="6" fill="#fce4ec" stroke="#ad1457"/>
+    <text x="486" y="571" font-size="17" fill="#880e4f">vLLM inference service</text>
+  </g>
+  <g>
+    <rect x="840" y="372" width="380" height="230" rx="8" fill="#ffffff" stroke="#455a64" stroke-width="2"/>
+    <text x="860" y="402" font-size="20" font-weight="bold" fill="#263238">Genesis / further sites</text>
+    <text x="860" y="426" font-size="16" fill="#546e7a">private RHAPSODY instance</text>
+    <rect x="860" y="440" width="340" height="42" rx="6" fill="#f3e5f5" stroke="#6a1b9a"/>
+    <text x="876" y="467" font-size="17" fill="#4a148c">simulation tasks — Dragon partition</text>
+    <rect x="860" y="492" width="340" height="42" rx="6" fill="#e1f5fe" stroke="#0277bd"/>
+    <text x="876" y="519" font-size="17" fill="#01579b">training tasks — Flux partition</text>
+    <rect x="860" y="544" width="340" height="42" rx="6" fill="#fce4ec" stroke="#ad1457"/>
+    <text x="876" y="571" font-size="17" fill="#880e4f">vLLM inference service</text>
+  </g>
+
+  <text x="60" y="632" font-size="16" fill="#546e7a">One allocation per site holds simulation, training and inference side by side — endpoints dial out, no inbound firewall exceptions.</text>
+</svg>

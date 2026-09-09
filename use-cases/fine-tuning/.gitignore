@@ -1,0 +1,8 @@
+# credentials — never commit (IRI bearer tokens, SFAPI client keys)
+token_*
+iri_client.*
+sfapi_*.id
+sfapi_*.pem
+
+__pycache__/
+ve3/

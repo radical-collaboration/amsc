@@ -31,7 +31,7 @@ returns to empty.
 
 ## Architecture
 
-![DTaaS architecture](presentations/dtaas-architecture.svg)
+![DTaaS architecture](presentations/dtaas-architecture.png)
 
 The DT framework is a thin top layer; ROSE (active learning), AsyncFlow,
 ORBIT and Rhapsody below it exist and run today. Details:

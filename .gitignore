@@ -1,0 +1,6 @@
+# credentials — NERSC SFAPI / IRI tokens and client certs live in the working
+# tree next to the use-case recipes; they must never enter git history
+*.tok
+*.pem
+*.id
+token_*

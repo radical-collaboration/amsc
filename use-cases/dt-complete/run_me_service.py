@@ -125,6 +125,8 @@ def main(m3dc1_candidates, other_args):
             buffer_max=other_args.m3dc1_buffer_maxlen,
             window_size=other_args.m3dc1_window_size,
             r2_threshold=other_args.m3dc1_r2_threshold,
+            # this session configures a 'learning' engine (see ENGINES)
+            learn_backend="learning",
         )
 
         neg_agent = dt.package(NEGATIVE_Agent)

@@ -242,8 +242,12 @@ class M3DC1_Investigator(ModelInvestigator):
 
             # save
             model_path = str((out_dir / "model.pkl"))
-            with open(model_path, "wb") as f:
+            # write-then-rename: inference loads this file concurrently, and
+            # a half-written pickle failed the twin (UnpicklingError)
+            tmp_path = f"{model_path}.{os.getpid()}.tmp"
+            with open(tmp_path, "wb") as f:
                 cloudpickle.dump(model, f)
+            os.replace(tmp_path, model_path)
             return {"simulation": sim_result, "surge": metrics, "model": model_path}
 
         self.train_task = training

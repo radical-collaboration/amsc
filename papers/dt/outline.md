@@ -10,13 +10,11 @@ and DTaaS form one paper; ORBIT is the hosting means. Seed: top half of
 - Timeline
 - Ben's role and author list
 - Overleaf
-- Which paper reports the two shared numbers, inference latency and
-  stream hop: this one or the ORBIT paper
 
 ## Claim
 
 - Abstractions that decouple DT application logic from task
-  orchestration, plus a central broker, make DTs easier to run.
+  orchestration, plus a central broker, make DTs easier to run
 - Scope of the claim: DTs with an online/offline (in-situ/ex-situ)
   architecture, on HPC, fed by external data streams.
 - "Easier" means:

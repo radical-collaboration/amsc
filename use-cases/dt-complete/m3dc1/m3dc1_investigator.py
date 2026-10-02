@@ -22,6 +22,7 @@ DO_PRINT = False
 import asyncio
 import json
 import os
+from collections import deque
 from pathlib import Path
 
 import cloudpickle
@@ -76,6 +77,10 @@ def _candidate_configs(candidates: list[str], max_iter: int) -> list[LearnerConf
     return configs
 
 
+# points of criterion history kept for the dashboard's sparkline
+METRIC_HISTORY = 24
+
+
 class M3DC1_Investigator(ModelInvestigator):
     def __init__(
         self,
@@ -86,7 +91,7 @@ class M3DC1_Investigator(ModelInvestigator):
         buffer_max: int,
         window_size: int,
         r2_threshold: float,
-        learn_backend: str | None = "learning",
+        learn_backend: str | None = None,
     ):
         super().__init__(flow)
 
@@ -95,16 +100,17 @@ class M3DC1_Investigator(ModelInvestigator):
         # The ROSE window tasks (simulation/training/active_learn/criterion)
         # carry this engine-role label, so a session with a 'learning'
         # engine runs them there and the dashboard's learning lane shows
-        # the training pipeline.  A session without one aliases the label
-        # back to inference, so the default is safe either way; None drops
-        # the label entirely.
+        # the training pipeline.  None (the default) drops the label: an
+        # engine without a backend of that name cannot route it, which is
+        # every standalone run -- the service driver passes 'learning'.
         _learn = {"backend": learn_backend} if learn_backend else {}
 
         # Convergence reporting: the runtime duck-types a `metrics` dict off
         # any component (see DTRuntime.metrics); the dashboard renders it as
         # the convergence bar.
         self.metrics: dict = {}
-        self._metric_history: list = []
+        # the dashboard sparkline draws the recent tail only
+        self._metric_history: deque = deque(maxlen=METRIC_HISTORY)
         self.candidates = candidates
         self.max_iter = max_iter
         self.r2_threshold = r2_threshold
@@ -236,8 +242,12 @@ class M3DC1_Investigator(ModelInvestigator):
 
             # save
             model_path = str((out_dir / "model.pkl"))
-            with open(model_path, "wb") as f:
+            # write-then-rename: inference loads this file concurrently, and
+            # a half-written pickle failed the twin (UnpicklingError)
+            tmp_path = f"{model_path}.{os.getpid()}.tmp"
+            with open(tmp_path, "wb") as f:
                 cloudpickle.dump(model, f)
+            os.replace(tmp_path, model_path)
             return {"simulation": sim_result, "surge": metrics, "model": model_path}
 
         self.train_task = training
@@ -348,10 +358,10 @@ class M3DC1_Investigator(ModelInvestigator):
                 "val_r2": {
                     "value": val_r2,
                     "threshold": float(self.r2_threshold),
-                    "operator": ">",
+                    "operator": ">=",   # what `should_stop` compares with
                     "should_stop": val_r2 >= float(self.r2_threshold),
                     "windows": iteration + 1,
-                    "history": self._metric_history[-24:],
+                    "history": list(self._metric_history),
                 }
             }
 

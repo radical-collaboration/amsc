@@ -1,0 +1,22 @@
+partition: nid004800,nid004805,nid004814,nid005560
+{
+  "backend": "rhapsody-flux",
+  "sched": "fluxion",
+  "nodes": 4,
+  "workload": "het",
+  "n_tasks": 6864,
+  "n_done": 6864,
+  "bringup_s": 4.53,
+  "teardown_s": 0.45,
+  "makespan_s": 69.54,
+  "n_records": 6864,
+  "utilization": 0.4311642979729786,
+  "throughput_overall": 98.7069603085724,
+  "throughput_steady": 170.5617614408954,
+  "hosts": [
+    "nid004800",
+    "nid004805",
+    "nid004814",
+    "nid005560"
+  ]
+}

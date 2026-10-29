@@ -1,0 +1,50 @@
+head=nid004956 JOB=59995969 nodelist=nid[004956-004959]
+
+########## A: RELIABLE in-process rhapsody-dragon (2n) || flux (2n) ##########
+p_dragon=nid004956,nid004957  p_flux=nid004958,nid004959
+dragon: dragon -N 2 --wlm slurm --hostlist nid004956,nid004957 /pscratch/sd/m/merzky/radical/ve.rh/bin/python /pscratch/sd/m/merzky/radical/dragon-investigation/rh_dragon.py --nodes 2 --ntasks 100
+flux:   srun --overlap --nodes=2 --ntasks=2 --ntasks-per-node=1 --nodelist=nid004958,nid004959 flux start /pscratch/sd/m/merzky/radical/ve.rh/bin/python /pscratch/sd/m/merzky/radical/dragon-investigation/_rhsplit_fluxw_948209.py 100
+
+=== RH SPLIT RESULT ===
+  rhapsody-dragon rc=0: RH_DRAGON_RESULT done=100 n=100 bringup=4.3 makespan=4.35
+  flux            rc=2: (none)
+[A exit=0]
+
+########## B: OPPORTUNISTIC RemoteBackendProxy split (short timeout; co-location coin-flip) ##########
+RM nodes: ['nid004956', 'nid004957', 'nid004958', 'nid004959']
+p_dragon: ['nid004956', 'nid004957'] | p_flux: ['nid004958', 'nid004959']
+p_dragon: driver@nid004956 hosts=['nid004956', 'nid004957'] head-first=['nid004956', 'nid004957']
+p_flux: srun --overlap --nodes=2 --ntasks=2 --ntasks-per-node=1 --nodelist=nid004958,nid004959 flux start /pscratch/sd/m/merzky/radical/ve.rh/bin/python /pscratch/sd/m/merzky/radical/dragon-investigation/_fluxw_948729.py 100 8
+[rhap-shimhost] running on host=nid004957
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/shim/shimhost.py", line 37, in <module>
+    runpy.run_module("rhapsody.backends.multiproc.host", run_name="__main__")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 234, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 163, in <module>
+    main()
+    ~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 158, in main
+    rc = asyncio.run(_run())
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 51, in _run
+    conn = Client(address, family="AF_UNIX", authkey=authkey)
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/multiprocessing/connection.py", line 536, in Client
+    c = SocketClient(address)
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/multiprocessing/connection.py", line 673, in SocketClient
+    s.connect(address)
+    ~~~~~~~~~^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory
+[B exit=124]
+
+=== split_run DONE ===

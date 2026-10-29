@@ -1,0 +1,31 @@
+{
+  "backend": "rhapsody-dragon",
+  "sched": "dragon",
+  "nodes": 8,
+  "workload": "zero",
+  "n_tasks": 32000,
+  "n_done": 32000,
+  "bringup_s": 7.03,
+  "teardown_s": 30.41,
+  "makespan_s": 324.31,
+  "n_records": 32000,
+  "utilization": 2.0884179821708414e-07,
+  "throughput_overall": 97.95275617145961,
+  "throughput_steady": 99.53384490185684,
+  "hosts": [
+    "nid004335",
+    "nid004336",
+    "nid006534",
+    "nid006535",
+    "nid006536",
+    "nid006686",
+    "nid006687",
+    "nid006688"
+  ],
+  "throughput_e2e": 98.67244416985297,
+  "utilization_e2e": 2.1037622094916766e-07,
+  "makespan_e2e_s": 324.31,
+  "makespan_record_s": 326.69,
+  "throughput_record": 97.95275617145961,
+  "utilization_record": 2.0884179821708414e-07
+}

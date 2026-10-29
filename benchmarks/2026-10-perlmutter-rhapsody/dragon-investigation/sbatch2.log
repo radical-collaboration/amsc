@@ -1,0 +1,14 @@
+sbatch head host=nid004439 JOB=59995697 nodelist=nid[004439,004899] CPUS_ON_NODE=256
+########## F4: rhapsody-dragon, surgical shimhost, 2 nodes, 100 tasks (sbatch, direct child) ##########
+[dtest] driver host=nid004439 partition fSB: ['nid004439', 'nid004899']
+[dtest] patch=default  DRAGON_PATCH_MP in extra_env = '<inherit>'
+[dtest] launch_prefix override: dragon --port 7575 --overlay-port 6565 --frontend-port 6566 -N 2 --wlm slurm --hostlist nid004439,nid004899 /pscratch/sd/m/merzky/radical/ve.rh/bin/python /pscratch/sd/m/merzky/radical/dragon-investigation/shim/shimhost.py
+[rhap-shimhost] running on host=nid004439
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+2026-10-19 06:28:41,371 api_setup INFO connecting to infrastructure from 951401
+2026-10-19 06:28:41,372 api_setup INFO debug entry hooked
+[dtest] proxy READY (bringup 19.9s)
+[dtest] RESULT nodes=2 ntasks=100 DONE=100/100 states={'DONE': 100} makespan=4.6s
+[dtest] closed cleanly
+[F4 exit=0]
+=== sbatch2 DONE ===

@@ -1,0 +1,65 @@
+diff --git i/src/rhapsody/backends/execution/flux/flux_backend.py w/src/rhapsody/backends/execution/flux/flux_backend.py
+index c9dafb0..5b2feaa 100644
+--- i/src/rhapsody/backends/execution/flux/flux_backend.py
++++ w/src/rhapsody/backends/execution/flux/flux_backend.py
+@@ -9,6 +9,7 @@ from __future__ import annotations
+ import asyncio
+ import logging
+ import os
++import sys
+ from typing import Any
+ 
+ from rhapsody.backends.base import BaseBackend
+@@ -230,11 +231,27 @@ class FluxExecutionBackend(BaseBackend):
+         specs = []
+         for task in tasks:
+             self.tasks[task["uid"]] = task
++            # Function tasks: Flux only runs executables, so bridge a Python
++            # callable to a jobspec by cloudpickling (function, args, kwargs) to
++            # a blob on the shared FS and launching a wrapper that calls it.
++            _exe = task["executable"]
++            _args = task.get("arguments", [])
++            if _exe is None and task.get("function") is not None:
++                import cloudpickle as _cp
++                _wrap = os.environ["RHAP_FN_WRAPPER"]
++                _dir = os.environ.get("RHAP_FN_WRAP_DIR", os.getcwd())
++                os.makedirs(_dir, exist_ok=True)
++                _blob = os.path.join(_dir, f"{task['uid']}.fn.pkl")
++                with open(_blob, "wb") as _f:
++                    _cp.dump((task["function"], tuple(task.get("args", ())),
++                              dict(task.get("kwargs", {}))), _f)
++                _exe = sys.executable
++                _args = [_wrap, _blob]
+             # Map canonical task dictionary values to the kwargs expected by spec_from_dict
+             td = {
+                 "uid": task["uid"],
+-                "executable": task["executable"],
+-                "arguments": task.get("arguments", []),
++                "executable": _exe,
++                "arguments": _args,
+                 "ranks": task.get("ranks", 1),
+                 "timeout": task.get("timeout", 0.0),
+                 "environment": task.get("environment"),
+diff --git i/src/rhapsody/backends/execution/flux/flux_helper.py w/src/rhapsody/backends/execution/flux/flux_helper.py
+index 23e5a9e..52d9228 100644
+--- i/src/rhapsody/backends/execution/flux/flux_helper.py
++++ w/src/rhapsody/backends/execution/flux/flux_helper.py
+@@ -308,12 +308,16 @@ class FluxHelper:
+             self._log.debug("submit: %d specs", len(specs))
+             tids = [spec.attributes["user"]["uid"] for spec in specs]
+ 
++            # Scale the submit timeout with batch size: rhapsody builds a
++            # jobspec per task in Python (~60-70 tasks/s), so a flat 60s caps
++            # batches at a few thousand tasks.  (local bench patch)
++            to = max(60.0, 0.1 * len(specs))
+             self._sevent.clear()
+             self._squeue.put(specs)
+-            self._sevent.wait(timeout=60.0)
++            self._sevent.wait(timeout=to)
+ 
+             if not self._sevent.is_set():
+-                raise RuntimeError("flux submit timed out after 60 s")
++                raise RuntimeError(f"flux submit timed out after {to:.0f} s ({len(specs)} specs)")
+ 
+             self._log.debug("submit done: %d specs", len(specs))
+             return tids

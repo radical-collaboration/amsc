@@ -1,0 +1,15 @@
+fluxion probe2 Sun Oct 18 07:36:21 AM PDT 2026
+salloc: Granted job allocation 59949725
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200039-200040] are ready for job
+Oct 18 07:36:57.909247 PDT 2026 rexec.err[0]: slurm-sync[838203]: slurm-expiration-sync: ERROR: Timed out waiting for resource-define event
+srun: forcing job termination
+srun: got SIGCONT
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+[2026-10-18T14:38:06.984] error: *** STEP 59949725.0 ON nid200039 CANCELLED AT 2026-10-18T14:38:06 DUE to SIGNAL Killed ***
+srun: error: nid200040: task 1: Killed
+srun: Terminating StepId=59949725.0
+srun: error: nid200039: task 0: Killed
+srun exit: 0
+salloc: Relinquishing job allocation 59949725
+=== probe2 salloc exit 0 ===

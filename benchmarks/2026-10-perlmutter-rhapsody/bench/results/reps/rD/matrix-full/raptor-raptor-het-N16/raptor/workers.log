@@ -1,0 +1,48 @@
+worker worker.nid006814.12 bootstrap via argv
+worker worker.nid006814.12 up: 128 slots on nid006814
+worker worker.nid006678.7 bootstrap via argv
+worker worker.nid006678.7 up: 128 slots on nid006678
+worker worker.nid006815.13 bootstrap via argv
+worker worker.nid006815.13 up: 128 slots on nid006815
+worker worker.nid006677.6 bootstrap via argv
+worker worker.nid006677.6 up: 128 slots on nid006677
+worker worker.nid006583.2 bootstrap via argv
+worker worker.nid006583.2 up: 128 slots on nid006583
+worker worker.nid006818.15 bootstrap via argv
+worker worker.nid006818.15 up: 128 slots on nid006818
+worker worker.nid006767.10 bootstrap via argv
+worker worker.nid006767.10 up: 128 slots on nid006767
+worker worker.nid006673.5 bootstrap via argv
+worker worker.nid006673.5 up: 128 slots on nid006673
+worker worker.nid006540.1 bootstrap via argv
+worker worker.nid006540.1 up: 128 slots on nid006540
+worker worker.nid006672.4 bootstrap via argv
+worker worker.nid006672.4 up: 128 slots on nid006672
+worker worker.nid006691.8 bootstrap via argv
+worker worker.nid006691.8 up: 128 slots on nid006691
+worker worker.nid006584.3 bootstrap via argv
+worker worker.nid006584.3 up: 128 slots on nid006584
+worker worker.nid006768.11 bootstrap via argv
+worker worker.nid006768.11 up: 128 slots on nid006768
+worker worker.nid006539.0 bootstrap via argv
+worker worker.nid006539.0 up: 128 slots on nid006539
+worker worker.nid006817.14 bootstrap via argv
+worker worker.nid006817.14 up: 128 slots on nid006817
+worker worker.nid006692.9 bootstrap via argv
+worker worker.nid006692.9 up: 128 slots on nid006692
+worker worker.nid006814.12 exiting (1712 tasks done)
+worker worker.nid006678.7 exiting (1712 tasks done)
+worker worker.nid006815.13 exiting (1712 tasks done)
+worker worker.nid006677.6 exiting (1712 tasks done)
+worker worker.nid006583.2 exiting (1712 tasks done)
+worker worker.nid006818.15 exiting (1712 tasks done)
+worker worker.nid006767.10 exiting (1712 tasks done)
+worker worker.nid006673.5 exiting (1712 tasks done)
+worker worker.nid006540.1 exiting (1712 tasks done)
+worker worker.nid006672.4 exiting (1712 tasks done)
+worker worker.nid006691.8 exiting (1712 tasks done)
+worker worker.nid006539.0 exiting (1712 tasks done)
+worker worker.nid006584.3 exiting (1728 tasks done)
+worker worker.nid006768.11 exiting (1728 tasks done)
+worker worker.nid006817.14 exiting (1728 tasks done)
+worker worker.nid006692.9 exiting (1728 tasks done)

@@ -1,0 +1,24 @@
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+{
+  "backend": "native-dragon",
+  "sched": "dragon",
+  "nodes": 1,
+  "workload": "het",
+  "n_tasks": 1716,
+  "n_done": 1716,
+  "bringup_s": 4.42,
+  "teardown_s": 2.19,
+  "makespan_s": 138.66,
+  "n_records": 1716,
+  "utilization": 0.21635847645483738,
+  "throughput_overall": 12.37549729442504,
+  "throughput_steady": 13.538972174497989,
+  "hosts": [
+    "nid200116"
+  ]
+}

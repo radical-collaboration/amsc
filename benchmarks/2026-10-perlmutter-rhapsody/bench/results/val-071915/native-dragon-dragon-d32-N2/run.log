@@ -1,0 +1,37 @@
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/bench/native_dragon.py", line 94, in <module>
+    main()
+    ~~~~^^
+  File "/pscratch/sd/m/merzky/radical/bench/native_dragon.py", line 63, in main
+    submit_and_wait(batch, [(0, 1)] * WARMUP, records)  # warmup
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/bench/native_dragon.py", line 37, in submit_and_wait
+    bt = opts.process(ProcessTemplate(
+        TASKRUN, args=(str(dur), str(cores), uid, records)))
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/workflows/batch/batch.py", line 5020, in process
+    return self._batch._submit_process(process_template, self._task_options)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/workflows/batch/batch.py", line 6894, in _submit_process
+    job = self._submit_job([(1, process_template)], task_options)
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/workflows/batch/batch.py", line 6902, in _submit_job
+    task = Job(
+        self,
+    ...<7 lines>...
+        stderr=task_options.stderr,
+    )
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/workflows/batch/batch.py", line 1601, in __init__
+    resolved_stdout, resolved_stderr = batch._resolve_task_output_paths(
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        tuid=tuid,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        stderr=stderr,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/workflows/batch/batch.py", line 5630, in _resolve_task_output_paths
+    resolved_stdout = _normalize_output_path(stdout) if stdout is not None else self._default_stdout
+                      ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/workflows/batch/batch.py", line 259, in _normalize_output_path
+    raise TypeError(f"output path must be a str or Path, got {type(path)!r}")
+TypeError: output path must be a str or Path, got <class 'int'>

@@ -1,0 +1,25 @@
+salloc: Granted job allocation 60112619
+salloc: Waiting for resource configuration
+salloc: Nodes nid200033 are ready for job
+=== baseline 100 (sanity) ===
+"n_done":100
+"throughput_overall":151.64533420833914
+=== chunk-port 100 (does it hang?) rc captured ===
+  "dur": 0.0,
+  "ncores": 1,
+  "n_tasks": 100,
+  "n_done": 100,
+  "bringup_s": 3.77,
+  "teardown_s": 1.62,
+  "makespan_s": 0.67,
+  "n_records": 100,
+  "utilization": 1.7807177955789377e-06,
+  "throughput_overall": 149.84570328010875,
+  "throughput_steady": 242.05617414200435,
+  "hosts": [
+    "nid200033"
+  ]
+}
+chunk rc=0
+### diag done
+salloc: Relinquishing job allocation 60112619

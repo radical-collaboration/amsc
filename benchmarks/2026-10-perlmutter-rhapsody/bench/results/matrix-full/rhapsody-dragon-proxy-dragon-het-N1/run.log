@@ -1,0 +1,21 @@
+[rhap-shimhost] running on host=nid004290
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+driver=nid004290 partition=['nid004290']
+{
+  "backend": "rhapsody-dragon-proxy",
+  "sched": "dragon",
+  "nodes": 1,
+  "workload": "het",
+  "n_tasks": 1716,
+  "n_done": 1716,
+  "bringup_s": 10.2,
+  "teardown_s": 3.82,
+  "makespan_s": 167.47,
+  "n_records": 1716,
+  "utilization": 0.17913872263166647,
+  "throughput_overall": 10.246556097723813,
+  "throughput_steady": 10.836686932807657,
+  "hosts": [
+    "nid004290"
+  ]
+}

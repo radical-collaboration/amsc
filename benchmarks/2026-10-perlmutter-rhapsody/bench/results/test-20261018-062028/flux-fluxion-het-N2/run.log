@@ -1,0 +1,33 @@
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/rhapsody_rm/src/rhapsody_rm/base.py", line 287, in get_instance
+    return rm_impl(cfg)
+  File "/pscratch/sd/m/merzky/radical/rhapsody_rm/src/rhapsody_rm/base.py", line 235, in __init__
+    self._init_info(cfg)
+    ~~~~~~~~~~~~~~~^^^^^
+  File "/pscratch/sd/m/merzky/radical/rhapsody_rm/src/rhapsody_rm/base.py", line 358, in _init_info
+    self._initialize()
+    ~~~~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/rhapsody_rm/src/rhapsody_rm/slurm.py", line 60, in _initialize
+    raise RuntimeError("$SLURM_CPUS_ON_NODE not set")
+RuntimeError: $SLURM_CPUS_ON_NODE not set
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/bench/run_one.py", line 154, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/bench/run_one.py", line 113, in main
+    rm = rhapsody_rm.ResourceManager.get_instance(name="SLURM", cfg=cfg)
+  File "/pscratch/sd/m/merzky/radical/rhapsody_rm/src/rhapsody_rm/base.py", line 290, in get_instance
+    raise RuntimeError(f"RM {name} creation failed") from e
+RuntimeError: RM SLURM creation failed

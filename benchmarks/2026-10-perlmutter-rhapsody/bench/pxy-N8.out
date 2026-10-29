@@ -1,0 +1,12 @@
+=== 13:41:03 rhapsody-dragon-proxy-dragon-zero_c-N8 ===
+  rc=0
+=== 13:42:31 rhapsody-dragon-proxy-dragon-d1_c-N8 ===
+  rc=124
+=== 14:07:34 rhapsody-dragon-proxy-dragon-d4-N8 ===
+  rc=124
+=== 14:32:38 rhapsody-dragon-proxy-dragon-d16-N8 ===
+  rc=124
+=== 14:57:41 rhapsody-dragon-proxy-dragon-d32-N8 ===
+  rc=124
+=== 15:22:44 rhapsody-dragon-proxy-dragon-het-N8 ===
+[2026-10-19T22:41:09.653] error: *** JOB 60006100 ON nid005847 CANCELLED AT 2026-10-19T22:41:09 DUE TO TIME LIMIT ***

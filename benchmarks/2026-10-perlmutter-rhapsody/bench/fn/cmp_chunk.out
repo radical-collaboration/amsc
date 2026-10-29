@@ -1,0 +1,18 @@
+salloc: Granted job allocation 60109702
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200032-200033] are ready for job
+### chunk vs baseline  alloc=2N  Thu Oct 22 08:04:10 AM PDT 2026
+--- base-rec-40k (count=40000 ) ---
+"n_done":40000
+"makespan_s":118.7
+"throughput_overall":336.9849520662624
+--- chunk-rec-40k (count=40000 ) ---
+--- base-rec-100k (count=100000 ) ---
+"n_done":100000
+"makespan_s":580.86
+"throughput_overall":172.1598317796062
+--- chunk-rec-100k (count=100000 ) ---
+--- base-noop-100k (count=100000 --noop) ---
+salloc: Job allocation 60109702 has been revoked.
+--- chunk-noop-100k (count=100000 --noop) ---
+### done Thu Oct 22 08:21:50 AM PDT 2026

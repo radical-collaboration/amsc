@@ -1,0 +1,26 @@
+{
+  "backend": "mix-dragon-proxy",
+  "sched": "mix",
+  "nodes": 4,
+  "workload": "d32",
+  "n_tasks": 2048,
+  "n_done": 2048,
+  "makespan_s": 180.53,
+  "makespan_shared_s": 182.8,
+  "n_records": 2048,
+  "utilization": 0.7090056037745492,
+  "throughput_overall": 11.344081571936657,
+  "throughput_steady": 14.652529361315391,
+  "hosts": [
+    "nid005085",
+    "nid005193",
+    "nid005194",
+    "nid005321"
+  ],
+  "throughput_e2e": 11.344081571936657,
+  "utilization_e2e": 0.7090056037745492,
+  "makespan_e2e_s": 180.53,
+  "makespan_record_s": 180.53,
+  "throughput_record": 11.344081571936657,
+  "utilization_record": 0.7090056037745492
+}

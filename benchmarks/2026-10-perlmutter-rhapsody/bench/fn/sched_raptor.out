@@ -1,0 +1,163 @@
+{
+  "backend": "raptor-fn",
+  "sched": "fn",
+  "nodes": 1,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "nslots": 128,
+  "n_tasks": 50000,
+  "n_done": 50000,
+  "bringup_s": 14.1,
+  "teardown_s": 2.0,
+  "makespan_s": 33.0,
+  "n_records": 50000,
+  "utilization": 8.129288191811433e-06,
+  "throughput_overall": 1515.0409155582445,
+  "throughput_steady": 1564.4140910596075,
+  "hosts": [
+    "nid004467"
+  ]
+}
+{
+  "backend": "raptor-fn",
+  "sched": "fn",
+  "nodes": 1,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "nslots": 32,
+  "n_tasks": 1000,
+  "n_done": 1000,
+  "bringup_s": 18.31,
+  "teardown_s": 2.0,
+  "makespan_s": 64.17,
+  "n_records": 1000,
+  "utilization": 0.9749428562696191,
+  "throughput_overall": 15.583228779798915,
+  "throughput_steady": 15.971329999213962,
+  "hosts": [
+    "nid004468"
+  ]
+}
+{
+  "backend": "raptor-fn",
+  "sched": "fn",
+  "nodes": 2,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "nslots": 128,
+  "n_tasks": 100000,
+  "n_done": 100000,
+  "bringup_s": 14.48,
+  "teardown_s": 2.0,
+  "makespan_s": 65.76,
+  "n_records": 100000,
+  "utilization": 4.07603720850571e-06,
+  "throughput_overall": 1520.707581611179,
+  "throughput_steady": 1562.6217857389877,
+  "hosts": [
+    "nid004469",
+    "nid004470"
+  ]
+}
+{
+  "backend": "raptor-fn",
+  "sched": "fn",
+  "nodes": 2,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "nslots": 32,
+  "n_tasks": 2000,
+  "n_done": 2000,
+  "bringup_s": 14.48,
+  "teardown_s": 2.0,
+  "makespan_s": 64.19,
+  "n_records": 2000,
+  "utilization": 0.974680413744833,
+  "throughput_overall": 31.15721603595412,
+  "throughput_steady": 31.954158628928074,
+  "hosts": [
+    "nid004471",
+    "nid004472"
+  ]
+}
+{
+  "backend": "raptor-fn",
+  "sched": "fn",
+  "nodes": 4,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "nslots": 128,
+  "n_tasks": 200000,
+  "n_done": 200000,
+  "bringup_s": 14.28,
+  "teardown_s": 2.0,
+  "makespan_s": 135.74,
+  "n_records": 200000,
+  "utilization": 2.4398680671603938e-06,
+  "throughput_overall": 1473.4302138064563,
+  "throughput_steady": 1557.343983150492,
+  "hosts": [
+    "nid004467",
+    "nid004468",
+    "nid004473",
+    "nid004474"
+  ]
+}
+{
+  "backend": "raptor-fn",
+  "sched": "fn",
+  "nodes": 4,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "nslots": 32,
+  "n_tasks": 4000,
+  "n_done": 4000,
+  "bringup_s": 14.67,
+  "teardown_s": 2.0,
+  "makespan_s": 64.22,
+  "n_records": 4000,
+  "utilization": 0.9740984574474728,
+  "throughput_overall": 62.28566647197924,
+  "throughput_steady": 63.901046483285015,
+  "hosts": [
+    "nid004467",
+    "nid004468",
+    "nid004469",
+    "nid004470"
+  ]
+}
+{
+  "backend": "raptor-fn",
+  "sched": "fn",
+  "nodes": 8,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "nslots": 32,
+  "n_tasks": 8000,
+  "n_done": 8000,
+  "bringup_s": 14.53,
+  "teardown_s": 2.0,
+  "makespan_s": 64.3,
+  "n_records": 8000,
+  "utilization": 0.9728114112938391,
+  "throughput_overall": 124.41738014878264,
+  "throughput_steady": 127.80255661906449,
+  "hosts": [
+    "nid004467",
+    "nid004468",
+    "nid004469",
+    "nid004470",
+    "nid004471",
+    "nid004472",
+    "nid004473",
+    "nid004474"
+  ]
+}
+raptor sched done

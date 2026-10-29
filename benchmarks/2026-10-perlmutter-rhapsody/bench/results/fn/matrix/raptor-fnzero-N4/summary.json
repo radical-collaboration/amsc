@@ -1,0 +1,24 @@
+{
+  "backend": "raptor-fn",
+  "sched": "fn",
+  "nodes": 4,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "nslots": 128,
+  "n_tasks": 200000,
+  "n_done": 200000,
+  "bringup_s": 14.28,
+  "teardown_s": 2.0,
+  "makespan_s": 135.74,
+  "n_records": 200000,
+  "utilization": 2.4398680671603938e-06,
+  "throughput_overall": 1473.4302138064563,
+  "throughput_steady": 1557.343983150492,
+  "hosts": [
+    "nid004467",
+    "nid004468",
+    "nid004473",
+    "nid004474"
+  ]
+}

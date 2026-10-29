@@ -1,0 +1,19 @@
+{
+  "backend": "native-flux",
+  "sched": "simple",
+  "nodes": 4,
+  "workload": "het",
+  "n_tasks": 6864,
+  "n_done": 6864,
+  "makespan_s": 78.89,
+  "n_records": 6864,
+  "utilization": 0.3802897026305056,
+  "throughput_overall": 87.00918670587268,
+  "throughput_steady": 113.74450352956579,
+  "hosts": [
+    "nid004800",
+    "nid004805",
+    "nid004814",
+    "nid005560"
+  ]
+}

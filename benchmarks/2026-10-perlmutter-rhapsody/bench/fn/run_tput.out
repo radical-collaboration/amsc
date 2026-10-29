@@ -1,0 +1,37 @@
+salloc: Granted job allocation 60127088
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200131-200132] are ready for job
+### dragon throughput test  alloc=2N  Thu Oct 22 01:44:37 PM PDT 2026
+script: /pscratch/sd/m/merzky/radical/rhapsody/tests/integration/test-hpc/dragon/test_throughput.py
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/rhapsody/tests/integration/test-hpc/dragon/test_throughput.py", line 64, in main
+    await run_bench(session, min_tasks, max_tasks, backend=backend)
+  File "/pscratch/sd/m/merzky/radical/rhapsody/tests/integration/test-hpc/dragon/test_throughput.py", line 43, in run_bench
+    await run_tasks(session, min_tasks, warmup=True, backend=backend)
+  File "/pscratch/sd/m/merzky/radical/rhapsody/tests/integration/test-hpc/dragon/test_throughput.py", line 36, in run_tasks
+    backend.batch.clear_results()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/workflows/batch/batch.py", line 6721, in clear_results
+    self.results_ddict.clear()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/data/ddict/ddict.py", line 3586, in clear
+    self._recv_responses_and_check_err(set([tag]), resp_num)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/data/ddict/ddict.py", line 2166, in _recv_responses_and_check_err
+    resp_msg = self._recv_resp(resp_set, connector)
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/data/ddict/ddict.py", line 2122, in _recv_resp
+    resp_ser_msg, hint = recvh.recv_bytes(timeout=timeout)
+                         ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "dragon/pydragon_fli.pyx", line 688, in dragon.fli.FLIRecvH.recv_bytes
+dragon.fli.DragonFLIEOT: DragonFLIEOT: End of Transmission
+*** Dragon C-level Traceback: ***
+
+*** End C-level Traceback: ***
+Dragon Error Code: DRAGON_EOT
+### done rc=? Thu Oct 22 01:45:24 PM PDT 2026
+salloc: Relinquishing job allocation 60127088

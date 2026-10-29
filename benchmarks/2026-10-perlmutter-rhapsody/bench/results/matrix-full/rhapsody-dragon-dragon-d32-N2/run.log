@@ -1,0 +1,19 @@
+{
+  "backend": "rhapsody-dragon",
+  "sched": "dragon",
+  "nodes": 2,
+  "workload": "d32",
+  "n_tasks": 1024,
+  "n_done": 1024,
+  "bringup_s": 12.0,
+  "teardown_s": 3.23,
+  "makespan_s": 146.56,
+  "n_records": 1024,
+  "utilization": 0.8733369716213782,
+  "throughput_overall": 6.986691031043723,
+  "throughput_steady": 7.513106243196928,
+  "hosts": [
+    "nid006535",
+    "nid006536"
+  ]
+}

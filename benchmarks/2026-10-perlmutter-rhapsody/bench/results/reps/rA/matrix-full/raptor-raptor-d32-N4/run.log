@@ -1,0 +1,29 @@
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/bench/raptor_one.py", line 79, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/bench/raptor_one.py", line 41, in main
+    be = await RaptorStandaloneBackend(
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        launch_workers=True)
+        ^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/raptor-standalone/raptor_standalone/rhapsody_backend.py", line 120, in _async_init
+    await asyncio.get_running_loop().run_in_executor(
+        None, self._master.wait_workers, self._nworkers, 180
+    )
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/pscratch/sd/m/merzky/radical/raptor-standalone/raptor_standalone/master.py", line 210, in wait_workers
+    raise RuntimeError('only %d/%d workers registered after %ds'
+                       % (n, count, timeout))
+RuntimeError: only 0/4 workers registered after 180s

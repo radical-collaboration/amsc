@@ -1,0 +1,12 @@
+worker worker.nid004467.0 bootstrap via argv
+worker worker.nid004467.0 up: 128 slots on nid004467
+worker worker.nid004468.1 bootstrap via argv
+worker worker.nid004468.1 up: 128 slots on nid004468
+worker worker.nid004474.3 bootstrap via argv
+worker worker.nid004474.3 up: 128 slots on nid004474
+worker worker.nid004473.2 bootstrap via argv
+worker worker.nid004473.2 up: 128 slots on nid004473
+worker worker.nid004474.3 exiting (50096 tasks done)
+worker worker.nid004473.2 exiting (50096 tasks done)
+worker worker.nid004467.0 exiting (49872 tasks done)
+worker worker.nid004468.1 exiting (49936 tasks done)

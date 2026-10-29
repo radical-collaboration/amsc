@@ -1,0 +1,68 @@
+Flux backend initialization failed: flux.job Python module not found
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/rhapsody/src/rhapsody/backends/execution/flux/flux_module.py", line 78, in __init__
+    result = subprocess.run(
+        ["flux", "python", "-c", "import flux; print(flux.__file__)"],  # noqa: S607
+    ...<2 lines>...
+        check=True,
+    )
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['flux', 'python', '-c', 'import flux; print(flux.__file__)']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/rhapsody/src/rhapsody/backends/execution/flux/flux_backend.py", line 145, in _async_init
+    self._flux_service = FluxService(launcher=launcher)
+                         ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/rhapsody/src/rhapsody/backends/execution/flux/flux_service.py", line 64, in __init__
+    self._fm.verify()
+    ~~~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/rhapsody/src/rhapsody/backends/execution/flux/flux_module.py", line 118, in verify
+    raise RuntimeError("flux.job Python module not found") from self._flux_exc
+RuntimeError: flux.job Python module not found
+partition: ['nid200010', 'nid200011']
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/rhapsody/src/rhapsody/backends/execution/flux/flux_module.py", line 78, in __init__
+    result = subprocess.run(
+        ["flux", "python", "-c", "import flux; print(flux.__file__)"],  # noqa: S607
+    ...<2 lines>...
+        check=True,
+    )
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['flux', 'python', '-c', 'import flux; print(flux.__file__)']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/bench/run_one.py", line 154, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/bench/run_one.py", line 120, in main
+    backend = await build_backend(args.backend, spec)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/bench/run_one.py", line 62, in build_backend
+    return await FluxExecutionBackend(name="bench", resources={"partition": spec})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/rhapsody/src/rhapsody/backends/execution/flux/flux_backend.py", line 145, in _async_init
+    self._flux_service = FluxService(launcher=launcher)
+                         ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/rhapsody/src/rhapsody/backends/execution/flux/flux_service.py", line 64, in __init__
+    self._fm.verify()
+    ~~~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/rhapsody/src/rhapsody/backends/execution/flux/flux_module.py", line 118, in verify
+    raise RuntimeError("flux.job Python module not found") from self._flux_exc
+RuntimeError: flux.job Python module not found

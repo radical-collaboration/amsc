@@ -1,0 +1,19 @@
+partition: nid006127
+{
+  "backend": "rhapsody-flux",
+  "sched": "fluxion",
+  "nodes": 1,
+  "workload": "d16",
+  "n_tasks": 640,
+  "n_done": 640,
+  "bringup_s": 3.8,
+  "teardown_s": 5.83,
+  "makespan_s": 84.55,
+  "n_records": 640,
+  "utilization": 0.9462301809582598,
+  "throughput_overall": 7.5698309791886755,
+  "throughput_steady": 7.934099983204334,
+  "hosts": [
+    "nid006127"
+  ]
+}

@@ -1,0 +1,87 @@
+=== mixrep het 09:06:20 ===
+[rhap-shimhost] running on host=nid006975
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+driver=nid006136 dragon=nid006136,nid006963 flux=nid006975,nid007052
+{
+  "backend": "mix-dragon-proxy",
+  "sched": "mix",
+  "nodes": 2,
+  "workload": "het",
+  "n_tasks": 3432,
+  "n_done": 3432,
+  "makespan_s": 165.27,
+  "makespan_shared_s": 167.37,
+  "n_records": 3432,
+  "utilization": 0.18152650781789678,
+  "throughput_overall": 20.766035959696158,
+  "throughput_steady": 22.44846660691283,
+  "hosts": [
+    "nid006963",
+    "nid006975"
+  ]
+}
+{
+  "backend": "mix-flux",
+  "sched": "mix",
+  "nodes": 2,
+  "workload": "het",
+  "n_tasks": 3432,
+  "n_done": 3432,
+  "makespan_s": 48.78,
+  "makespan_shared_s": 167.37,
+  "n_records": 3432,
+  "utilization": 0.6150866566038318,
+  "throughput_overall": 70.36340676357355,
+  "throughput_steady": 99.0726257662988,
+  "hosts": [
+    "nid006975",
+    "nid007052"
+  ]
+}
+MIX done: dragon 3432/3432 flux 3432/3432 makespan=167.4s
+=== mixrep d32 09:09:55 ===
+[rhap-shimhost] running on host=nid006136
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+driver=nid006136 dragon=nid006136,nid006963 flux=nid006975,nid007052
+{
+  "backend": "mix-dragon-proxy",
+  "sched": "mix",
+  "nodes": 2,
+  "workload": "d32",
+  "n_tasks": 1024,
+  "n_done": 1024,
+  "makespan_s": 177.15,
+  "makespan_shared_s": 179.33,
+  "n_records": 1024,
+  "utilization": 0.7225531679199129,
+  "throughput_overall": 5.780421288117273,
+  "throughput_steady": 7.4786018796538904,
+  "hosts": [
+    "nid006136",
+    "nid006963"
+  ]
+}
+{
+  "backend": "mix-flux",
+  "sched": "mix",
+  "nodes": 2,
+  "workload": "d32",
+  "n_tasks": 1024,
+  "n_done": 1024,
+  "makespan_s": 130.48,
+  "makespan_shared_s": 179.33,
+  "n_records": 1024,
+  "utilization": 0.9809616568912796,
+  "throughput_overall": 7.847688088658173,
+  "throughput_steady": 8.439108905406073,
+  "hosts": [
+    "nid006975",
+    "nid007052"
+  ]
+}
+MIX done: dragon 1024/1024 flux 1024/1024 makespan=179.3s
+=== mixrep done ===

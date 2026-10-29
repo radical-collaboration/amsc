@@ -1,0 +1,28 @@
+Flux backend initialization failed: FluxService failed to start within timeout
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/rhapsody/src/rhapsody/backends/execution/flux/flux_backend.py", line 149, in _async_init
+    raise RuntimeError("FluxService failed to start within timeout")
+RuntimeError: FluxService failed to start within timeout
+partition: ['nid200005', 'nid200006']
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/bench/run_one.py", line 157, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/bench/run_one.py", line 123, in main
+    backend = await build_backend(args.backend, spec)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/bench/run_one.py", line 65, in build_backend
+    return await FluxExecutionBackend(name="bench", resources={"partition": spec})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/rhapsody/src/rhapsody/backends/execution/flux/flux_backend.py", line 149, in _async_init
+    raise RuntimeError("FluxService failed to start within timeout")
+RuntimeError: FluxService failed to start within timeout

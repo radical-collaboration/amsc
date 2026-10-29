@@ -1,0 +1,100 @@
+### repeat rD  scales=[16] wl=[d4 d32 het]  alloc=16N  Tue Oct 20 12:12:52 PM PDT 2026
+RESULTS=/pscratch/sd/m/merzky/radical/bench/results/reps/rD/matrix-full  SLURM_CPUS_ON_NODE=256  alloc=16 nodes
+=== 12:12:58 native-dragon-dragon-d4-N16 ===
+  exit=0
+=== 12:16:33 native-dragon-dragon-d32-N16 ===
+  exit=0
+=== 12:21:02 native-dragon-dragon-het-N16 ===
+  exit=0
+=== 12:27:42 native-flux-simple-d4-N16 ===
+  exit=0
+=== 12:30:12 native-flux-simple-d32-N16 ===
+  exit=0
+=== 12:33:40 native-flux-simple-het-N16 ===
+  exit=0
+=== 12:39:28 native-flux-fluxion-d4-N16 ===
+  exit=0
+=== 12:41:48 native-flux-fluxion-d32-N16 ===
+  exit=0
+=== 12:45:12 native-flux-fluxion-het-N16 ===
+  exit=0
+=== 12:50:45 rhapsody-flux-simple-d4-N16 ===
+  exit=0
+=== 12:53:14 rhapsody-flux-simple-d32-N16 ===
+  exit=0
+=== 12:56:31 rhapsody-flux-simple-het-N16 ===
+  exit=0
+=== matrix complete: /pscratch/sd/m/merzky/radical/bench/results/reps/rD/matrix-full ===
+workload  nodes  backend        sched    n_done  n_tasks  bringup_s  teardown_s  makespan_s  throughput_steady  throughput_overall  utilization
+-----------------------------------------------------------------------------------------------------------------------------------------------
+d32       16     native-dragon  dragon   8192    8192     8.800      4.080       206.6       42.650             39.650              0.619      
+d32       16     native-flux    fluxion  8192    8192                            176.3       61.468             46.455              0.726      
+d32       16     native-flux    simple   8192    8192                            180.9       60.166             45.292              0.708      
+d32       16     rhapsody-flux  simple   8192    8192     6.170      5.340       158.7       64.711             51.610              0.806      
+d4        16     native-dragon  dragon   12288   12288    11.080     4.720       142.6       84.509             86.174              0.168      
+d4        16     native-flux    fluxion  12288   12288                           102.9       135.5              119.4               0.233      
+d4        16     native-flux    simple   12288   12288                           112.1       112.2              109.6               0.214      
+d4        16     rhapsody-flux  simple   12288   12288    5.330      2.630       98.890      146.6              124.3               0.243      
+het       16     native-dragon  dragon   27456   27456    10.430     3.970       307.5       97.374             89.294              0.098      
+het       16     native-flux    fluxion  27456   27456                           263.6       118.3              104.2               0.114      
+het       16     native-flux    simple   27456   27456                           284.1       105.4              96.659              0.106      
+het       16     rhapsody-flux  simple   27456   27456    5.570      7.670       221.4       133.3              124.0               0.136      
+
+12 cells -> /pscratch/sd/m/merzky/radical/bench/results/reps/rD/matrix-full/results.csv
+=== 13:01:33 rhapsody-dragon-proxy-dragon-d4-N16 (port-offset 0) ===
+  rc=0
+=== 13:05:04 rhapsody-dragon-proxy-dragon-d32-N16 (port-offset 20) ===
+  rc=124
+=== 13:20:09 rhapsody-dragon-proxy-dragon-het-N16 (port-offset 40) ===
+  rc=124
+proxy sweep done (16)
+=== 13:35:17 raptor-raptor-d4-N16 ===
+  rc=0
+=== 13:36:31 raptor-raptor-d32-N16 ===
+  rc=0
+=== 13:39:19 raptor-raptor-het-N16 ===
+  rc=0
+raptor sweep done (16)
+=== rep mix het nper2 13:41:16 ===
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+=== rep mix d32 nper2 13:56:19 ===
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+=== rep mix het nper4 14:11:22 ===
+[2026-10-20T21:12:47.014] error: *** JOB 60035522 ON nid006539 CANCELLED AT 2026-10-20T21:12:47 DUE TO TIME LIMIT ***
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/dragon_multi_fe.py", line 47, in main
+    net_conf = fe_server.run_startup(net_conf=net_conf)
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/frontend.py", line 1071, in run_startup
+    self.net = self._populate_net_config(net_conf)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/frontend.py", line 1012, in _populate_net_config
+    raise RuntimeError("Unable to acquire backend network configuration via workload manager")

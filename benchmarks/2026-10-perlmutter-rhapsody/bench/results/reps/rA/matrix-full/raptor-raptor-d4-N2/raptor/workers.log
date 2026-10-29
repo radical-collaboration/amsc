@@ -1,0 +1,5 @@
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+[2026-10-20T16:02:50.956] error: *** STEP 60035533.120 ON nid200114 CANCELLED AT 2026-10-20T16:02:50 DUE to SIGNAL Terminated ***
+srun: error: nid200114: task 0: Terminated
+srun: Terminating StepId=60035533.120
+srun: error: nid200115: task 1: Terminated

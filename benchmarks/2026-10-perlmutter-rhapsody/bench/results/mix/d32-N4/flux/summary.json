@@ -1,0 +1,26 @@
+{
+  "backend": "mix-flux",
+  "sched": "mix",
+  "nodes": 4,
+  "workload": "d32",
+  "n_tasks": 2048,
+  "n_done": 2048,
+  "makespan_s": 131.2,
+  "makespan_shared_s": 182.8,
+  "n_records": 2048,
+  "utilization": 0.9756257314742168,
+  "throughput_overall": 15.610001066921713,
+  "throughput_steady": 16.77370024062185,
+  "hosts": [
+    "nid005322",
+    "nid007030",
+    "nid007031",
+    "nid007032"
+  ],
+  "throughput_e2e": 15.610001066921713,
+  "utilization_e2e": 0.9756257314742168,
+  "makespan_e2e_s": 131.2,
+  "makespan_record_s": 131.2,
+  "throughput_record": 15.610001066921713,
+  "utilization_record": 0.9756257314742168
+}

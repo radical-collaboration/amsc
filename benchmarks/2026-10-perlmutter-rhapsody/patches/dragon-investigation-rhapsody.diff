@@ -1,0 +1,71 @@
+diff --git i/src/rhapsody/backends/execution/flux/flux_helper.py w/src/rhapsody/backends/execution/flux/flux_helper.py
+index 23e5a9e..56dbc1b 100644
+--- i/src/rhapsody/backends/execution/flux/flux_helper.py
++++ w/src/rhapsody/backends/execution/flux/flux_helper.py
+@@ -308,12 +308,13 @@ class FluxHelper:
+             self._log.debug("submit: %d specs", len(specs))
+             tids = [spec.attributes["user"]["uid"] for spec in specs]
+ 
++            to = max(60.0, 0.1 * len(specs))   # scale with batch size (local patch)
+             self._sevent.clear()
+             self._squeue.put(specs)
+-            self._sevent.wait(timeout=60.0)
++            self._sevent.wait(timeout=to)
+ 
+             if not self._sevent.is_set():
+-                raise RuntimeError("flux submit timed out after 60 s")
++                raise RuntimeError(f"flux submit timed out after {to:.0f} s ({len(specs)} specs)")
+ 
+             self._log.debug("submit done: %d specs", len(specs))
+             return tids
+diff --git i/src/rhapsody/backends/multiproc/host.py w/src/rhapsody/backends/multiproc/host.py
+index 18258c2..dd06508 100644
+--- i/src/rhapsody/backends/multiproc/host.py
++++ w/src/rhapsody/backends/multiproc/host.py
+@@ -48,7 +48,10 @@ async def _run() -> int:
+     authkey = bytes.fromhex(authkey_hex)
+ 
+     # Connect (blocking, fast — listener is already accepting on the driver side).
+-    conn = Client(address, family="AF_UNIX", authkey=authkey)
++    # AF_INET control plane (was AF_UNIX): RHAPSODY_MP_ADDRESS is "host:port";
++    # connect over TCP so the child reaches the driver from any compute node.
++    host_str, port_str = address.rsplit(":", 1)
++    conn = Client((host_str, int(port_str)), family="AF_INET", authkey=authkey)
+ 
+     # CONFIG handshake: driver tells us which backend to build and with what
+     # resources.  ``resources`` may carry the partition spec per
+diff --git i/src/rhapsody/backends/multiproc/spawn.py w/src/rhapsody/backends/multiproc/spawn.py
+index e4ada0a..8e35910 100644
+--- i/src/rhapsody/backends/multiproc/spawn.py
++++ w/src/rhapsody/backends/multiproc/spawn.py
+@@ -15,6 +15,7 @@ from __future__ import annotations
+ 
+ import logging
+ import os
++import socket
+ import subprocess
+ import sys
+ import tempfile
+@@ -73,11 +74,19 @@ def spawn_backend_host(
+         ``listener.accept()`` blocks until the child connects; callers running
+         on an asyncio loop should invoke this via ``loop.run_in_executor``.
+     """
+-    sockdir = tempfile.mkdtemp(prefix="rhapsody-mp-")
+-    address = os.path.join(sockdir, "sock")
++    # AF_INET control plane (was AF_UNIX): the host child may land on a
++    # different node than the driver (dragon elects its head via min(host_id),
++    # not --hostlist order), so a node-local AF_UNIX socket is unreachable.
++    # Bind the Listener on all interfaces with an OS-chosen port, and advertise
++    # a routable hostname (reachable from the other compute nodes via the HSN)
++    # to the child via RHAPSODY_MP_ADDRESS as "host:port".
++    sockdir = tempfile.mkdtemp(prefix="rhapsody-mp-")  # retained only for teardown symmetry
+     authkey = os.urandom(16)
+ 
+-    listener = Listener(address, family="AF_UNIX", authkey=authkey)
++    driver_host = socket.gethostname()
++    listener = Listener(("", 0), family="AF_INET", authkey=authkey)
++    bound_port = listener.address[1]
++    address = f"{driver_host}:{bound_port}"
+ 
+     child_env = {k: v for k, v in os.environ.items() if v is not None}
+     if extra_env:

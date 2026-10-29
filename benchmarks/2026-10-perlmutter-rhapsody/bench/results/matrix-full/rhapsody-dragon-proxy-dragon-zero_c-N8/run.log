@@ -1,0 +1,39 @@
+[rhap-shimhost] running on host=nid006043
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+driver=nid005847 partition=['nid005847', 'nid005991', 'nid006041', 'nid006042', 'nid006043', 'nid006150', 'nid006151', 'nid006152']
+{
+  "backend": "rhapsody-dragon-proxy",
+  "sched": "dragon",
+  "nodes": 8,
+  "workload": "zero_c",
+  "n_tasks": 4000,
+  "n_done": 4000,
+  "bringup_s": 18.27,
+  "teardown_s": 7.0,
+  "makespan_s": 42.85,
+  "n_records": 4000,
+  "utilization": 1.9682532704833777e-07,
+  "throughput_overall": 93.34529664012311,
+  "throughput_steady": 97.82284867027258,
+  "hosts": [
+    "nid005847",
+    "nid005991",
+    "nid006041",
+    "nid006042",
+    "nid006043",
+    "nid006150",
+    "nid006151",
+    "nid006152"
+  ]
+}
+[2026-10-19T22:41:09.652] error: *** STEP 60006100.1 ON nid005847 CANCELLED AT 2026-10-19T22:41:09 DUE TO TIME LIMIT ***

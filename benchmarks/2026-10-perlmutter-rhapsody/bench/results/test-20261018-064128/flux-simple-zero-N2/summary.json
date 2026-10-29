@@ -1,0 +1,19 @@
+{
+  "backend": "flux",
+  "sched": "simple",
+  "nodes": 2,
+  "workload": "zero",
+  "n_tasks": 5000,
+  "n_done": 5000,
+  "bringup_s": 7.53,
+  "teardown_s": 1.26,
+  "makespan_s": 44.12,
+  "n_records": 5000,
+  "utilization": 4.7253770051926216e-07,
+  "throughput_overall": 113.32860388740889,
+  "throughput_steady": 136.63063151075016,
+  "hosts": [
+    "nid200005",
+    "nid200006"
+  ]
+}

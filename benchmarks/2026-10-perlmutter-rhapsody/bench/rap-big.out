@@ -1,0 +1,25 @@
+=== 12:12:55 raptor-raptor-zero-N32 ===
+  rc=0
+=== 12:18:04 raptor-raptor-d1-N32 ===
+  rc=0
+=== 12:22:06 raptor-raptor-d4-N32 ===
+  rc=0
+=== 12:23:42 raptor-raptor-d16-N32 ===
+  rc=0
+=== 12:26:10 raptor-raptor-d32-N32 ===
+  rc=0
+=== 12:29:17 raptor-raptor-het-N32 ===
+  rc=0
+=== 12:32:02 raptor-raptor-zero-N128 ===
+  rc=0
+=== 12:51:04 raptor-raptor-d1-N128 ===
+  rc=0
+=== 13:05:24 raptor-raptor-d4-N128 ===
+  rc=0
+=== 13:09:38 raptor-raptor-d16-N128 ===
+  rc=0
+=== 13:13:48 raptor-raptor-d32-N128 ===
+  rc=0
+=== 13:18:26 raptor-raptor-het-N128 ===
+  rc=0
+raptor sweep done (32 128)

@@ -1,0 +1,36 @@
+=== 0.14.2 proxy+shim 2-node confirm | head=nid006179 nodelist=nid[006179,006394] ===
+[dtest] driver host=nid006179 partition c2n: ['nid006179', 'nid006394']
+[dtest] patch=default  DRAGON_PATCH_MP in extra_env = '<inherit>'
+[dtest] launch_prefix override: dragon --port 7575 --overlay-port 6565 --frontend-port 6566 -N 2 --wlm slurm --hostlist nid006179,nid006394 /pscratch/sd/m/merzky/radical/dragon-investigation/ve.0142/bin/python /pscratch/sd/m/merzky/radical/dragon-investigation/shim/shimhost.py
+[rhap-shimhost] running on host=nid006394
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/shim/shimhost.py", line 37, in <module>
+    runpy.run_module("rhapsody.backends.multiproc.host", run_name="__main__")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 234, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 163, in <module>
+    main()
+    ~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 158, in main
+    rc = asyncio.run(_run())
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 51, in _run
+    conn = Client(address, family="AF_UNIX", authkey=authkey)
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/multiprocessing/connection.py", line 536, in Client
+    c = SocketClient(address)
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/multiprocessing/connection.py", line 673, in SocketClient
+    s.connect(address)
+    ~~~~~~~~~^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory
+[exit=0]
+=== t2b_2n_dbg DONE ===

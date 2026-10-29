@@ -1,0 +1,9 @@
+=== 01:38:37 rhapsody-dragon-proxy-dragon-het-N1 (port-offset 0) ===
+  rc=0
+=== 01:41:52 rhapsody-dragon-proxy-dragon-het-N2 (port-offset 20) ===
+  rc=0
+=== 01:45:08 rhapsody-dragon-proxy-dragon-het-N4 (port-offset 40) ===
+  rc=0
+=== 01:47:59 rhapsody-dragon-proxy-dragon-het-N8 (port-offset 60) ===
+  rc=124
+proxy sweep done (1 2 4 8)

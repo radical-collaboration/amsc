@@ -1,0 +1,4 @@
+worker worker.nid006219.0 up: 128 slots on nid006219
+worker worker.nid006223.1 up: 128 slots on nid006223
+worker worker.nid006219.0 exiting (512 tasks done)
+worker worker.nid006223.1 exiting (512 tasks done)

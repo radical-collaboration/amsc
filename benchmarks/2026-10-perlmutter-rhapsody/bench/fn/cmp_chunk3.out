@@ -1,0 +1,11 @@
+salloc: Granted job allocation 60110498
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200032-200033] are ready for job
+### ported-chunk vs baseline  alloc=2N  Thu Oct 22 08:22:05 AM PDT 2026
+--- chunk-smoke (3k, validate port runs) ---
+salloc: Job 60110498 has exceeded its time limit and its allocation has been revoked.
+--- base-rec ---
+--- chunk-rec ---
+--- base-noop ---
+--- chunk-noop ---
+### done Thu Oct 22 09:12:58 AM PDT 2026

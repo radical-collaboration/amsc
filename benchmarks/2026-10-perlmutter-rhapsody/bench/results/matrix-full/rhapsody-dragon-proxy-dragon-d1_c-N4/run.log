@@ -1,0 +1,31 @@
+[rhap-shimhost] running on host=nid005771
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+driver=nid005770 partition=['nid005770', 'nid005771', 'nid005772', 'nid005773']
+{
+  "backend": "rhapsody-dragon-proxy",
+  "sched": "dragon",
+  "nodes": 4,
+  "workload": "d1_c",
+  "n_tasks": 4000,
+  "n_done": 4000,
+  "bringup_s": 19.33,
+  "teardown_s": 7.0,
+  "makespan_s": 50.31,
+  "n_records": 4000,
+  "utilization": 0.15514836079224448,
+  "throughput_overall": 79.51370641348998,
+  "throughput_steady": 80.21687826711732,
+  "hosts": [
+    "nid005770",
+    "nid005771",
+    "nid005772",
+    "nid005773"
+  ]
+}
+[2026-10-19T22:44:04.787] error: *** STEP 60007603.1 ON nid005770 CANCELLED AT 2026-10-19T22:44:04 DUE to SIGNAL Terminated ***

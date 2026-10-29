@@ -1,0 +1,14 @@
+salloc: Granted job allocation 60127210
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200105-200106] are ready for job
+### dragon throughput test (patched clear_results)  alloc=2N  Thu Oct 22 01:46:12 PM PDT 2026
+task_logs is disabled: task['stdout']/task['stderr'] will be empty for capture_stdio=False tasks; output goes directly to the console.
+task throughput benchmark
+-------------------------
+num tasks  throughput [tasks/s]
+10000      893.0884710784126   
+20000      622.7681998554389   
+40000      489.9287702032458   
+
+### done Thu Oct 22 01:48:58 PM PDT 2026
+salloc: Relinquishing job allocation 60127210

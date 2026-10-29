@@ -1,0 +1,13 @@
+{
+  "ntasks": 20,
+  "done": 20,
+  "failed": 0,
+  "walltime": 0.20050048828125,
+  "throughput": 99.7503805175038,
+  "workers": 2,
+  "bulk": 1,
+  "nslots": [
+    2,
+    2
+  ]
+}

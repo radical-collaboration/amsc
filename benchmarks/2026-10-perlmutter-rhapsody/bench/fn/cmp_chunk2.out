@@ -1,0 +1,10 @@
+salloc: Granted job allocation 60110026
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200061-200062] are ready for job
+### ported-chunk vs baseline (feature/flux)  alloc=2N  Thu Oct 22 08:11:06 AM PDT 2026
+--- base-rec-100k ---
+salloc: Job allocation 60110026 has been revoked.
+--- chunk-rec-100k ---
+--- base-noop-100k ---
+--- chunk-noop-100k ---
+### done Thu Oct 22 08:22:01 AM PDT 2026

@@ -1,0 +1,49 @@
+validation launch Sun Oct 18 07:19:15 AM PDT 2026 -> /pscratch/sd/m/merzky/radical/bench/results/val-071915
+salloc: Granted job allocation 59949380
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200075-200076] are ready for job
+RESULTS=/pscratch/sd/m/merzky/radical/bench/results/val-071915  SLURM_CPUS_ON_NODE=256  alloc=2 nodes
+=== 07:19:24 native-dragon-dragon-zero-N2 ===
+  exit=0
+=== 07:20:03 native-dragon-dragon-d32-N2 ===
+  exit=0
+=== 07:20:32 native-dragon-dragon-het-N2 ===
+  exit=0
+=== 07:21:08 native-flux-simple-zero-N2 ===
+  exit=0
+=== 07:22:45 native-flux-simple-d32-N2 ===
+  exit=0
+=== 07:25:09 native-flux-simple-het-N2 ===
+  exit=0
+=== 07:25:57 native-flux-fluxion-zero-N2 ===
+  exit=129 FAILED
+=== 07:26:12 native-flux-fluxion-d32-N2 ===
+  exit=129 FAILED
+=== 07:26:28 native-flux-fluxion-het-N2 ===
+  exit=1 FAILED
+=== 07:26:42 rhapsody-flux-simple-zero-N2 ===
+  exit=0
+=== 07:28:39 rhapsody-flux-simple-d32-N2 ===
+  exit=0
+=== 07:31:08 rhapsody-flux-simple-het-N2 ===
+  exit=0
+=== 07:31:59 rhapsody-flux-fluxion-zero-N2 ===
+  exit=1 FAILED
+=== 07:33:02 rhapsody-flux-fluxion-d32-N2 ===
+  exit=1 FAILED
+=== 07:34:05 rhapsody-flux-fluxion-het-N2 ===
+  exit=1 FAILED
+=== matrix complete: /pscratch/sd/m/merzky/radical/bench/results/val-071915 ===
+workload  nodes  backend        sched   n_done  n_tasks  bringup_s  teardown_s  makespan_s  throughput_steady  throughput_overall  utilization
+----------------------------------------------------------------------------------------------------------------------------------------------
+d32       2      native-flux    simple  1024    1024                            134.6       8.450              7.606               0.951      
+d32       2      rhapsody-flux  simple  1024    1024     5.110      0.170       134.7       8.446              7.604               0.950      
+het       2      native-flux    simple  344     344                             39.750      31.190             8.654               0.489      
+het       2      rhapsody-flux  simple  344     344      5.040      0.120       37.890      31.502             9.079               0.515      
+zero      2      native-flux    simple  8000    8000                            74.020      119.8              108.1               0.000      
+zero      2      rhapsody-flux  simple  8000    8000     10.660     3.930       75.260      189.6              106.3               0.000      
+
+6 cells -> /pscratch/sd/m/merzky/radical/bench/results/val-071915/results.csv
+salloc: Relinquishing job allocation 59949380
+salloc: Job allocation 59949380 has been revoked.
+=== val salloc exit 0 (Sun Oct 18 07:35:08 AM PDT 2026) ===

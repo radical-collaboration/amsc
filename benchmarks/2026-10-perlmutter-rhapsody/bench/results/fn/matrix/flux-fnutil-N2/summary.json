@@ -1,0 +1,21 @@
+{
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 2,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "n_tasks": 2000,
+  "n_done": 2000,
+  "bringup_s": 4.66,
+  "teardown_s": 10.01,
+  "makespan_s": 73.99,
+  "n_records": 2000,
+  "utilization": 0.8451041399372996,
+  "throughput_overall": 27.03107823170795,
+  "throughput_steady": 29.321282395398914,
+  "hosts": [
+    "nid005752",
+    "nid005753"
+  ]
+}

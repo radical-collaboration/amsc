@@ -1,0 +1,9 @@
+{
+  "uid": "raptor.master.0000",
+  "req_addr_get": "tcp://10.249.1.53:10002",
+  "res_addr_put": "tcp://10.249.1.53:10003",
+  "ctrl_addr_pub": "tcp://10.249.1.53:10006",
+  "ctrl_addr_sub": "tcp://10.249.1.53:10009",
+  "bulk_size": 16,
+  "workdir": "/pscratch/sd/m/merzky/radical/bench/results/matrix-full/raptor-raptor-d32-N128/raptor"
+}

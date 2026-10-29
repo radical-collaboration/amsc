@@ -1,0 +1,91 @@
+diff --git i/src/rhapsody/backends/execution/dragon.py w/src/rhapsody/backends/execution/dragon.py
+index a0c8c69..f3128f7 100644
+--- i/src/rhapsody/backends/execution/dragon.py
++++ w/src/rhapsody/backends/execution/dragon.py
+@@ -401,19 +401,40 @@ class DragonExecutionBackend(BaseBackend):
+             )
+             self._batch_monitor_thread.start()
+ 
+-        # Build tasks
++        # Build tasks.  PORTED from feature/v3_submit_chunking: dragon's Batch
++        # work-queue (maxsize ~256) blocks the calling thread on put() once
++        # full, so building per-task on the event-loop thread freezes the loop
++        # at scale.  Build in chunks of work_q.maxsize and offload each chunk's
++        # blocking puts to a worker thread via asyncio.to_thread.
++        try:
++            chunk = self.batch.work_q.maxsize or 4096
++        except AttributeError:
++            chunk = 4096
++        if chunk <= 0:
++            chunk = 4096
++
++        def _build_chunk(chunk_tasks):
++            out = []
++            for task in chunk_tasks:
++                try:
++                    bt = self._build_task_sync(task)
++                    out.append((task["uid"], bt, task, None))
++                except Exception as e:  # noqa: BLE001
++                    out.append((None, None, task, e))
++            return out
++
+         batch_tasks_data = []
+-        for task in tasks:
+-            try:
+-                batch_task = await self.build_task(task)
+-                batch_tasks_data.append((task["uid"], batch_task))
+-                # This is the moment Dragon takes ownership was called
+-                # inside build_task) and start executing it.
+-                self._callback_func(task, "RUNNING")
+-            except Exception as e:
+-                self.logger.error(f"Failed to create task {task.get('uid')}: {e}", exc_info=True)
+-                task["exception"] = e
+-                self._callback_func(task, "FAILED")
++        for start in range(0, len(tasks), chunk):
++            results = await asyncio.to_thread(_build_chunk, tasks[start : start + chunk])
++            for uid, bt, task, err in results:
++                if err is None:
++                    batch_tasks_data.append((uid, bt))
++                    self._callback_func(task, "RUNNING")
++                else:
++                    self.logger.error(f"Failed to create task {task.get('uid')}: {err}",
++                                      exc_info=True)
++                    task["exception"] = err
++                    self._callback_func(task, "FAILED")
+ 
+         if not batch_tasks_data:
+             return
+@@ -425,6 +446,10 @@ class DragonExecutionBackend(BaseBackend):
+         self.logger.info(f"Submitted {len(batch_tasks_data)} tasks (streaming, auto-dispatched)")
+ 
+     async def build_task(self, task: dict):
++        """Async wrapper kept for compatibility; body is synchronous."""
++        return self._build_task_sync(task)
++
++    def _build_task_sync(self, task: dict):
+         """Translate AsyncFlow task to Dragon Batch task.
+ 
+         Translation Priority (in order):
+diff --git i/src/rhapsody/backends/execution/flux/flux_helper.py w/src/rhapsody/backends/execution/flux/flux_helper.py
+index 23e5a9e..52d9228 100644
+--- i/src/rhapsody/backends/execution/flux/flux_helper.py
++++ w/src/rhapsody/backends/execution/flux/flux_helper.py
+@@ -308,12 +308,16 @@ class FluxHelper:
+             self._log.debug("submit: %d specs", len(specs))
+             tids = [spec.attributes["user"]["uid"] for spec in specs]
+ 
++            # Scale the submit timeout with batch size: rhapsody builds a
++            # jobspec per task in Python (~60-70 tasks/s), so a flat 60s caps
++            # batches at a few thousand tasks.  (local bench patch)
++            to = max(60.0, 0.1 * len(specs))
+             self._sevent.clear()
+             self._squeue.put(specs)
+-            self._sevent.wait(timeout=60.0)
++            self._sevent.wait(timeout=to)
+ 
+             if not self._sevent.is_set():
+-                raise RuntimeError("flux submit timed out after 60 s")
++                raise RuntimeError(f"flux submit timed out after {to:.0f} s ({len(specs)} specs)")
+ 
+             self._log.debug("submit done: %d specs", len(specs))
+             return tids

@@ -1,0 +1,26 @@
+[rhap-shimhost] running on host=nid004290
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+driver=nid004290 partition=['nid004290', 'nid004291']
+{
+  "backend": "rhapsody-dragon-proxy",
+  "sched": "dragon",
+  "nodes": 2,
+  "workload": "het",
+  "n_tasks": 3432,
+  "n_done": 3432,
+  "bringup_s": 11.98,
+  "teardown_s": 7.0,
+  "makespan_s": 162.02,
+  "n_records": 3432,
+  "utilization": 0.1850451738293314,
+  "throughput_overall": 21.1825994740396,
+  "throughput_steady": 22.294605635502467,
+  "hosts": [
+    "nid004290",
+    "nid004291"
+  ]
+}

@@ -1,0 +1,17 @@
+fluxion bringup diagnostic Sun Oct 18 06:49:41 AM PDT 2026
+salloc: Granted job allocation 59948819
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200070-200071] are ready for job
+FLUX_RC_EXTRA=/pscratch/sd/m/merzky/radical/bench/fluxion_rc
+=== 2-node flux start with fluxion rc ===
+Oct 18 06:49:59.307446 PDT 2026 rexec.err[0]: slurm-sync[1523852]: slurm-expiration-sync: ERROR: Timed out waiting for resource-define event
+srun: forcing job termination
+srun: got SIGCONT
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+[2026-10-18T13:51:17.727] error: *** STEP 59948819.0 ON nid200070 CANCELLED AT 2026-10-18T13:51:17 DUE to SIGNAL Killed ***
+srun: error: nid200071: task 1: Killed
+srun: Terminating StepId=59948819.0
+srun: error: nid200070: task 0: Killed
+srun exit: 0
+salloc: Relinquishing job allocation 59948819
+=== diag salloc exit 0 ===

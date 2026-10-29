@@ -1,0 +1,49 @@
+=== AF_INET proxy on dragon 0.14.1 | head=nid006400 nodelist=nid[006400,006402,006412,006426] ===
+
+########## 2-node partition x3 ##########
+----- n2a : dtest --nodes 2 --ntasks 100 --shim shimhost (port-offset 0) -----
+[dtest] driver host=nid006400 partition n2a: ['nid006400', 'nid006402']
+[rhap-shimhost] running on host=nid006402
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+[dtest] proxy READY (bringup 12.6s)
+[dtest] RESULT nodes=2 ntasks=100 DONE=100/100 states={'DONE': 100} makespan=4.1s
+[n2a exit=0]
+----- n2b : dtest --nodes 2 --ntasks 100 --shim shimhost (port-offset 100) -----
+[dtest] driver host=nid006400 partition n2b: ['nid006400', 'nid006402']
+[rhap-shimhost] running on host=nid006412
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+[dtest] proxy READY (bringup 11.5s)
+[dtest] RESULT nodes=2 ntasks=100 DONE=100/100 states={'DONE': 100} makespan=5.4s
+[n2b exit=0]
+----- n2c : dtest --nodes 2 --ntasks 100 --shim shimhost (port-offset 200) -----
+[dtest] driver host=nid006400 partition n2c: ['nid006400', 'nid006402']
+[rhap-shimhost] running on host=nid006402
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+[dtest] proxy READY (bringup 10.4s)
+[dtest] RESULT nodes=2 ntasks=100 DONE=100/100 states={'DONE': 100} makespan=4.2s
+[n2c exit=0]
+
+########## 4-node partition x3 (head often NOT co-located with driver) ##########
+----- n4a : dtest --nodes 4 --ntasks 100 --shim shimhost (port-offset 300) -----
+[dtest] driver host=nid006400 partition n4a: ['nid006400', 'nid006402', 'nid006412', 'nid006426']
+[rhap-shimhost] running on host=nid006402
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+[dtest] proxy READY (bringup 11.4s)
+[dtest] RESULT nodes=4 ntasks=100 DONE=100/100 states={'DONE': 100} makespan=4.0s
+[n4a exit=0]
+----- n4b : dtest --nodes 4 --ntasks 100 --shim shimhost (port-offset 400) -----
+[dtest] driver host=nid006400 partition n4b: ['nid006400', 'nid006402', 'nid006412', 'nid006426']
+[rhap-shimhost] running on host=nid006402
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+[dtest] proxy READY (bringup 11.5s)
+[dtest] RESULT nodes=4 ntasks=100 DONE=100/100 states={'DONE': 100} makespan=4.3s
+[n4b exit=0]
+----- n4c : dtest --nodes 4 --ntasks 100 --shim shimhost (port-offset 500) -----
+[dtest] driver host=nid006400 partition n4c: ['nid006400', 'nid006402', 'nid006412', 'nid006426']
+[rhap-shimhost] running on host=nid006402
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+[dtest] proxy READY (bringup 10.0s)
+[dtest] RESULT nodes=4 ntasks=100 DONE=100/100 states={'DONE': 100} makespan=5.5s
+[n4c exit=0]
+
+=== afinet DONE ===

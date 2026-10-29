@@ -1,0 +1,10 @@
+=== split zero 05:58:08 ===
+dragon: ['nid004888', 'nid004889', 'nid004890', 'nid004891'] | flux: ['nid005627', 'nid005628', 'nid006349', 'nid006350']
+split done: dragon rc=0 flux rc=0
+=== split d32 06:01:57 ===
+dragon: ['nid004888', 'nid004889', 'nid004890', 'nid004891'] | flux: ['nid005627', 'nid005628', 'nid006349', 'nid006350']
+split done: dragon rc=0 flux rc=0
+=== split het 06:05:01 ===
+dragon: ['nid004888', 'nid004889', 'nid004890', 'nid004891'] | flux: ['nid005627', 'nid005628', 'nid006349', 'nid006350']
+split done: dragon rc=0 flux rc=0
+=== partB done ===

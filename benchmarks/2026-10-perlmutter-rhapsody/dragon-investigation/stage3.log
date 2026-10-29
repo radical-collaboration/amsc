@@ -1,0 +1,39 @@
+salloc: Granted job allocation 59995515
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200086-200087] are ready for job
+JOB 59995515 nodes=2 nodelist=nid[200086-200087] CPUS_ON_NODE=256
+
+########## F2: rhapsody-dragon, surgical shimhost, 2 nodes, 100 tasks ##########
+[dtest] partition fSURG: ['nid200086', 'nid200087']
+[dtest] patch=default  DRAGON_PATCH_MP in extra_env = '<inherit>'
+[dtest] launch_prefix override: dragon --port 7575 --overlay-port 6565 --frontend-port 6566 -N 2 --wlm slurm --hostlist nid200086,nid200087 /pscratch/sd/m/merzky/radical/ve.rh/bin/python /pscratch/sd/m/merzky/radical/dragon-investigation/shim/shimhost.py
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/shim/shimhost.py", line 33, in <module>
+    runpy.run_module("rhapsody.backends.multiproc.host", run_name="__main__")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 234, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 163, in <module>
+    main()
+    ~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 158, in main
+    rc = asyncio.run(_run())
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 51, in _run
+    conn = Client(address, family="AF_UNIX", authkey=authkey)
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/multiprocessing/connection.py", line 536, in Client
+    c = SocketClient(address)
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/multiprocessing/connection.py", line 673, in SocketClient
+    s.connect(address)
+    ~~~~~~~~~^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory
+salloc: Job allocation 59995515 has been revoked.

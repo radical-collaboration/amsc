@@ -1,0 +1,33 @@
+{
+  "backend": "native-dragon",
+  "sched": "dragon",
+  "nodes": 16,
+  "workload": "d4",
+  "n_tasks": 12288,
+  "n_done": 12288,
+  "bringup_s": 11.08,
+  "teardown_s": 4.72,
+  "makespan_s": 142.59,
+  "n_records": 12288,
+  "utilization": 0.16825526087785564,
+  "throughput_overall": 86.17426404764825,
+  "throughput_steady": 84.50948021439052,
+  "hosts": [
+    "nid006539",
+    "nid006540",
+    "nid006583",
+    "nid006584",
+    "nid006672",
+    "nid006673",
+    "nid006677",
+    "nid006678",
+    "nid006691",
+    "nid006692",
+    "nid006767",
+    "nid006768",
+    "nid006814",
+    "nid006815",
+    "nid006817",
+    "nid006818"
+  ]
+}

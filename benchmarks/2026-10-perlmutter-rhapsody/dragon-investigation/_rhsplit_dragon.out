@@ -1,0 +1,2 @@
+[rh_dragon] host=nid004953 nodes=2 ntasks=100
+RH_DRAGON_RESULT done=100 n=100 bringup=4.4 makespan=5.19

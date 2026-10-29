@@ -1,0 +1,150 @@
+salloc: Granted job allocation 59995307
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200072-200073] are ready for job
+==================================================================
+JOB 59995307  nodes=2  nodelist=nid[200072-200073]
+python: /pscratch/sd/m/merzky/radical/ve.rh/bin/python   dragon: /pscratch/sd/m/merzky/radical/ve.rh/bin/dragon
+==================================================================
+
+########## P1: plain python probe (no dragon launcher) ##########
+[probe pid=2079095] argv=['plain']
+  DRAGON_PATCH_MP env = '<unset>'
+  Client BEFORE rhapsody import: multiprocessing.connection.Client
+  imported rhapsody OK
+  Client AFTER rhapsody import:  multiprocessing.connection.Client  -> REAL (multiprocessing)
+  host-style `from ... import Client`: multiprocessing.connection.Client
+  dragon.workflows.batch.Batch import OK
+  original_multiprocessing.connection_Client = multiprocessing.connection.Client
+
+########## P2: dragon python probe (models the host CHILD, default env) ##########
+[probe pid=1151278] argv=['under-dragon-default']
+  DRAGON_PATCH_MP env = 'True'
+  Client BEFORE rhapsody import: multiprocessing.connection.Client
+  imported rhapsody OK
+  Client AFTER rhapsody import:  dragon.mpbridge.context.DragonContext.Client  -> PATCHED (dragon.mpbridge.context)
+  host-style `from ... import Client`: dragon.mpbridge.context.DragonContext.Client
+  dragon.workflows.batch.Batch import OK
+  original_multiprocessing.connection_Client = multiprocessing.connection.Client
+[P2 exit=0]
+
+########## P3: DRAGON_PATCH_MP='' dragon python probe (empty override) ##########
+[probe pid=1151410] argv=['under-dragon-empty']
+  DRAGON_PATCH_MP env = 'True'
+  Client BEFORE rhapsody import: multiprocessing.connection.Client
+  imported rhapsody OK
+  Client AFTER rhapsody import:  dragon.mpbridge.context.DragonContext.Client  -> PATCHED (dragon.mpbridge.context)
+  host-style `from ... import Client`: dragon.mpbridge.context.DragonContext.Client
+  dragon.workflows.batch.Batch import OK
+  original_multiprocessing.connection_Client = multiprocessing.connection.Client
+[P3 exit=0]
+
+########## D1: rhapsody-dragon proxy, patch=on (REPRODUCE failure) ##########
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 287, in get_instance
+    return rm_impl(cfg)
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 235, in __init__
+    self._init_info(cfg)
+    ~~~~~~~~~~~~~~~^^^^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 358, in _init_info
+    self._initialize()
+    ~~~~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/slurm.py", line 60, in _initialize
+    raise RuntimeError("$SLURM_CPUS_ON_NODE not set")
+RuntimeError: $SLURM_CPUS_ON_NODE not set
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/dtest.py", line 83, in <module>
+    sys.exit(asyncio.run(main()))
+             ~~~~~~~~~~~^^^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/dtest.py", line 36, in main
+    rm = rhapsody_rm.ResourceManager.get_instance(name="SLURM", cfg=cfg)
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 290, in get_instance
+    raise RuntimeError(f"RM {name} creation failed") from e
+RuntimeError: RM SLURM creation failed
+[D1 exit=1]
+
+########## D2: rhapsody-dragon proxy, patch=off (CANDIDATE FIX) ##########
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 287, in get_instance
+    return rm_impl(cfg)
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 235, in __init__
+    self._init_info(cfg)
+    ~~~~~~~~~~~~~~~^^^^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 358, in _init_info
+    self._initialize()
+    ~~~~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/slurm.py", line 60, in _initialize
+    raise RuntimeError("$SLURM_CPUS_ON_NODE not set")
+RuntimeError: $SLURM_CPUS_ON_NODE not set
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/dtest.py", line 83, in <module>
+    sys.exit(asyncio.run(main()))
+             ~~~~~~~~~~~^^^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/dtest.py", line 36, in main
+    rm = rhapsody_rm.ResourceManager.get_instance(name="SLURM", cfg=cfg)
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 290, in get_instance
+    raise RuntimeError(f"RM {name} creation failed") from e
+RuntimeError: RM SLURM creation failed
+[D2 exit=1]
+
+########## D3: rhapsody-dragon proxy, patch=default (inherit) ##########
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 287, in get_instance
+    return rm_impl(cfg)
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 235, in __init__
+    self._init_info(cfg)
+    ~~~~~~~~~~~~~~~^^^^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 358, in _init_info
+    self._initialize()
+    ~~~~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/slurm.py", line 60, in _initialize
+    raise RuntimeError("$SLURM_CPUS_ON_NODE not set")
+RuntimeError: $SLURM_CPUS_ON_NODE not set
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/dtest.py", line 83, in <module>
+    sys.exit(asyncio.run(main()))
+             ~~~~~~~~~~~^^^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/dtest.py", line 36, in main
+    rm = rhapsody_rm.ResourceManager.get_instance(name="SLURM", cfg=cfg)
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody_rm/src/rhapsody_rm/base.py", line 290, in get_instance
+    raise RuntimeError(f"RM {name} creation failed") from e
+RuntimeError: RM SLURM creation failed
+[D3 exit=1]
+
+=== runall1 DONE ===
+salloc: Relinquishing job allocation 59995307

@@ -1,0 +1,30 @@
+Oct 18 07:26:30.428576 PDT 2026 sched-fluxion-resource.err[0]: update_resource: exiting due to resource.acquire failure: Device or resource busy
+Oct 18 07:26:30.428591 PDT 2026 sched-fluxion-resource.err[0]: populate_resource_db_acquire: update_resource: Device or resource busy
+Oct 18 07:26:30.428595 PDT 2026 sched-fluxion-resource.err[0]: populate_resource_db: populate_resource_db_acquire
+Oct 18 07:26:30.428597 PDT 2026 sched-fluxion-resource.err[0]: init_resource_graph: can't populate graph resource database
+Oct 18 07:26:30.428598 PDT 2026 sched-fluxion-resource.err[0]: mod_main: can't initialize resource graph database
+Oct 18 07:26:30.428636 PDT 2026 sched-fluxion-resource.crit[0]: module exiting abnormally
+Oct 18 07:26:30.428950 PDT 2026 broker.err[0]: sched-fluxion-resource: Device or resource busy
+Oct 18 07:26:30.428963 PDT 2026 broker.crit[0]: sched-fluxion-resource module runtime failure
+Oct 18 07:26:30.437020 PDT 2026 broker.err[0]: rc1.0: flux modprobe rc1 Hangup (rc=129) 1.2s
+Oct 18 07:26:30.746781 PDT 2026 broker.err[1]: rc3.0: flux-modprobe: ERROR: Upstream Flux broker is offline. Try again later.
+Oct 18 07:26:30.772065 PDT 2026 broker.err[1]: rc3.0: flux modprobe rc3 Exited (rc=1) 0.3s
+srun: error: nid200076: task 1: Exited with exit code 1
+srun: Terminating StepId=59949380.13
+[2026-10-18T14:26:30.829] error: *** STEP 59949380.13 ON nid200075 CANCELLED AT 2026-10-18T14:26:30 DUE TO TASK FAILURE ***
+Oct 18 07:26:30.830527 PDT 2026 broker.err[0]: rc3.0: flux modprobe rc3 Hangup (rc=129) 0.1s
+Oct 18 07:26:30.847000 PDT 2026 broker.err[0]: sched-simple: loader (module-python-exec) killed by Terminated
+Oct 18 07:26:30.847020 PDT 2026 broker.crit[0]: sched-simple module runtime failure
+Oct 18 07:26:30.847530 PDT 2026 broker.err[0]: broker module 'job-exec' was not properly shut down
+Oct 18 07:26:30.847564 PDT 2026 broker.err[0]: broker module 'job-ingest' was not properly shut down
+Oct 18 07:26:30.847578 PDT 2026 broker.err[0]: broker module 'kvs' was not properly shut down
+Oct 18 07:26:30.847589 PDT 2026 broker.err[0]: broker module 'job-list' was not properly shut down
+Oct 18 07:26:30.847599 PDT 2026 broker.err[0]: broker module 'heartbeat' was not properly shut down
+Oct 18 07:26:30.847613 PDT 2026 broker.err[0]: broker module 'job-manager' was not properly shut down
+Oct 18 07:26:30.847626 PDT 2026 broker.err[0]: broker module 'job-info' was not properly shut down
+Oct 18 07:26:30.847641 PDT 2026 broker.err[0]: broker module 'content-sqlite' was not properly shut down
+Oct 18 07:26:30.847659 PDT 2026 broker.err[0]: broker module 'content' was not properly shut down
+Oct 18 07:26:30.847670 PDT 2026 broker.err[0]: broker module 'kvs-watch' was not properly shut down
+Oct 18 07:26:30.847702 PDT 2026 broker.err[0]: broker module 'cron' was not properly shut down
+Oct 18 07:26:30.847715 PDT 2026 broker.err[0]: broker module 'resource' was not properly shut down
+srun: error: nid200075: task 0: Exited with exit code 1

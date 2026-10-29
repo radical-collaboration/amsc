@@ -1,0 +1,9 @@
+{
+  "uid": "raptor.master.0000",
+  "req_addr_get": "tcp://10.249.0.50:10001",
+  "res_addr_put": "tcp://10.249.0.50:10003",
+  "ctrl_addr_pub": "tcp://10.249.0.50:10005",
+  "ctrl_addr_sub": "tcp://10.249.0.50:10006",
+  "bulk_size": 16,
+  "workdir": "/pscratch/sd/m/merzky/radical/bench/results/reps/rB/matrix-full/raptor-raptor-het-N2/raptor"
+}

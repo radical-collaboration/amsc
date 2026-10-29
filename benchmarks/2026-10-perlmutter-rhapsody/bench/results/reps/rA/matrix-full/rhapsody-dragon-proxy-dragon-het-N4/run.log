@@ -1,0 +1,29 @@
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/dragon_multi_fe.py", line 47, in main
+    net_conf = fe_server.run_startup(net_conf=net_conf)
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/frontend.py", line 1071, in run_startup
+    self.net = self._populate_net_config(net_conf)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/frontend.py", line 1012, in _populate_net_config
+    raise RuntimeError("Unable to acquire backend network configuration via workload manager")
+Dragon launcher frontend encountered an error during execution. Unable to acquire backend network configuration via workload manager

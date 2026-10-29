@@ -1,0 +1,19 @@
+partition: nid200114
+{
+  "backend": "rhapsody-flux",
+  "sched": "simple",
+  "nodes": 1,
+  "workload": "het",
+  "n_tasks": 1716,
+  "n_done": 1716,
+  "bringup_s": 4.18,
+  "teardown_s": 2.04,
+  "makespan_s": 48.66,
+  "n_records": 1716,
+  "utilization": 0.6165054717674168,
+  "throughput_overall": 35.2636547385556,
+  "throughput_steady": 56.72338281680793,
+  "hosts": [
+    "nid200114"
+  ]
+}

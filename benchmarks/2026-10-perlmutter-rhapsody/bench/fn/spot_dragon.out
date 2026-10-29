@@ -1,0 +1,44 @@
+salloc: Granted job allocation 60056867
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200179-200180] are ready for job
+### dragon-fn spot  alloc=2N Tue Oct 20 03:20:57 PM PDT 2026
+=== dragon-fn zero-dur x 20000 (native dispatch rate) ===
+  "nodes": 2,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "n_tasks": 20000,
+  "n_done": 20000,
+  "bringup_s": 5.96,
+  "teardown_s": 15.5,
+  "makespan_s": 49.54,
+  "n_records": 20000,
+  "utilization": 1.7793440716879036e-06,
+  "throughput_overall": 403.7310262682141,
+  "throughput_steady": 747.053291861285,
+  "hosts": [
+    "nid200179",
+    "nid200180"
+  ]
+}
+=== dragon-fn 2s x 4-core x 512 (multi-core util) ===
+  "nodes": 2,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "n_tasks": 512,
+  "n_done": 512,
+  "bringup_s": 6.19,
+  "teardown_s": 2.47,
+  "makespan_s": 7.3,
+  "n_records": 512,
+  "utilization": 2.2353246731466516,
+  "throughput_overall": 70.15972851969194,
+  "throughput_steady": 91.3426410902139,
+  "hosts": [
+    "nid200179",
+    "nid200180"
+  ]
+}
+### done Tue Oct 20 03:23:11 PM PDT 2026
+salloc: Relinquishing job allocation 60056867

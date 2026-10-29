@@ -1,0 +1,74 @@
+salloc: Granted job allocation 59995466
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200086-200087] are ready for job
+==================================================================
+JOB 59995466 nodes=2 nodelist=nid[200086-200087] CPUS_ON_NODE=256
+==================================================================
+
+########## S0: micro-probe under dragon WITH shim (expect Client REAL) ##########
+[rhap-shim] restored multiprocessing.connection.Client -> multiprocessing.connection.Client
+[rhap-shim] restored multiprocessing.connection.Client -> multiprocessing.connection.Client
+[rhap-shim] restored multiprocessing.connection.Client -> multiprocessing.connection.Client
+[rhap-shim] restored multiprocessing.connection.Client -> multiprocessing.connection.Client
+[rhap-shim] restored multiprocessing.connection.Client -> multiprocessing.connection.Client
+[rhap-shim] restored multiprocessing.connection.Client -> multiprocessing.connection.Client
+[rhap-shim] restored multiprocessing.connection.Client -> multiprocessing.connection.Client
+Abnormal Exit detected. Attempting to clean up over next minute....
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/ve.rh/bin/dragon-backend", line 6, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/dragon_multi_be.py", line 84, in main
+    with LauncherBackEnd(
+         ~~~~~~~~~~~~~~~^
+        args.transport_test, args.network_prefix, args.overlay_transport, args.overlay_port
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as be_server:
+    ^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/backend.py", line 160, in __exit__
+    raise RuntimeError("Abnormal exit detected")
+RuntimeError: Abnormal exit detected
+srun: error: nid200086: task 0: Exited with exit code 1
+srun: Terminating StepId=59995466.2
+Dragon launcher frontend encountered an error during execution. Abnormal exit detected
+[S0 exit=1]
+
+########## C1: dtest patch=default, NO shim (expect failure: NoneType) ##########
+[dtest] partition cNOSHIM: ['nid200086', 'nid200087']
+[dtest] patch=default  DRAGON_PATCH_MP in extra_env = '<inherit>'
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 163, in <module>
+    main()
+    ~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 158, in main
+    rc = asyncio.run(_run())
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 51, in _run
+    conn = Client(address, family="AF_UNIX", authkey=authkey)
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/mpbridge/context.py", line 1462, in Client
+    return _original_Client(address, family=family, authkey=authkey)
+TypeError: 'NoneType' object is not callable
+salloc: Job allocation 59995466 has been revoked.
+[C1 exit=124]
+
+########## F1: dtest patch=default, WITH shim, 100 tasks (expect DONE=100) ##########
+[dtest] partition fSHIM: ['nid200086', 'nid200087']
+[dtest] patch=default  DRAGON_PATCH_MP in extra_env = '<inherit>'
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/dragon_multi_fe.py", line 47, in main
+    net_conf = fe_server.run_startup(net_conf=net_conf)
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/frontend.py", line 1071, in run_startup
+    self.net = self._populate_net_config(net_conf)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/frontend.py", line 1012, in _populate_net_config
+    raise RuntimeError("Unable to acquire backend network configuration via workload manager")
+Dragon launcher frontend encountered an error during execution. Unable to acquire backend network configuration via workload manager

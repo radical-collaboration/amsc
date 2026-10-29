@@ -1,0 +1,18 @@
+=== 0.14.2 proxy+shim 1-node co-located, DEBUG | head=nid006564 ===
+dragon 0.14.2
+[dtest] driver host=nid006564 partition dbg: ['nid006564']
+[dtest] patch=default  DRAGON_PATCH_MP in extra_env = '<inherit>'
+[dtest] launch_prefix override: dragon --port 7575 --overlay-port 6565 --frontend-port 6566 -N 1 --wlm slurm --hostlist nid006564 /pscratch/sd/m/merzky/radical/dragon-investigation/ve.0142/bin/python /pscratch/sd/m/merzky/radical/dragon-investigation/shim/shimhost.py
+[rhap-shimhost] running on host=nid006564
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+2026-10-19 08:25:14,570 asyncio DEBUG Using selector: EpollSelector
+2026-10-19 08:25:14,575 api_setup INFO connecting to infrastructure from 1111877
+2026-10-19 08:25:14,578 api_setup DEBUG waiting for handshake
+2026-10-19 08:25:14,578 api_setup DEBUG Got response GSPingProc: 6
+2026-10-19 08:25:14,578 api_setup DEBUG got handshake
+2026-10-19 08:25:14,578 api_setup INFO debug entry hooked
+[dtest] proxy READY (bringup 11.5s)
+[dtest] RESULT nodes=1 ntasks=20 DONE=20/20 states={'DONE': 20} makespan=5.1s
+[dtest] closed cleanly
+[exit=0]
+=== t2b_dbg DONE ===

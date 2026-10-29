@@ -1,0 +1,96 @@
+worker worker.nid004144.0 bootstrap via argv
+worker worker.nid004144.0 up: 128 slots on nid004144
+worker worker.nid004463.26 bootstrap via argv
+worker worker.nid004463.26 up: 128 slots on nid004463
+worker worker.nid004568.31 bootstrap via argv
+worker worker.nid004568.31 up: 128 slots on nid004568
+worker worker.nid004394.16 bootstrap via argv
+worker worker.nid004394.16 up: 128 slots on nid004394
+worker worker.nid004469.27 bootstrap via argv
+worker worker.nid004469.27 up: 128 slots on nid004469
+worker worker.nid004277.8 bootstrap via argv
+worker worker.nid004277.8 up: 128 slots on nid004277
+worker worker.nid004430.21 bootstrap via argv
+worker worker.nid004430.21 up: 128 slots on nid004430
+worker worker.nid004393.15 bootstrap via argv
+worker worker.nid004393.15 up: 128 slots on nid004393
+worker worker.nid004462.25 bootstrap via argv
+worker worker.nid004462.25 up: 128 slots on nid004462
+worker worker.nid004276.7 bootstrap via argv
+worker worker.nid004276.7 up: 128 slots on nid004276
+worker worker.nid004567.30 bootstrap via argv
+worker worker.nid004567.30 up: 128 slots on nid004567
+worker worker.nid004338.13 bootstrap via argv
+worker worker.nid004338.13 up: 128 slots on nid004338
+worker worker.nid004193.4 bootstrap via argv
+worker worker.nid004193.4 up: 128 slots on nid004193
+worker worker.nid004471.29 bootstrap via argv
+worker worker.nid004471.29 up: 128 slots on nid004471
+worker worker.nid004318.9 bootstrap via argv
+worker worker.nid004318.9 up: 128 slots on nid004318
+worker worker.nid004437.22 bootstrap via argv
+worker worker.nid004437.22 up: 128 slots on nid004437
+worker worker.nid004191.2 bootstrap via argv
+worker worker.nid004191.2 up: 128 slots on nid004191
+worker worker.nid004427.18 bootstrap via argv
+worker worker.nid004427.18 up: 128 slots on nid004427
+worker worker.nid004461.24 bootstrap via argv
+worker worker.nid004461.24 up: 128 slots on nid004461
+worker worker.nid004320.11 bootstrap via argv
+worker worker.nid004320.11 up: 128 slots on nid004320
+worker worker.nid004337.12 bootstrap via argv
+worker worker.nid004337.12 up: 128 slots on nid004337
+worker worker.nid004319.10 bootstrap via argv
+worker worker.nid004319.10 up: 128 slots on nid004319
+worker worker.nid004199.6 bootstrap via argv
+worker worker.nid004199.6 up: 128 slots on nid004199
+worker worker.nid004395.17 bootstrap via argv
+worker worker.nid004395.17 up: 128 slots on nid004395
+worker worker.nid004145.1 bootstrap via argv
+worker worker.nid004145.1 up: 128 slots on nid004145
+worker worker.nid004438.23 bootstrap via argv
+worker worker.nid004438.23 up: 128 slots on nid004438
+worker worker.nid004429.20 bootstrap via argv
+worker worker.nid004429.20 up: 128 slots on nid004429
+worker worker.nid004339.14 bootstrap via argv
+worker worker.nid004339.14 up: 128 slots on nid004339
+worker worker.nid004198.5 bootstrap via argv
+worker worker.nid004198.5 up: 128 slots on nid004198
+worker worker.nid004192.3 bootstrap via argv
+worker worker.nid004192.3 up: 128 slots on nid004192
+worker worker.nid004470.28 bootstrap via argv
+worker worker.nid004470.28 up: 128 slots on nid004470
+worker worker.nid004428.19 bootstrap via argv
+worker worker.nid004428.19 up: 128 slots on nid004428
+worker worker.nid004470.28 exiting (1728 tasks done)
+worker worker.nid004192.3 exiting (1712 tasks done)
+worker worker.nid004144.0 exiting (1728 tasks done)
+worker worker.nid004463.26 exiting (1728 tasks done)
+worker worker.nid004568.31 exiting (1728 tasks done)
+worker worker.nid004430.21 exiting (1712 tasks done)
+worker worker.nid004469.27 exiting (1728 tasks done)
+worker worker.nid004277.8 exiting (1728 tasks done)
+worker worker.nid004394.16 exiting (1728 tasks done)
+worker worker.nid004393.15 exiting (1712 tasks done)
+worker worker.nid004462.25 exiting (1712 tasks done)
+worker worker.nid004276.7 exiting (1712 tasks done)
+worker worker.nid004567.30 exiting (1712 tasks done)
+worker worker.nid004338.13 exiting (1712 tasks done)
+worker worker.nid004471.29 exiting (1712 tasks done)
+worker worker.nid004318.9 exiting (1712 tasks done)
+worker worker.nid004193.4 exiting (1712 tasks done)
+worker worker.nid004428.19 exiting (1728 tasks done)
+worker worker.nid004427.18 exiting (1712 tasks done)
+worker worker.nid004437.22 exiting (1712 tasks done)
+worker worker.nid004337.12 exiting (1712 tasks done)
+worker worker.nid004320.11 exiting (1712 tasks done)
+worker worker.nid004461.24 exiting (1712 tasks done)
+worker worker.nid004319.10 exiting (1712 tasks done)
+worker worker.nid004191.2 exiting (1712 tasks done)
+worker worker.nid004199.6 exiting (1712 tasks done)
+worker worker.nid004395.17 exiting (1712 tasks done)
+worker worker.nid004145.1 exiting (1712 tasks done)
+worker worker.nid004438.23 exiting (1712 tasks done)
+worker worker.nid004339.14 exiting (1712 tasks done)
+worker worker.nid004429.20 exiting (1712 tasks done)
+worker worker.nid004198.5 exiting (1712 tasks done)

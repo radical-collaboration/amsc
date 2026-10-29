@@ -1,0 +1,94 @@
+salloc: Granted job allocation 59999044
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200049-200052] are ready for job
+=== dragon 0.14.2 | JOB=59999044 nodelist=nid[200049-200052] N0=nid200049 CPUS_ON_NODE=256 ===
+dragon version: 0.14.2
+
+########## P: probe under dragon (mp-patch state) ##########
+[probe pid=1288940] argv=['v0142']
+  DRAGON_PATCH_MP env = 'True'
+  Client BEFORE rhapsody import: multiprocessing.connection.Client
+  imported rhapsody OK
+  Client AFTER rhapsody import:  dragon.mpbridge.context.DragonContext.Client  -> PATCHED (dragon.mpbridge.context)
+  host-style `from ... import Client`: dragon.mpbridge.context.DragonContext.Client
+  dragon.workflows.batch.Batch import OK
+  original_multiprocessing.connection_Client = multiprocessing.connection.Client
+  dragon.mpbridge.context._original_Client = None
+  get_start_method() = 'fork'
+[P exit=0]
+
+########## T1: in-process rhapsody-dragon, 2 nodes, 100 tasks ##########
+[rh_dragon] host=nid200049 nodes=2 ntasks=100
+RH_DRAGON_RESULT done=100 n=100 bringup=4.5 makespan=5.55
+[T1 exit=0]
+
+########## T2a: proxy 1-node co-located (driver on nid200049), --shim NONE ##########
+[dtest] driver host=nid200049 partition v2aNONE: ['nid200049']
+[dtest] patch=default  DRAGON_PATCH_MP in extra_env = '<inherit>'
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 163, in <module>
+    main()
+    ~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 158, in main
+    rc = asyncio.run(_run())
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 51, in _run
+    conn = Client(address, family="AF_UNIX", authkey=authkey)
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/ve.0142/lib/python3.13/site-packages/dragon/mpbridge/context.py", line 1462, in Client
+    return _original_Client(address, family=family, authkey=authkey)
+TypeError: 'NoneType' object is not callable
+srun: error: nid200049: task 0: Exited with exit code 124
+srun: Terminating StepId=59999044.5
+[T2a exit=124]
+
+########## T2b: proxy 1-node co-located (driver on nid200049), --shim shimhost ##########
+[dtest] driver host=nid200049 partition v2bSHIM: ['nid200049']
+[dtest] patch=default  DRAGON_PATCH_MP in extra_env = '<inherit>'
+[dtest] launch_prefix override: dragon --port 7575 --overlay-port 6565 --frontend-port 6566 -N 1 --wlm slurm --hostlist nid200049 /pscratch/sd/m/merzky/radical/dragon-investigation/ve.0142/bin/python /pscratch/sd/m/merzky/radical/dragon-investigation/shim/shimhost.py
+[rhap-shimhost] running on host=nid200050
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/shim/shimhost.py", line 37, in <module>
+    runpy.run_module("rhapsody.backends.multiproc.host", run_name="__main__")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 234, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 163, in <module>
+    main()
+    ~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 158, in main
+    rc = asyncio.run(_run())
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody/backends/multiproc/host.py", line 51, in _run
+    conn = Client(address, family="AF_UNIX", authkey=authkey)
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/multiprocessing/connection.py", line 536, in Client
+    c = SocketClient(address)
+  File "/global/common/software/nersc/pe/conda-envs/26.8.1/python-3.13/nersc-python/lib/python3.13/multiprocessing/connection.py", line 673, in SocketClient
+    s.connect(address)
+    ~~~~~~~~~^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory
+srun: error: nid200049: task 0: Exited with exit code 124
+srun: Terminating StepId=59999044.8
+[T2b exit=124]
+
+=== runall_0142i DONE ===
+salloc: Relinquishing job allocation 59999044
+salloc: Job allocation 59999044 has been revoked.

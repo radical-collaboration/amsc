@@ -1,0 +1,72 @@
+[rhap-shimhost] running on host=nid005079
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+driver=nid004144 partition=['nid004144', 'nid004145', 'nid004252', 'nid004253', 'nid004480', 'nid004481', 'nid004482', 'nid004483', 'nid004484', 'nid004485', 'nid004486', 'nid004487', 'nid004488', 'nid004489', 'nid004490', 'nid004675', 'nid004679', 'nid004722', 'nid004730', 'nid004734', 'nid004737', 'nid004742', 'nid004746', 'nid004750', 'nid004796', 'nid004823', 'nid005075', 'nid005076', 'nid005077', 'nid005078', 'nid005079', 'nid005080']
+{
+  "backend": "rhapsody-dragon-proxy",
+  "sched": "dragon",
+  "nodes": 32,
+  "workload": "d32",
+  "n_tasks": 16384,
+  "n_done": 16384,
+  "bringup_s": 39.01,
+  "teardown_s": 9.0,
+  "makespan_s": 260.77,
+  "n_records": 16384,
+  "utilization": 0.49072857249487156,
+  "throughput_overall": 62.82855202804234,
+  "throughput_steady": 76.9175140243776,
+  "hosts": [
+    "nid004144",
+    "nid004145",
+    "nid004252",
+    "nid004253",
+    "nid004480",
+    "nid004481",
+    "nid004482",
+    "nid004483",
+    "nid004484",
+    "nid004485",
+    "nid004486",
+    "nid004487",
+    "nid004488",
+    "nid004489",
+    "nid004490",
+    "nid004675",
+    "nid004679",
+    "nid004722",
+    "nid004730",
+    "nid004734",
+    "nid004737",
+    "nid004742",
+    "nid004746",
+    "nid004750",
+    "nid004796",
+    "nid004823",
+    "nid005075",
+    "nid005076",
+    "nid005077",
+    "nid005078",
+    "nid005079",
+    "nid005080"
+  ]
+}

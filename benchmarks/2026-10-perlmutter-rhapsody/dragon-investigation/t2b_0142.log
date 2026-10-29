@@ -1,0 +1,8 @@
+=== 0.14.2 proxy+shim (head-node driver) | head=nid006164 nodelist=nid[006164-006165] ===
+dragon 0.14.2
+--- run 1: dtest --nodes 2 --shim shimhost --ntasks 100 ---
+[dtest] driver host=nid006164 partition v2b1: ['nid006164', 'nid006165']
+[rhap-shimhost] running on host=nid006164
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+[dtest] proxy READY (bringup 13.4s)
+[2026-10-19T15:23:36.186] error: *** JOB 59999289 ON nid006164 CANCELLED AT 2026-10-19T15:23:36 DUE to SIGNAL Terminated ***

@@ -1,0 +1,23 @@
+{
+  "backend": "native-flux",
+  "sched": "simple",
+  "nodes": 2,
+  "workload": "d32",
+  "n_tasks": 1024,
+  "n_done": 1024,
+  "makespan_s": 135.29,
+  "n_records": 1024,
+  "utilization": 0.9476582007800571,
+  "throughput_overall": 7.581260404289014,
+  "throughput_steady": 8.452949893588187,
+  "hosts": [
+    "nid200125",
+    "nid200126"
+  ],
+  "throughput_e2e": 7.568969468895164,
+  "utilization_e2e": 0.9461218328016336,
+  "makespan_e2e_s": 135.29,
+  "makespan_record_s": 135.07,
+  "throughput_record": 7.581260404289014,
+  "utilization_record": 0.9476582007800571
+}

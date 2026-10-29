@@ -1,0 +1,24 @@
+worker worker.nid004556.0 bootstrap via argv
+worker worker.nid004556.0 up: 128 slots on nid004556
+worker worker.nid004559.3 bootstrap via argv
+worker worker.nid004559.3 up: 128 slots on nid004559
+worker worker.nid004557.1 bootstrap via argv
+worker worker.nid004557.1 up: 128 slots on nid004557
+worker worker.nid004563.7 bootstrap via argv
+worker worker.nid004563.7 up: 128 slots on nid004563
+worker worker.nid004562.6 bootstrap via argv
+worker worker.nid004562.6 up: 128 slots on nid004562
+worker worker.nid004561.5 bootstrap via argv
+worker worker.nid004561.5 up: 128 slots on nid004561
+worker worker.nid004558.2 bootstrap via argv
+worker worker.nid004558.2 up: 128 slots on nid004558
+worker worker.nid004560.4 bootstrap via argv
+worker worker.nid004560.4 up: 128 slots on nid004560
+worker worker.nid004558.2 exiting (10000 tasks done)
+worker worker.nid004556.0 exiting (10000 tasks done)
+worker worker.nid004560.4 exiting (10000 tasks done)
+worker worker.nid004559.3 exiting (10000 tasks done)
+worker worker.nid004557.1 exiting (10000 tasks done)
+worker worker.nid004563.7 exiting (10000 tasks done)
+worker worker.nid004562.6 exiting (10000 tasks done)
+worker worker.nid004561.5 exiting (10000 tasks done)

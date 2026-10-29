@@ -1,0 +1,14 @@
+salloc: Granted job allocation 60130792
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200087-200088] are ready for job
+### Step 0  alloc=2N  Thu Oct 22 03:20:21 PM PDT 2026
+=== raw dragon Batch ceiling ===
+salloc: Job 60130792 has exceeded its time limit and its allocation has been revoked.
+Batch up: 128 workers / 3 managers
+raw-batch reuse-options    N=10000        832.1 tasks/s  (12.02s)
+raw-batch per-task-opts    N=10000        885.8 tasks/s  (11.29s)
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Dragon launcher frontend encountered an error during execution. Abnormal exit detected
+=== profile rhapsody submit (40k no_op) ===
+### done Thu Oct 22 03:45:37 PM PDT 2026

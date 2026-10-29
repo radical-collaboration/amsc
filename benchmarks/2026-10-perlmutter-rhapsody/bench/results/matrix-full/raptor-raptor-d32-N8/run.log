@@ -1,0 +1,25 @@
+{
+  "backend": "raptor",
+  "sched": "raptor",
+  "nodes": 8,
+  "workload": "d32",
+  "n_tasks": 4096,
+  "n_done": 4096,
+  "bringup_s": 14.16,
+  "teardown_s": 2.0,
+  "makespan_s": 128.72,
+  "n_records": 4096,
+  "utilization": 0.9944014470284993,
+  "throughput_overall": 31.82082477406119,
+  "throughput_steady": 34.071701922330476,
+  "hosts": [
+    "nid006690",
+    "nid006691",
+    "nid006692",
+    "nid006939",
+    "nid006940",
+    "nid006941",
+    "nid006942",
+    "nid006943"
+  ]
+}

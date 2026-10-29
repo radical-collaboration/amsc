@@ -1,0 +1,21 @@
+{
+  "backend": "native-dragon",
+  "sched": "dragon",
+  "nodes": 4,
+  "workload": "het",
+  "n_tasks": 688,
+  "n_done": 688,
+  "bringup_s": 5.08,
+  "teardown_s": 2.5,
+  "makespan_s": 68.53,
+  "n_records": 688,
+  "utilization": 0.28455634761592796,
+  "throughput_overall": 10.039421771344857,
+  "throughput_steady": 25.80471525038743,
+  "hosts": [
+    "nid004888",
+    "nid004889",
+    "nid004890",
+    "nid004891"
+  ]
+}

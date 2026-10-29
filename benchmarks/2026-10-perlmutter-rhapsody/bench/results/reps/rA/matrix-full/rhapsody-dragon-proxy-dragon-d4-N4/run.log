@@ -1,0 +1,47 @@
+[rhap-shimhost] running on host=nid200116
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+driver=login34 partition=['nid200114', 'nid200115', 'nid200116', 'nid200117']
+{
+  "backend": "rhapsody-dragon-proxy",
+  "sched": "dragon",
+  "nodes": 4,
+  "workload": "d4",
+  "n_tasks": 3072,
+  "n_done": 3072,
+  "bringup_s": 15.08,
+  "teardown_s": 7.0,
+  "makespan_s": 61.77,
+  "n_records": 3072,
+  "utilization": 0.38789608544078125,
+  "throughput_overall": 49.731325436978366,
+  "throughput_steady": 56.864360422337995,
+  "hosts": [
+    "nid200114",
+    "nid200115",
+    "nid200116",
+    "nid200117"
+  ]
+}
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+[2026-10-20T16:02:50.956] error: *** STEP 60035533.108 ON nid200114 CANCELLED AT 2026-10-20T16:02:50 DUE to SIGNAL Terminated ***
+srun: error: nid200117: task 3: Killed
+srun: Terminating StepId=60035533.108
+srun: error: nid200114: task 0: Killed
+srun: error: nid200115: task 1: Killed
+srun: error: nid200116: task 2: Killed

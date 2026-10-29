@@ -1,0 +1,44 @@
+salloc: Granted job allocation 60057355
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200215-200216] are ready for job
+### raptor-fn spot alloc=2N Tue Oct 20 03:29:31 PM PDT 2026
+=== raptor-fn zero-dur x 20000 (native dispatch rate) ===
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "nslots": 128,
+  "n_tasks": 20000,
+  "n_done": 20000,
+  "bringup_s": 14.44,
+  "teardown_s": 2.0,
+  "makespan_s": 13.18,
+  "n_records": 20000,
+  "utilization": 4.022121162915379e-06,
+  "throughput_overall": 1517.57667925285,
+  "throughput_steady": 1562.9886591153931,
+  "hosts": [
+    "nid200215",
+    "nid200216"
+  ]
+}
+=== raptor-fn 2s x 4-core x 256, nslots=32 (core-aware util) ===
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "nslots": 32,
+  "n_tasks": 256,
+  "n_done": 256,
+  "bringup_s": 14.04,
+  "teardown_s": 2.0,
+  "makespan_s": 8.1,
+  "n_records": 256,
+  "utilization": 0.98987925098167,
+  "throughput_overall": 31.587542867488125,
+  "throughput_steady": 33.80342671556225,
+  "hosts": [
+    "nid200215",
+    "nid200216"
+  ]
+}
+### done Tue Oct 20 03:31:16 PM PDT 2026
+salloc: Relinquishing job allocation 60057355

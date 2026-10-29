@@ -1,0 +1,29 @@
+{
+  "backend": "raptor-fn",
+  "sched": "fn",
+  "nodes": 8,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "nslots": 128,
+  "n_tasks": 80000,
+  "n_done": 80000,
+  "bringup_s": 14.49,
+  "teardown_s": 2.0,
+  "makespan_s": 52.99,
+  "n_records": 80000,
+  "utilization": 1.355465299595451e-06,
+  "throughput_overall": 1509.7128308352385,
+  "throughput_steady": 1558.216503138817,
+  "hosts": [
+    "nid004556",
+    "nid004557",
+    "nid004558",
+    "nid004559",
+    "nid004560",
+    "nid004561",
+    "nid004562",
+    "nid004563"
+  ]
+}
+rap N8 done

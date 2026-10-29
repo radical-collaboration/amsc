@@ -1,0 +1,27 @@
+{
+  "backend": "raptor",
+  "sched": "raptor",
+  "nodes": 4,
+  "workload": "d16",
+  "n_tasks": 2560,
+  "n_done": 2560,
+  "bringup_s": 13.92,
+  "teardown_s": 2.0,
+  "makespan_s": 80.41,
+  "n_records": 2560,
+  "utilization": 0.9953637038870942,
+  "throughput_overall": 31.85159591430276,
+  "throughput_steady": 31.98500299292915,
+  "hosts": [
+    "nid004275",
+    "nid004276",
+    "nid004279",
+    "nid004280"
+  ],
+  "throughput_e2e": 31.83688828935116,
+  "utilization_e2e": 0.9949040899925002,
+  "makespan_e2e_s": 80.41,
+  "makespan_record_s": 80.37,
+  "throughput_record": 31.85159591430276,
+  "utilization_record": 0.9953637038870942
+}

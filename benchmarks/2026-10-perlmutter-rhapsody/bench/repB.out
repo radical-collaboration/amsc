@@ -1,0 +1,217 @@
+salloc: Granted job allocation 60035542
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200123-200126] are ready for job
+### repeat rB  scales=[1 2 4] wl=[d4 d32 het]  alloc=4N  Tue Oct 20 07:08:19 AM PDT 2026
+RESULTS=/pscratch/sd/m/merzky/radical/bench/results/reps/rB/matrix-full  SLURM_CPUS_ON_NODE=256  alloc=4 nodes
+=== 07:08:22 native-dragon-dragon-d4-N1 ===
+  exit=0
+=== 07:09:41 native-dragon-dragon-d32-N1 ===
+  exit=0
+=== 07:12:21 native-dragon-dragon-het-N1 ===
+  exit=0
+=== 07:15:03 native-flux-simple-d4-N1 ===
+  exit=0
+=== 07:15:40 native-flux-simple-d32-N1 ===
+  exit=0
+=== 07:17:59 native-flux-simple-het-N1 ===
+  exit=0
+=== 07:18:55 native-flux-fluxion-d4-N1 ===
+  exit=0
+=== 07:19:32 native-flux-fluxion-d32-N1 ===
+  exit=0
+=== 07:21:52 native-flux-fluxion-het-N1 ===
+  exit=0
+=== 07:22:47 rhapsody-flux-simple-d4-N1 ===
+  exit=0
+=== 07:23:30 rhapsody-flux-simple-d32-N1 ===
+  exit=0
+=== 07:25:54 rhapsody-flux-simple-het-N1 ===
+  exit=0
+=== 07:26:59 native-dragon-dragon-d4-N2 ===
+  exit=0
+=== 07:28:12 native-dragon-dragon-d32-N2 ===
+  exit=0
+=== 07:31:01 native-dragon-dragon-het-N2 ===
+  exit=0
+=== 07:34:06 native-flux-simple-d4-N2 ===
+  exit=0
+=== 07:34:49 native-flux-simple-d32-N2 ===
+  exit=0
+=== 07:37:14 native-flux-simple-het-N2 ===
+  exit=0
+=== 07:38:21 native-flux-fluxion-d4-N2 ===
+  exit=0
+=== 07:39:04 native-flux-fluxion-d32-N2 ===
+  exit=0
+=== 07:41:27 native-flux-fluxion-het-N2 ===
+  exit=0
+=== 07:42:34 rhapsody-flux-simple-d4-N2 ===
+  exit=0
+=== 07:43:24 rhapsody-flux-simple-d32-N2 ===
+  exit=0
+=== 07:45:55 rhapsody-flux-simple-het-N2 ===
+  exit=0
+=== 07:47:18 native-dragon-dragon-d4-N4 ===
+  exit=0
+=== 07:48:44 native-dragon-dragon-d32-N4 ===
+  exit=0
+=== 07:51:42 native-dragon-dragon-het-N4 ===
+  exit=0
+=== 07:54:28 native-flux-simple-d4-N4 ===
+  exit=0
+=== 07:55:22 native-flux-simple-d32-N4 ===
+  exit=0
+=== 07:57:53 native-flux-simple-het-N4 ===
+  exit=0
+=== 07:59:34 native-flux-fluxion-d4-N4 ===
+  exit=0
+=== 08:00:29 native-flux-fluxion-d32-N4 ===
+  exit=0
+=== 08:03:01 native-flux-fluxion-het-N4 ===
+  exit=0
+=== 08:04:43 rhapsody-flux-simple-d4-N4 ===
+  exit=0
+=== 08:05:50 rhapsody-flux-simple-d32-N4 ===
+  exit=0
+=== 08:08:27 rhapsody-flux-simple-het-N4 ===
+  exit=0
+=== matrix complete: /pscratch/sd/m/merzky/radical/bench/results/reps/rB/matrix-full ===
+workload  nodes  backend        sched    n_done  n_tasks  bringup_s  teardown_s  makespan_s  throughput_steady  throughput_overall  utilization
+-----------------------------------------------------------------------------------------------------------------------------------------------
+d32       1      native-dragon  dragon   512     512      3.230      2.180       139.0       3.902              3.683               0.921      
+d32       1      native-flux    fluxion  512     512                             132.6       4.226              3.863               0.966      
+d32       1      native-flux    simple   512     512                             132.0       4.222              3.880               0.970      
+d32       1      rhapsody-flux  simple   512     512      4.100      0.120       132.0       4.228              3.880               0.970      
+d32       2      native-dragon  dragon   1024    1024     4.650      2.470       141.4       7.731              7.242               0.905      
+d32       2      native-flux    fluxion  1024    1024                            134.9       8.452              7.592               0.948      
+d32       2      native-flux    simple   1024    1024                            135.3       8.453              7.569               0.946      
+d32       2      rhapsody-flux  simple   1024    1024     4.870      1.620       135.0       8.443              7.584               0.948      
+d32       4      native-dragon  dragon   2048    2048     5.080      2.250       151.9       14.363             13.481              0.841      
+d32       4      native-flux    fluxion  2048    2048                            141.1       16.021             14.517              0.906      
+d32       4      native-flux    simple   2048    2048                            138.5       16.773             14.790              0.924      
+d32       4      rhapsody-flux  simple   2048    2048     5.120      0.270       139.6       16.856             14.668              0.917      
+d4        1      native-dragon  dragon   768     768      5.670      1.910       39.680      18.743             19.354              0.605      
+d4        1      native-flux    fluxion  768     768                             29.410      33.911             26.113              0.816      
+d4        1      native-flux    simple   768     768                             29.770      34.135             25.799              0.806      
+d4        1      rhapsody-flux  simple   768     768      3.860      0.170       29.630      30.439             25.916              0.810      
+d4        2      native-dragon  dragon   1536    1536     3.540      2.170       49.310      30.671             31.150              0.485      
+d4        2      native-flux    fluxion  1536    1536                            33.050      58.310             46.477              0.726      
+d4        2      native-flux    simple   1536    1536                            33.100      67.362             46.412              0.725      
+d4        2      rhapsody-flux  simple   1536    1536     5.230      0.370       33.400      60.600             45.986              0.719      
+d4        4      native-dragon  dragon   3072    3072     6.090      2.170       52.490      61.063             58.523              0.456      
+d4        4      native-flux    fluxion  3072    3072                            41.930      83.102             73.264              0.572      
+d4        4      native-flux    simple   3072    3072                            39.780      95.774             77.230              0.603      
+d4        4      rhapsody-flux  simple   3072    3072     4.710      4.430       40.990      113.8              74.942              0.585      
+het       1      native-dragon  dragon   1716    1716     3.650      2.170       139.7       13.417             12.288              0.215      
+het       1      native-flux    fluxion  1716    1716                            47.310      51.266             36.273              0.634      
+het       1      native-flux    simple   1716    1716                            46.790      57.377             36.671              0.641      
+het       1      rhapsody-flux  simple   1716    1716     3.920      1.440       47.300      57.013             36.279              0.634      
+het       2      native-dragon  dragon   3432    3432     3.500      2.210       159.2       23.886             21.553              0.185      
+het       2      native-flux    fluxion  3432    3432                            54.830      92.748             62.592              0.547      
+het       2      native-flux    simple   3432    3432                            54.840      91.363             62.581              0.547      
+het       2      rhapsody-flux  simple   3432    3432     4.500      4.670       57.730      114.0              59.452              0.520      
+het       4      native-dragon  dragon   6864    6864     5.640      2.520       126.9       56.925             54.073              0.236      
+het       4      native-flux    fluxion  6864    6864                            80.350      110.8              85.425              0.373      
+het       4      native-flux    simple   6864    6864                            79.080      114.4              86.795              0.379      
+het       4      rhapsody-flux  simple   6864    6864     5.150      1.360       72.520      156.2              94.643              0.414      
+
+36 cells -> /pscratch/sd/m/merzky/radical/bench/results/reps/rB/matrix-full/results.csv
+=== 08:10:15 rhapsody-dragon-proxy-dragon-d4-N1 (port-offset 0) ===
+  rc=0
+=== 08:11:24 rhapsody-dragon-proxy-dragon-d32-N1 (port-offset 20) ===
+  rc=0
+=== 08:14:13 rhapsody-dragon-proxy-dragon-het-N1 (port-offset 40) ===
+  rc=0
+=== 08:17:21 rhapsody-dragon-proxy-dragon-d4-N2 (port-offset 60) ===
+  rc=0
+=== 08:18:35 rhapsody-dragon-proxy-dragon-d32-N2 (port-offset 80) ===
+  rc=0
+=== 08:21:51 rhapsody-dragon-proxy-dragon-het-N2 (port-offset 100) ===
+  rc=0
+=== 08:25:21 rhapsody-dragon-proxy-dragon-d4-N4 (port-offset 120) ===
+  rc=0
+=== 08:27:09 rhapsody-dragon-proxy-dragon-d32-N4 (port-offset 140) ===
+  rc=0
+=== 08:30:46 rhapsody-dragon-proxy-dragon-het-N4 (port-offset 160) ===
+  rc=0
+proxy sweep done (1 2 4)
+=== 08:33:55 raptor-raptor-d4-N1 ===
+  rc=0
+=== 08:34:43 raptor-raptor-d32-N1 ===
+  rc=0
+=== 08:37:14 raptor-raptor-het-N1 ===
+  rc=0
+=== 08:38:14 raptor-raptor-d4-N2 ===
+  rc=0
+=== 08:39:04 raptor-raptor-d32-N2 ===
+  rc=0
+=== 08:41:35 raptor-raptor-het-N2 ===
+  rc=0
+=== 08:42:42 raptor-raptor-d4-N4 ===
+  rc=0
+=== 08:43:36 raptor-raptor-d32-N4 ===
+  rc=0
+=== 08:46:11 raptor-raptor-het-N4 ===
+  rc=0
+raptor sweep done (1 2 4)
+=== rep mix het nper2 08:47:30 ===
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+=== rep mix d32 nper2 09:02:33 ===
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+### repeat rB DONE Tue Oct 20 09:17:36 AM PDT 2026
+salloc: Relinquishing job allocation 60035542
+salloc: Job allocation 60035542 has been revoked.
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/dragon_multi_fe.py", line 47, in main
+    net_conf = fe_server.run_startup(net_conf=net_conf)
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/frontend.py", line 1071, in run_startup
+    self.net = self._populate_net_config(net_conf)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/frontend.py", line 1012, in _populate_net_config
+    raise RuntimeError("Unable to acquire backend network configuration via workload manager")
+Dragon launcher frontend encountered an error during execution. Unable to acquire backend network configuration via workload manager
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/dragon_multi_fe.py", line 47, in main
+    net_conf = fe_server.run_startup(net_conf=net_conf)
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/frontend.py", line 1071, in run_startup
+    self.net = self._populate_net_config(net_conf)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/radical/ve.rh/lib/python3.13/site-packages/dragon/launcher/frontend.py", line 1012, in _populate_net_config
+    raise RuntimeError("Unable to acquire backend network configuration via workload manager")
+Dragon launcher frontend encountered an error during execution. Unable to acquire backend network configuration via workload manager

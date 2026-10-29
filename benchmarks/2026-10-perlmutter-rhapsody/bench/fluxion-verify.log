@@ -1,0 +1,19 @@
+verify Mon Oct 19 05:53:02 AM PDT 2026
+salloc: Granted job allocation 59994291
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200119-200120] are ready for job
+FLUX_MODPROBE_PATH_APPEND=/pscratch/sd/m/merzky/spack/opt/spack/linux-zen3/flux-sched-0.55.0-qlcer6mkbv3gqnszf6oif2kml7ntv35k/etc/flux/modprobe  FLUX_RC_EXTRA=<unset>
+sched-fluxion-feasibility    0  R     0     0 feasibility
+sched-fluxion-qmanager       0  R     0     0 sched
+sched-fluxion-resource       0  R     0     0 
+     STATE NNODES NCORES NGPUS NODELIST
+      free      2    256     0 nid[200119-200120]
+ allocated      0      0     0 
+      down      0      0     0 
+FLUXION_1OK
+nid200119
+nid200120
+FLUXION_2OK
+srun rc=0
+salloc: Relinquishing job allocation 59994291
+=== verify exit 0 ===

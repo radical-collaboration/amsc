@@ -1,0 +1,11 @@
+head=nid004953 JOB=59996153 nodelist=nid[004953-004954,006915-006916] flux=/pscratch/sd/m/merzky/spack/opt/spack/linux-zen3/flux-core-0.89.0-bhgqfinbpq3drojqmm4msypbiamcwfdc/bin/flux
+########## 2+2: rhapsody-dragon (2n, in-process) || flux (2n), 100 tasks each ##########
+p_dragon=nid004953,nid004954  p_flux=nid006915,nid006916
+dragon: dragon -N 2 --wlm slurm --hostlist nid004953,nid004954 /pscratch/sd/m/merzky/radical/ve.rh/bin/python /pscratch/sd/m/merzky/radical/dragon-investigation/rh_dragon.py --nodes 2 --ntasks 100
+flux:   srun --overlap --nodes=2 --ntasks=2 --ntasks-per-node=1 --nodelist=nid006915,nid006916 flux start /pscratch/sd/m/merzky/radical/ve.rh/bin/python /pscratch/sd/m/merzky/radical/dragon-investigation/_rhsplit_fluxw_895583.py 100
+
+=== RH SPLIT RESULT ===
+  rhapsody-dragon rc=0: RH_DRAGON_RESULT done=100 n=100 bringup=4.4 makespan=5.19
+  flux            rc=0: FLUX_RESULT done=100 n=100 secs=1.032
+[split exit=0]
+=== split_final DONE ===

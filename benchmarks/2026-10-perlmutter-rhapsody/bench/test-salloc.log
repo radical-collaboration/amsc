@@ -1,0 +1,28 @@
+launching salloc test (flux-only v4, payload+env fixed) Sun Oct 18 06:41:24 AM PDT 2026
+salloc: Granted job allocation 59948701
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200005-200006] are ready for job
+SLURM_CPUS_ON_NODE=256
+results: /pscratch/sd/m/merzky/radical/bench/results/test-20261018-064128   nodes: 2
+=== flux-simple-zero-N2 ===
+  exit=0
+=== flux-simple-fixed32-N2 ===
+  exit=0
+=== flux-simple-het-N2 ===
+  exit=0
+=== flux-fluxion-zero-N2 ===
+  exit=1 FAILED (see /pscratch/sd/m/merzky/radical/bench/results/test-20261018-064128/flux-fluxion-zero-N2/run.log)
+=== flux-fluxion-fixed32-N2 ===
+  exit=1 FAILED (see /pscratch/sd/m/merzky/radical/bench/results/test-20261018-064128/flux-fluxion-fixed32-N2/run.log)
+=== flux-fluxion-het-N2 ===
+  exit=1 FAILED (see /pscratch/sd/m/merzky/radical/bench/results/test-20261018-064128/flux-fluxion-het-N2/run.log)
+
+=== SUMMARY (/pscratch/sd/m/merzky/radical/bench/results/test-20261018-064128) ===
+cell                       bringup  teard makespan  thru_ss   util      done
+----------------------------------------------------------------------------
+flux-simple-fixed32           4.34   2.27   101.14      9.4  0.475   768/768
+flux-simple-het               5.31   1.32     37.9     32.0  0.257   344/344
+flux-simple-zero              7.53   1.26    44.12    136.6    0.0 5000/5000
+salloc: Relinquishing job allocation 59948701
+salloc: Job allocation 59948701 has been revoked.
+=== salloc wrapper exit: 0 (Sun Oct 18 06:48:38 AM PDT 2026) ===

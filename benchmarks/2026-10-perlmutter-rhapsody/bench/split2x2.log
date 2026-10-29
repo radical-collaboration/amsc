@@ -1,0 +1,14 @@
+salloc: Granted job allocation 59996469
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200120-200123] are ready for job
+=== 2+2 split zero 06:52:08 ===
+dragon: nid200120,nid200121 | flux: nid200122,nid200123
+split done: dragon rc=0 flux rc=0
+=== 2+2 split d32 06:54:38 ===
+dragon: nid200120,nid200121 | flux: nid200122,nid200123
+split done: dragon rc=0 flux rc=0
+=== 2+2 split het 06:58:01 ===
+dragon: nid200120,nid200121 | flux: nid200122,nid200123
+split done: dragon rc=0 flux rc=0
+=== 2x2 split done ===
+salloc: Relinquishing job allocation 59996469

@@ -1,0 +1,24 @@
+which rhapsody: /pscratch/sd/m/merzky/radical/dragon-investigation/rhapsody/src/rhapsody
+[rhap-shimhost] running on host=nid006981
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+driver=nid006342 partition=['nid006342', 'nid006981']
+{
+  "backend": "rhapsody-dragon-proxy",
+  "sched": "dragon",
+  "nodes": 2,
+  "workload": "d32",
+  "n_tasks": 1024,
+  "n_done": 1024,
+  "bringup_s": 14.56,
+  "teardown_s": 3.87,
+  "makespan_s": 180.3,
+  "n_records": 1024,
+  "utilization": 0.7071716839867057,
+  "throughput_overall": 5.679555385645224,
+  "throughput_steady": 7.42868079719385,
+  "hosts": [
+    "nid006342",
+    "nid006981"
+  ]
+}
+verify rc=0

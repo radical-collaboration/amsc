@@ -1,0 +1,51 @@
+salloc: Pending job allocation 60056768
+salloc: job 60056768 queued and waiting for resources
+salloc: job 60056768 has been allocated resources
+salloc: Granted job allocation 60056768
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200179-200180] are ready for job
+### flux-fn spot-check  alloc=2N  Tue Oct 20 03:19:26 PM PDT 2026
+=== flux-fn zero-dur x 2000 (dispatch rate) ===
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 2,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "n_tasks": 2000,
+  "n_done": 2000,
+  "bringup_s": 6.54,
+  "teardown_s": 3.82,
+  "makespan_s": 13.46,
+  "n_records": 2000,
+  "utilization": 6.621810398725529e-07,
+  "throughput_overall": 148.54517446379853,
+  "throughput_steady": 216.82406143575176,
+  "hosts": [
+    "nid200179",
+    "nid200180"
+  ]
+}
+=== flux-fn 2s x 4-core x 256 (multi-core util) ===
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 2,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "n_tasks": 256,
+  "n_done": 256,
+  "bringup_s": 4.79,
+  "teardown_s": 0.12,
+  "makespan_s": 12.29,
+  "n_records": 256,
+  "utilization": 0.651388801032439,
+  "throughput_overall": 20.835018428187396,
+  "throughput_steady": 30.602496031258653,
+  "hosts": [
+    "nid200179",
+    "nid200180"
+  ]
+}
+### spot done Tue Oct 20 03:20:14 PM PDT 2026
+salloc: Relinquishing job allocation 60056768

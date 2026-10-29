@@ -1,0 +1,14 @@
+partition: ['nid200024', 'nid200025']
+bringup: 8.0s
+{
+  "backend": "flux",
+  "sched": "simple",
+  "nodes": 2,
+  "workload": "zero",
+  "n_tasks": 5000,
+  "n_done": 0,
+  "bringup_s": 7.99,
+  "teardown_s": 0.32,
+  "makespan_s": 26.81,
+  "n_records": 0
+}

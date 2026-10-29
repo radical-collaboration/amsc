@@ -1,0 +1,111 @@
+### repeat rC  scales=[8] wl=[d4 d32 het]  alloc=8N  Tue Oct 20 11:16:39 AM PDT 2026
+RESULTS=/pscratch/sd/m/merzky/radical/bench/results/reps/rC/matrix-full  SLURM_CPUS_ON_NODE=256  alloc=8 nodes
+=== 11:16:45 native-dragon-dragon-d4-N8 ===
+  exit=0
+=== 11:20:22 native-dragon-dragon-d32-N8 ===
+  exit=0
+=== 11:24:55 native-dragon-dragon-het-N8 ===
+  exit=0
+=== 11:34:39 native-flux-simple-d4-N8 ===
+  exit=0
+=== 11:36:09 native-flux-simple-d32-N8 ===
+  exit=0
+=== 11:38:59 native-flux-simple-het-N8 ===
+  exit=0
+=== 11:41:59 native-flux-fluxion-d4-N8 ===
+  exit=0
+=== 11:43:18 native-flux-fluxion-d32-N8 ===
+  exit=0
+=== 11:46:11 native-flux-fluxion-het-N8 ===
+  exit=0
+=== 11:49:02 rhapsody-flux-simple-d4-N8 ===
+  exit=0
+=== 11:50:37 rhapsody-flux-simple-d32-N8 ===
+  exit=0
+=== 11:53:37 rhapsody-flux-simple-het-N8 ===
+  exit=0
+=== matrix complete: /pscratch/sd/m/merzky/radical/bench/results/reps/rC/matrix-full ===
+workload  nodes  backend        sched    n_done  n_tasks  bringup_s  teardown_s  makespan_s  throughput_steady  throughput_overall  utilization
+-----------------------------------------------------------------------------------------------------------------------------------------------
+d32       8      native-dragon  dragon   4096    4096     16.200     4.210       185.2       23.883             19.553              0.610      
+d32       8      native-flux    fluxion  4096    4096                            153.6       32.430             26.674              0.833      
+d32       8      native-flux    simple   4096    4096                            150.6       32.659             27.234              0.851      
+d32       8      rhapsody-flux  simple   4096    4096     5.490      4.530       152.4       32.934             26.938              0.842      
+d4        8      native-dragon  dragon   6144    6144     11.560     4.580       136.7       50.264             45.471              0.178      
+d4        8      native-flux    fluxion  6144    6144                            55.690      114.1              110.5               0.431      
+d4        8      native-flux    simple   6144    6144                            64.370      123.8              95.820              0.374      
+d4        8      rhapsody-flux  simple   6144    6144     6.330      8.640       57.900      158.7              106.7               0.417      
+het       8      native-dragon  dragon   13728   13728    16.040     4.600       487.6       27.942             28.239              0.062      
+het       8      native-flux    fluxion  13728   13728                           128.8       128.1              106.6               0.233      
+het       8      native-flux    simple   13728   13728                           140.9       114.1              97.648              0.213      
+het       8      rhapsody-flux  simple   13728   13728    5.070      3.320       116.9       149.2              117.4               0.257      
+
+12 cells -> /pscratch/sd/m/merzky/radical/bench/results/reps/rC/matrix-full/results.csv
+=== 11:56:25 rhapsody-dragon-proxy-dragon-d4-N8 (port-offset 0) ===
+  rc=0
+=== 11:58:48 rhapsody-dragon-proxy-dragon-d32-N8 (port-offset 20) ===
+  rc=124
+=== 12:13:53 rhapsody-dragon-proxy-dragon-het-N8 (port-offset 40) ===
+  rc=124
+proxy sweep done (8)
+=== 12:29:01 raptor-raptor-d4-N8 ===
+  rc=0
+=== 12:30:09 raptor-raptor-d32-N8 ===
+  rc=0
+=== 12:32:51 raptor-raptor-het-N8 ===
+  rc=0
+raptor sweep done (8)
+=== rep mix het nper4 12:34:25 ===
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+=== rep mix d32 nper4 12:49:28 ===
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+Private key file is encrypted
+### repeat rC DONE Tue Oct 20 01:04:31 PM PDT 2026

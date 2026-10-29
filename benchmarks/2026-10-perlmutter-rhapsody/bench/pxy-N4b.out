@@ -1,0 +1,11 @@
+skip(done) rhapsody-dragon-proxy-dragon-zero_c-N4
+skip(done) rhapsody-dragon-proxy-dragon-d1_c-N4
+=== 20:03:58 rhapsody-dragon-proxy-dragon-d4-N4 (port-offset 0) ===
+  rc=0
+=== 20:05:25 rhapsody-dragon-proxy-dragon-d16-N4 (port-offset 20) ===
+  rc=124
+=== 20:30:30 rhapsody-dragon-proxy-dragon-d32-N4 (port-offset 40) ===
+  rc=124
+=== 20:55:35 rhapsody-dragon-proxy-dragon-het-N4 (port-offset 60) ===
+  rc=124
+proxy sweep done (4)

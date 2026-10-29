@@ -1,0 +1,24 @@
+{
+  "backend": "rhapsody-flux",
+  "sched": "simple",
+  "nodes": 1,
+  "workload": "d16",
+  "n_tasks": 640,
+  "n_done": 640,
+  "bringup_s": 3.95,
+  "teardown_s": 0.47,
+  "makespan_s": 84.75,
+  "n_records": 640,
+  "utilization": 0.9464823687356416,
+  "throughput_overall": 7.571848934870707,
+  "throughput_steady": 7.940602935551775,
+  "hosts": [
+    "nid004601"
+  ],
+  "throughput_e2e": 7.551870547950992,
+  "utilization_e2e": 0.9439850670675899,
+  "makespan_e2e_s": 84.75,
+  "makespan_record_s": 84.52,
+  "throughput_record": 7.571848934870707,
+  "utilization_record": 0.9464823687356416
+}

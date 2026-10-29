@@ -1,0 +1,23 @@
+{
+  "backend": "dragon-fn",
+  "sched": "fn",
+  "nodes": 4,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "n_tasks": 4000,
+  "n_done": 4000,
+  "bringup_s": 5.29,
+  "teardown_s": 5.7,
+  "makespan_s": 26.62,
+  "n_records": 4000,
+  "utilization": 2.4145313983789234,
+  "throughput_overall": 150.26385838224368,
+  "throughput_steady": 176.00029478122494,
+  "hosts": [
+    "nid005221",
+    "nid005223",
+    "nid005224",
+    "nid005225"
+  ]
+}

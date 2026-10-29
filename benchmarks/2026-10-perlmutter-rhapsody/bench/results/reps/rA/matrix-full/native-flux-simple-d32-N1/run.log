@@ -1,0 +1,17 @@
+Oct 20 07:16:34.889706 PDT 2026 rexec.err[0]: slurm-sync[454507]: slurm-expiration-sync: ERROR: Command '['squeue', '--noheader', '--job=60035533', '-o', '%L']' timed out after 10 seconds
+{
+  "backend": "native-flux",
+  "sched": "simple",
+  "nodes": 1,
+  "workload": "d32",
+  "n_tasks": 512,
+  "n_done": 512,
+  "makespan_s": 132.68,
+  "n_records": 512,
+  "utilization": 0.9647391665067012,
+  "throughput_overall": 3.858954083001172,
+  "throughput_steady": 4.228767952185299,
+  "hosts": [
+    "nid200115"
+  ]
+}

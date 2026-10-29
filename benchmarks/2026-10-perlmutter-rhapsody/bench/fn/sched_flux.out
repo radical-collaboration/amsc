@@ -1,0 +1,183 @@
+{
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 1,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "n_tasks": 5000,
+  "n_done": 5000,
+  "bringup_s": 4.39,
+  "teardown_s": 6.13,
+  "makespan_s": 48.49,
+  "n_records": 5000,
+  "utilization": 9.009081116454536e-07,
+  "throughput_overall": 103.11942681376695,
+  "throughput_steady": 122.52007037236727,
+  "hosts": [
+    "nid005752"
+  ]
+}
+{
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 1,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "n_tasks": 1000,
+  "n_done": 1000,
+  "bringup_s": 3.78,
+  "teardown_s": 3.68,
+  "makespan_s": 72.56,
+  "n_records": 1000,
+  "utilization": 0.8617572937209415,
+  "throughput_overall": 13.781901540374916,
+  "throughput_steady": 14.84622668056556,
+  "hosts": [
+    "nid005752"
+  ]
+}
+{
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 2,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "n_tasks": 5000,
+  "n_done": 5000,
+  "bringup_s": 5.01,
+  "teardown_s": 4.58,
+  "makespan_s": 32.61,
+  "n_records": 5000,
+  "utilization": 6.687279514447024e-07,
+  "throughput_overall": 153.32931248003803,
+  "throughput_steady": 205.46136639418108,
+  "hosts": [
+    "nid005752",
+    "nid005753"
+  ]
+}
+{
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 2,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "n_tasks": 2000,
+  "n_done": 2000,
+  "bringup_s": 4.66,
+  "teardown_s": 10.01,
+  "makespan_s": 73.99,
+  "n_records": 2000,
+  "utilization": 0.8451041399372996,
+  "throughput_overall": 27.03107823170795,
+  "throughput_steady": 29.321282395398914,
+  "hosts": [
+    "nid005752",
+    "nid005753"
+  ]
+}
+{
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 4,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "n_tasks": 5000,
+  "n_done": 5000,
+  "bringup_s": 4.87,
+  "teardown_s": 0.17,
+  "makespan_s": 26.74,
+  "n_records": 5000,
+  "utilization": 4.124623115877191e-07,
+  "throughput_overall": 186.99461019061553,
+  "throughput_steady": 269.209232251053,
+  "hosts": [
+    "nid005752",
+    "nid005753",
+    "nid005754",
+    "nid005755"
+  ]
+}
+{
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 4,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "n_tasks": 4000,
+  "n_done": 4000,
+  "bringup_s": 4.8,
+  "teardown_s": 4.03,
+  "makespan_s": 76.55,
+  "n_records": 4000,
+  "utilization": 0.8168290092537673,
+  "throughput_overall": 52.25369327695346,
+  "throughput_steady": 58.61670190264685,
+  "hosts": [
+    "nid005752",
+    "nid005753",
+    "nid005754",
+    "nid005755"
+  ]
+}
+{
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 8,
+  "mode": "function",
+  "dur": 0.0,
+  "ncores": 1,
+  "n_tasks": 5000,
+  "n_done": 5000,
+  "bringup_s": 5.21,
+  "teardown_s": 0.67,
+  "makespan_s": 27.0,
+  "n_records": 5000,
+  "utilization": 1.97378446385248e-07,
+  "throughput_overall": 185.19988905490663,
+  "throughput_steady": 266.74966639629,
+  "hosts": [
+    "nid005752",
+    "nid005753",
+    "nid005754",
+    "nid005755",
+    "nid005756",
+    "nid005757",
+    "nid005758",
+    "nid005759"
+  ]
+}
+{
+  "backend": "flux-fn",
+  "sched": "fn",
+  "nodes": 8,
+  "mode": "function",
+  "dur": 2.0,
+  "ncores": 4,
+  "n_tasks": 8000,
+  "n_done": 8000,
+  "bringup_s": 4.8,
+  "teardown_s": 3.43,
+  "makespan_s": 84.25,
+  "n_records": 8000,
+  "utilization": 0.7421341242057353,
+  "throughput_overall": 94.95063576366478,
+  "throughput_steady": 114.74138625927354,
+  "hosts": [
+    "nid005752",
+    "nid005753",
+    "nid005754",
+    "nid005755",
+    "nid005756",
+    "nid005757",
+    "nid005758",
+    "nid005759"
+  ]
+}
+flux sched done

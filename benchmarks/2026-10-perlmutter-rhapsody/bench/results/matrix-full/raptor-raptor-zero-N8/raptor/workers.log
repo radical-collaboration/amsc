@@ -1,0 +1,16 @@
+worker worker.nid006690.0 up: 128 slots on nid006690
+worker worker.nid006942.6 up: 128 slots on nid006942
+worker worker.nid006943.7 up: 128 slots on nid006943
+worker worker.nid006940.4 up: 128 slots on nid006940
+worker worker.nid006941.5 up: 128 slots on nid006941
+worker worker.nid006691.1 up: 128 slots on nid006691
+worker worker.nid006692.2 up: 128 slots on nid006692
+worker worker.nid006939.3 up: 128 slots on nid006939
+worker worker.nid006939.3 exiting (4000 tasks done)
+worker worker.nid006942.6 exiting (4000 tasks done)
+worker worker.nid006943.7 exiting (4000 tasks done)
+worker worker.nid006940.4 exiting (4000 tasks done)
+worker worker.nid006941.5 exiting (4000 tasks done)
+worker worker.nid006690.0 exiting (4000 tasks done)
+worker worker.nid006691.1 exiting (4000 tasks done)
+worker worker.nid006692.2 exiting (4000 tasks done)

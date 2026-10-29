@@ -1,0 +1,53 @@
+=== mix4+4 het 02:59:22 ===
+[rhap-shimhost] running on host=nid005885
+[rhap-shimhost] Client restored -> multiprocessing.connection.Client
+Detected an abnormal exit. Will attempt to clean up Dragon resources...
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Connect Unhandled exception: <class 'paramiko.ssh_exception.PasswordRequiredException'> Private key file is encrypted
+Private key file is encrypted
+driver=nid005882 dragon=nid005882,nid005883,nid005884,nid005885 flux=nid006955,nid007070,nid007071,nid007072
+{
+  "backend": "mix-dragon-proxy",
+  "sched": "mix",
+  "nodes": 4,
+  "workload": "het",
+  "n_tasks": 6864,
+  "n_done": 6864,
+  "makespan_s": 125.46,
+  "makespan_shared_s": 127.85,
+  "n_records": 6864,
+  "utilization": 0.23911635596144765,
+  "throughput_overall": 54.708736478951955,
+  "throughput_steady": 59.40727960466827,
+  "hosts": [
+    "nid005883",
+    "nid005884",
+    "nid005885",
+    "nid006955"
+  ]
+}
+{
+  "backend": "mix-flux",
+  "sched": "mix",
+  "nodes": 4,
+  "workload": "het",
+  "n_tasks": 6864,
+  "n_done": 6864,
+  "makespan_s": 61.07,
+  "makespan_shared_s": 127.85,
+  "n_records": 6864,
+  "utilization": 0.4912288730570237,
+  "throughput_overall": 112.39166401742581,
+  "throughput_steady": 140.47287914126022,
+  "hosts": [
+    "nid006955",
+    "nid007070",
+    "nid007071",
+    "nid007072"
+  ]
+}
+MIX done: dragon 6864/6864 flux 6864/6864 makespan=127.8s
+skip d32
+=== mix4+4 done ===

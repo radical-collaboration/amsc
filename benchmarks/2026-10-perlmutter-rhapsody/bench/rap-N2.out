@@ -1,0 +1,12 @@
+=== 15:58:56 raptor-raptor-zero-N2 ===
+  rc=0
+=== 15:59:38 raptor-raptor-d1-N2 ===
+  rc=0
+=== 16:00:32 raptor-raptor-d4-N2 ===
+  rc=0
+=== 16:01:23 raptor-raptor-d16-N2 ===
+  rc=0
+skip(done) raptor-raptor-d32-N2
+=== 16:03:06 raptor-raptor-het-N2 ===
+  rc=0
+raptor sweep done (2)

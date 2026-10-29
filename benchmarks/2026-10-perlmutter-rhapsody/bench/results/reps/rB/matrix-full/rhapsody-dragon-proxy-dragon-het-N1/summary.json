@@ -1,0 +1,24 @@
+{
+  "backend": "rhapsody-dragon-proxy",
+  "sched": "dragon",
+  "nodes": 1,
+  "workload": "het",
+  "n_tasks": 1716,
+  "n_done": 1716,
+  "bringup_s": 9.73,
+  "teardown_s": 3.87,
+  "makespan_s": 158.38,
+  "n_records": 1716,
+  "utilization": 0.19130907691659707,
+  "throughput_overall": 10.942689288468861,
+  "throughput_steady": 11.660047010012736,
+  "hosts": [
+    "nid200123"
+  ],
+  "throughput_e2e": 10.834735131638215,
+  "utilization_e2e": 0.1894217337280864,
+  "makespan_e2e_s": 158.38,
+  "makespan_record_s": 156.82,
+  "throughput_record": 10.942689288468861,
+  "utilization_record": 0.19130907691659707
+}

@@ -1,0 +1,8 @@
+worker worker.nid004275.0 up: 128 slots on nid004275
+worker worker.nid004280.3 up: 128 slots on nid004280
+worker worker.nid004276.1 up: 128 slots on nid004276
+worker worker.nid004279.2 up: 128 slots on nid004279
+worker worker.nid004276.1 exiting (512 tasks done)
+worker worker.nid004279.2 exiting (512 tasks done)
+worker worker.nid004275.0 exiting (512 tasks done)
+worker worker.nid004280.3 exiting (512 tasks done)

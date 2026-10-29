@@ -1,0 +1,16 @@
+rhapsody-dragon verify -> /pscratch/sd/m/merzky/radical/bench/results/rdverify-064804
+salloc: Granted job allocation 59996364
+salloc: Waiting for resource configuration
+salloc: Nodes nid[200004-200005] are ready for job
+RESULTS=/pscratch/sd/m/merzky/radical/bench/results/rdverify-064804  SLURM_CPUS_ON_NODE=256  alloc=2 nodes
+=== 06:48:16 rhapsody-dragon-dragon-d32-N2 ===
+  exit=0
+=== matrix complete: /pscratch/sd/m/merzky/radical/bench/results/rdverify-064804 ===
+workload  nodes  backend          sched   n_done  n_tasks  bringup_s  teardown_s  makespan_s  throughput_steady  throughput_overall  utilization
+------------------------------------------------------------------------------------------------------------------------------------------------
+d32       2      rhapsody-dragon  dragon  1024    1024     4.360      3.060       177.7       7.568              5.763               0.718      
+
+1 cells -> /pscratch/sd/m/merzky/radical/bench/results/rdverify-064804/results.csv
+salloc: Relinquishing job allocation 59996364
+salloc: Job allocation 59996364 has been revoked.
+=== rd-verify exit 0 ===

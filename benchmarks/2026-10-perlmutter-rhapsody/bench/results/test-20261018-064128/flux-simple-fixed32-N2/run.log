@@ -1,0 +1,21 @@
+partition: ['nid200005', 'nid200006']
+bringup: 4.3s
+{
+  "backend": "flux",
+  "sched": "simple",
+  "nodes": 2,
+  "workload": "fixed32",
+  "n_tasks": 768,
+  "n_done": 768,
+  "bringup_s": 4.34,
+  "teardown_s": 2.27,
+  "makespan_s": 101.14,
+  "n_records": 768,
+  "utilization": 0.47457870897427185,
+  "throughput_overall": 7.593254375596812,
+  "throughput_steady": 9.43580221205709,
+  "hosts": [
+    "nid200005",
+    "nid200006"
+  ]
+}

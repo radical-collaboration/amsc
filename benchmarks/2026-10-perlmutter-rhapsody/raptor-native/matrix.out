@@ -1,0 +1,53 @@
+
+The following have been reloaded with a version change:
+  1) python/3.13-26.11.0 => python/3.13-26.8.1
+
+=== 17:56:11 raptor-native-zero-N1 ===
+  rc=0
+=== 17:56:43 raptor-native-d1-N1 ===
+  rc=0
+=== 17:57:33 raptor-native-d4-N1 ===
+  rc=0
+=== 17:58:20 raptor-native-d16-N1 ===
+  rc=0
+=== 18:00:06 raptor-native-d32-N1 ===
+  rc=0
+=== 18:02:37 raptor-native-het-N1 ===
+  rc=0
+=== 18:03:35 raptor-native-zero-N2 ===
+  rc=0
+=== 18:04:19 raptor-native-d1-N2 ===
+  rc=0
+=== 18:05:19 raptor-native-d4-N2 ===
+  rc=0
+=== 18:06:12 raptor-native-d16-N2 ===
+  rc=0
+=== 18:08:12 raptor-native-d32-N2 ===
+  rc=0
+=== 18:10:44 raptor-native-het-N2 ===
+  rc=0
+=== 18:11:49 raptor-native-zero-N4 ===
+  rc=0
+=== 18:13:01 raptor-native-d1-N4 ===
+  rc=0
+=== 18:14:11 raptor-native-d4-N4 ===
+  rc=0
+=== 18:15:08 raptor-native-d16-N4 ===
+  rc=0
+=== 18:16:56 raptor-native-d32-N4 ===
+  rc=0
+=== 18:19:32 raptor-native-het-N4 ===
+  rc=0
+=== 18:20:46 raptor-native-zero-N8 ===
+  rc=0
+=== 18:22:45 raptor-native-d1-N8 ===
+  rc=0
+=== 18:24:28 raptor-native-d4-N8 ===
+  rc=0
+=== 18:25:34 raptor-native-d16-N8 ===
+  rc=0
+=== 18:27:29 raptor-native-d32-N8 ===
+  rc=0
+=== 18:30:11 raptor-native-het-N8 ===
+  rc=0
+raptor-native sweep done (1 2 4 8)

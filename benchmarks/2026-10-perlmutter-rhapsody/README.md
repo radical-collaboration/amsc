@@ -34,8 +34,8 @@ as of 2026-10-28, not a maintained harness: the scripts hard-code those
   (`raptor-standalone/raptor_standalone/rhapsody_backend.py`): a
   `RaptorMaster` plus `srun`-launched workers, with no RADICAL-Pilot session,
   pilot, agent or MongoDB. Matrix cells: `bench/run_raptor.sh` →
-  `bench/raptor_one.py`. There is no native-Raptor baseline: Raptor numbers
-  always include the RHAPSODY Session path.
+  `bench/raptor_one.py`. The native-Raptor baseline (no RHAPSODY) was added
+  later in `raptor-native/`.
 
 ## Layout
 
@@ -70,6 +70,8 @@ as of 2026-10-28, not a maintained harness: the scripts hard-code those
   - `variants/fn/`: the two files that differ in the function-dispatch copy
     (`raptor-standalone-fn/` on scratch): `rhapsody_backend.py` and
     `worker.py`.
+- `raptor-native/`: the same Raptor cells driven directly, without RHAPSODY
+  (2026-10-28, nodes 1-8), with a native vs via-RHAPSODY comparison.
 - `dragon-investigation/`: the debugging of rhapsody-dragon on multiple
   nodes (the dragon `multiprocessing` monkeypatch vs. `RemoteBackendProxy`,
   and the 2+2 dragon/flux split). Its nested `rhapsody` copy was at

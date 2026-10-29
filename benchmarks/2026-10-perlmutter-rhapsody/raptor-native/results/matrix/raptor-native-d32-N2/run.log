@@ -1,0 +1,28 @@
+launching workers: srun --nodes=2 --ntasks=2 --ntasks-per-node=1 --cpu-bind=none --overlap /pscratch/sd/m/merzky/radical/raptor-standalone/ve.raptor/bin/python -m raptor_standalone.worker --req-addr tcp://10.249.1.147:10002 --res-addr tcp://10.249.1.147:10003 --ctrl-pub-addr tcp://10.249.1.147:10005 --ctrl-sub-addr tcp://10.249.1.147:10006 --prefetch 4 --nslots 128
+workers registered: ['worker.nid004223.0', 'worker.nid004259.1']
+{
+  "backend": "raptor-native",
+  "sched": "raptor",
+  "nodes": 2,
+  "workload": "d32",
+  "n_tasks": 1024,
+  "n_done": 1024,
+  "n_failed": 0,
+  "bringup_s": 14.69,
+  "teardown_s": 2.0,
+  "makespan_s": 128.33,
+  "n_records": 1024,
+  "utilization": 0.997822386927002,
+  "throughput_overall": 7.982573732286734,
+  "throughput_steady": 8.524953969539093,
+  "hosts": [
+    "nid004223",
+    "nid004259"
+  ],
+  "throughput_e2e": 7.979375151549319,
+  "utilization_e2e": 0.9974225640662024,
+  "makespan_e2e_s": 128.33,
+  "makespan_record_s": 128.28,
+  "throughput_record": 7.982573732286734,
+  "utilization_record": 0.997822386927002
+}

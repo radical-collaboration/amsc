@@ -1,7 +1,7 @@
 # Raptor without RHAPSODY: native baseline (2026-10-28)
 
 The `raptor` cells of the main study (`../bench/results/matrix-full/raptor-raptor-*`)
-drove the standalone, pilot-free Raptor through a RHAPSODY Session
+drove Raptor through a RHAPSODY Session
 (`RaptorStandaloneBackend`). This directory adds the missing baseline: the
 same Raptor, workloads and payload, driven directly with no `rhapsody` import
 and no Session.

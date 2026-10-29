@@ -29,13 +29,12 @@ as of 2026-10-28, not a maintained harness: the scripts hard-code those
   run under the dragon launcher (`bench/rhapsody_dragon.py`).
 - **rhapsody-dragon-proxy:** the dragon backend hosted out of process via
   `RemoteBackendProxy` (`bench/rhapsody_dragon_proxy.py`).
-- **raptor:** standalone, pilot-free Raptor **driven through a RHAPSODY
-  Session** by a custom backend, `RaptorStandaloneBackend`
+- **raptor:** Raptor **driven through a RHAPSODY Session** by a custom
+  backend, `RaptorStandaloneBackend`
   (`raptor-standalone/raptor_standalone/rhapsody_backend.py`): a
-  `RaptorMaster` plus `srun`-launched workers, with no RADICAL-Pilot session,
-  pilot, agent or MongoDB. Matrix cells: `bench/run_raptor.sh` →
-  `bench/raptor_one.py`. The native-Raptor baseline (no RHAPSODY) was added
-  later in `raptor-native/`.
+  `RaptorMaster` plus `srun`-launched workers. Matrix cells:
+  `bench/run_raptor.sh` → `bench/raptor_one.py`. The native-Raptor baseline
+  (no RHAPSODY) was added later in `raptor-native/`.
 
 ## Layout
 
@@ -64,9 +63,13 @@ as of 2026-10-28, not a maintained harness: the scripts hard-code those
     behind the live report.
   - `results/`: one directory per cell with `summary.json` and `run.log`,
     plus the `results.csv` files; `*.out` are the Slurm job logs.
-- `raptor-standalone/`: the pilot-free Raptor (`raptor_standalone/`), its
+- `raptor-standalone/`: Raptor as benchmarked (`raptor_standalone/`), its
   RHAPSODY backend, launch and job scripts (`bin/`), tests and benchmark
-  drivers (`tests/`) and milestone results (`results/`).
+  drivers (`tests/`) and milestone results (`results/`). Raptor is now
+  maintained in
+  [radical-cybertools/radical.raptor](https://github.com/radical-cybertools/radical.raptor)
+  (package `radical.raptor`, backend renamed `RaptorBackend`); this directory
+  keeps the snapshot that produced the numbers here.
   - `variants/fn/`: the two files that differ in the function-dispatch copy
     (`raptor-standalone-fn/` on scratch): `rhapsody_backend.py` and
     `worker.py`.

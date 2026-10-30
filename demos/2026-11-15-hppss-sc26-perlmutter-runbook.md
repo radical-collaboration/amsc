@@ -277,3 +277,86 @@ One CPU node (128 cores), serial `simpleFoam` per case.
   driver-*.py`, not `python`.
 - **radex fails to compile with `no member named 'wait_for_keys'`:** the
   Dragon wheel is too old (needs >= 0.14.2); use the pinned `dragonhpc==0.15.0`.
+
+## 7. Through ORBIT (demo part 2)
+
+The same optimization driven from a client process on a login node, with the
+solvers and the radex store running in an ORBIT endpoint on a compute node.
+Validated 2026-10-29 on Perlmutter (no laptop: the client runs on login20,
+which stands in for the laptop in the video).
+
+### 7.1 Stack
+
+| Piece | Version |
+|---|---|
+| RHAPSODY | branch `demo/hppss-orbit` (`6ae799b`): `demo/hppss` plus `OrbitDataBackend` (rhapsody#96) |
+| radical.orbit | `devel` `52b2a0f` |
+| radical.prof | `radical-cybertools/radical.profile` `devel` `2bf1eb1` (not on PyPI; ORBIT profiling is a no-op without it) |
+| Everything else | as in sections 1-4 (dragonhpc 0.15.0, radex, plugin, OpenFOAM v2412) |
+
+Scripts: `demos/hppss-sc26-orbit/` in this repo.
+- `driver-orbit.py`: `driver-staged.py` through ORBIT.
+  - The solvers run via `OrbitExecutionBackend`, and the radex DDict via `OrbitDataBackend` in the endpoint's Dragon runtime.
+  - One function task per batch reads the results from radex on the endpoint and returns `(final_step, avgInlets)` per case. The loss and the optimizer stay in the client.
+  - It prints one progress line per batch.
+- `run_orbit.py`: one run end to end. It hosts the broker, starts the endpoint, runs one or more clients, then tears everything down.
+- `orbit_harness.py`: helpers for the above.
+
+### 7.2 Setup
+
+1. A venv like section 3.1 (Python 3.12.12, `dragonhpc==0.15.0`), with:
+   - `pip install '.[dragon,orbit]'` from RHAPSODY `demo/hppss-orbit`;
+   - `pip install .` from radical.orbit `devel` and from radical.profile `devel`;
+   - the radex client and the plugin (sections 3.2, 3.4);
+   - `scikit-optimize matplotlib`.
+2. Broker TLS: generate a self-signed pair for the demo, rather than reusing
+   any `~/.radical/orbit/broker_key.pem` that another deployment relies on:
+
+   ```sh
+   openssl req -x509 -newkey rsa:4096 -nodes -days 30 -subj "/CN=hppss-orbit" \
+       -keyout $DIR/tls/broker_key.pem -out $DIR/tls/broker_cert.pem
+   ```
+
+   The token is read from `~/.radical/orbit/broker.token`.
+3. An env file (`ORBIT_DEMO_ENV`): section 2's `env.sh` with this venv, plus
+   `RADICAL_ORBIT_BROKER_CERT/KEY` and an absolute `OPENFOAM_CASE_DIR`. The
+   endpoint job sources it via `RADICAL_ORBIT_SETUP`. Source it in the client
+   shell too: case preparation (`foamDictionary`) runs on the client, and the
+   client's `LD_LIBRARY_PATH` is copied into every task.
+
+### 7.3 Run
+
+```sh
+source $ORBIT_DEMO_ENV
+cd $PSCRATCH/somewhere          # run dirs go here (shared filesystem)
+python demos/hppss-sc26-orbit/run_orbit.py --tag part2 --launch psij \
+    --clients 2 --targets=-1.9,-2.0 --minutes 20 \
+    -- --ensemble-size 4 --max-iterations 4 --plot
+```
+
+- `--launch psij`: the client's embedded broker hosts the psij plugin, and the endpoint is started through ORBIT. `psij.submit_tunneled(tunnel='none')` submits a 1-node Slurm job (constraint cpu, QOS debug) running `radical-orbit-endpoint-wrapper.sh` under Dragon, and the job is cancelled through ORBIT at the end. `--launch sbatch` submits the same endpoint directly.
+- Compute nodes reach the login node's broker port directly (`tunnel='none'`). SSH from compute to login works too, as a fallback (`forward`).
+- `--clients 2`: two independent optimizations on one endpoint, with different targets. Each has its own radex store, and each checks that the other's keys are not in its store.
+
+### 7.4 Measured (2026-10-29)
+
+- **One client, 2 batches of 5:** 10/10 results, best loss per batch identical
+  to the local run (0.213, 0.0196).
+- **Part 2 at video size** (psij-started endpoint, 2 clients, 4 cases × 4
+  batches, 3 clean runs): each client takes 119-133 s.
+  - Client A matches the local video run (best loss 1.17e-04).
+  - Client B (target −2.0) reaches 5.9e-06.
+- **Endpoint start** (submit → registered, 7 runs): 45-120 s.
+  - Debug-queue wait: 14-68 s.
+  - Job start → registered: 24-34 s (one 58 s).
+  - Gone from the topology after cancel: 40 s (psij), 15 s (scancel).
+- **Video timing:** Part 2 fits about 3 minutes with the queue wait cut: about 30 s of endpoint start, about 2 min of optimization, then teardown.
+
+### 7.5 Open issue: two clients on one endpoint
+
+ORBIT broadcasts task notifications to every client of the endpoint's rhapsody
+plugin, and RHAPSODY numbers tasks per process (`task.000001`, …), so two
+clients swap results. radical.orbit#143 and rhapsody#112 fix this; they are
+verified live but not merged. Until they are, `run_orbit.py` gives each client
+its own task-uid range (`driver-orbit.py --uid-offset`). Drop that once both
+PRs are merged and installed.

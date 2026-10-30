@@ -122,6 +122,8 @@ via the submit request that immediately precedes `rh_submit` on the endpoint.
 
 ### F2 throughput
 
+![F2: throughput vs. batch size](f2_throughput.png)
+
 Tasks/s, median of 3:
 
 | batch | direct (identical / per-task args) | ORBIT default | ORBIT notify window 0 | ORBIT both windows 0 |
@@ -148,6 +150,8 @@ The exact values are in `data/f2_summary.csv`; every repetition is in
   it stalls (see Findings).
 
 ### F1 latency
+
+![F1: single-task latency and per-hop cost](f1_latency.png)
 
 p50 / p95 in ms, from `data/f1_summary.csv`:
 
@@ -181,6 +185,8 @@ Per-hop p50 in the default configuration (noop function / `/bin/true`):
 
 ### F5: one vs. two endpoints
 
+![F5: one vs. two endpoints](f5_two_endpoints.png)
+
 Aggregate tasks/s, median of 3, identical / per-task-argument tasks. Jobs
 60518280 and 60518281 ran on `regular` QOS, because debug allows only 2 running
 jobs per user.
@@ -201,6 +207,8 @@ jobs per user.
 
 ### F3: endpoint start-up
 
+![F3: endpoint start-up](f3_startup.png)
+
 | run | queue | start → registered | registered → ready |
 |---|---:|---:|---:|
 | w4a | 68 s | 27 s | 5.1 s |
@@ -220,6 +228,8 @@ jobs per user.
 - **w8r2 (58 s) is an outlier.** Its cause was not investigated.
 
 ### F4: application overhead
+
+![F4: pitzDaily local vs. through ORBIT](f4_app_overhead.png)
 
 | scenario | local | ORBIT start | ORBIT optimization |
 |---|---:|---:|---:|

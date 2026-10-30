@@ -170,6 +170,8 @@ def f2(recs, out):
             ax.plot(x, [p[1][0] for p in pts], '-', color=color, lw=2.5,
                     marker='o', ms=8, label=label)
         ax.set_xscale('log', base=2)
+        ax.set_xticks([64, 256, 1024, 4096, 16384])
+        ax.set_xticklabels(['64', '256', '1k', '4k', '16k'])
         ax.set_xlabel('tasks per batch (split evenly over endpoints)')
         ax.set_ylabel('aggregate throughput [tasks/s]')
         ax.set_title('One client, one vs. two ORBIT endpoints (noop)')

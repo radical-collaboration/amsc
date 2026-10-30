@@ -11,7 +11,7 @@ Slide figures for the ORBIT task path. One question per figure:
 |---|---|
 | F2 throughput vs. batch size | `f2_throughput.png` / `.svg` |
 | F1 single-task latency and per-hop cost | `f1_latency.png` / `.svg` |
-| F5 one vs. two endpoints | `f5_two_endpoints.png` / `.svg` (only if F5 ran, see below) |
+| F5 one vs. two endpoints | `f5_two_endpoints.png` / `.svg` |
 
 ## Topology
 
@@ -155,6 +155,26 @@ Per-hop p50 in the default configuration (noop function / `/bin/true`):
   delayed-ACK/Nagle interaction on the client WebSocket. It was not investigated
   further.
 
+### F5: one vs. two endpoints
+
+Aggregate tasks/s, median of 3, identical / per-task-argument tasks. Jobs
+60518280 and 60518281 ran on `regular` QOS, because debug allows only 2 running
+jobs per user.
+
+| batch | one endpoint | two endpoints |
+|---:|---:|---:|
+| 512 | 890 / 886 | 891 / 915 |
+| 1024 | 7.1k / 7.2k | 1.7k / 1.7k |
+| 2048 | 6.9k / 6.0k | 10.1k / 9.9k |
+| 16384 | 6.8k / 6.8k | 9.9k / 9.8k |
+
+- **A second endpoint lifts the plateau from about 7k to about 10k tasks/s (1.4x).**
+  It does not double, which points at the single client process (client and
+  embedded broker in one Python interpreter) as the next bottleneck.
+- **The dip at 1024 for two endpoints is the client batch window again.** Each
+  backend gets 512 tasks, below `batch_limit=1024`, so it waits for the 0.25 s
+  timer.
+
 ## Findings (ORBIT / RHAPSODY issues hit during the runs)
 
 1. **Large submissions exceed the frame cap and hang the client.**
@@ -225,6 +245,7 @@ On the ORBIT side, the runs that produced these data were:
 | `default-f2` | 60517577 | F2 with `--f2cfg orbit-default`, after the workaround |
 | `nw0` | 60517658 | F1; its F2 hit finding 2 |
 | `nw0-f2` | 60517898 | F2 for both window-0 configurations |
+| `f5` | 60518280, 60518281 | F5 |
 
 Raw `.prof` files and logs stay on scratch under
 `/pscratch/sd/m/merzky/overnight-2026-10-29/runs/perf/`. `data/` holds the

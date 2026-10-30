@@ -6,12 +6,17 @@ Slide figures for the ORBIT task path. One question per figure:
   a local RHAPSODY session?
 - **F1:** what does one remote task cost, and where does the time go?
 - **F5:** does a second endpoint add throughput? (stretch goal)
+- **F3:** how long until a fresh ORBIT endpoint on a compute node is usable?
+- **F4:** what does running the HPPSS pitzDaily optimization through ORBIT cost,
+  compared with running it locally?
 
 | figure | file |
 |---|---|
 | F2 throughput vs. batch size | `f2_throughput.png` / `.svg` |
 | F1 single-task latency and per-hop cost | `f1_latency.png` / `.svg` |
 | F5 one vs. two endpoints | `f5_two_endpoints.png` / `.svg` |
+| F3 endpoint start-up | `f3_startup.png` / `.svg` |
+| F4 application overhead (pitzDaily) | `f4_app_overhead.png` / `.svg` |
 
 ## Topology
 
@@ -94,6 +99,25 @@ via the submit request that immediately precedes `rh_submit` on the endpoint.
 - **Comparison:** the same sweep against one endpoint only. Batch sizes 64 … 16384,
   3 repetitions, default windows.
 
+### F3: endpoint start-up (`f3_startup.py`)
+
+- **Source:** the eight psij-started endpoints of the HPPSS-through-ORBIT runs
+  (W4, W5, W8 in `demos/2026-11-15-hppss-sc26.md`). Each run's `timings.json`
+  plus `sacct` Submit/Start.
+- **Segments:** Slurm queue wait (debug QOS); job start to endpoint registered
+  with the broker; registered to client session and radex store ready.
+
+### F4: application overhead (`f4_app_overhead.py`)
+
+- **Workload:** the HPPSS pitzDaily optimization (OpenFOAM, radex gather), in two
+  sizes: staged (5 simulations per batch, 4 iterations) and video size (4 per
+  batch, 4 iterations).
+- **Local:** `dragon driver-*.py` on one CPU node; wall time includes Dragon start
+  (Slurm 60517323).
+- **ORBIT:** client on a login node, endpoint started through psij. The bar is
+  endpoint start (median of the eight F3 runs, queue excluded) plus the client's
+  optimization wall time.
+
 ## Key numbers
 
 ### F2 throughput
@@ -175,6 +199,39 @@ jobs per user.
   backend gets 512 tasks, below `batch_limit=1024`, so it waits for the 0.25 s
   timer.
 
+### F3: endpoint start-up
+
+| run | queue | start → registered | registered → ready |
+|---|---:|---:|---:|
+| w4a | 68 s | 27 s | 5.1 s |
+| w5a | 38 s | 27 s | 8.2 s |
+| w5b | 36 s | 24 s | 8.2 s |
+| w5c | 36 s | 34 s | 8.4 s |
+| w5fix | 50 s | 25 s | 8.3 s |
+| w8r2 | 62 s | 58 s | 8.2 s |
+| w8r3 | 14 s | 31 s | 8.2 s |
+| w8r4 | 47 s | 28 s | 8.2 s |
+
+- **About 36 s from job start to a usable endpoint (median).** This covers the
+  endpoint wrapper (environment setup, Python imports, Dragon start); it is not
+  split further.
+- **Queue wait is of the same order** (14–68 s on debug QOS, median 42 s). It is
+  outside ORBIT's control.
+- **w8r2 (58 s) is an outlier.** Its cause was not investigated.
+
+### F4: application overhead
+
+| scenario | local | ORBIT start | ORBIT optimization |
+|---|---:|---:|---:|
+| staged, 5 per batch, 4 iter. | 113.2 s | 36 s | 104.6 s |
+| video size, 4 per batch, 4 iter. | 109.0 s | 36 s | 105.7 s |
+
+- **The optimization itself runs as fast through ORBIT as locally** (within a few
+  percent, single runs). The remote task path adds no visible cost at this task
+  granularity (simulations of tens of seconds).
+- **The cost of ORBIT is the endpoint start**, about 36 s once, plus the queue
+  wait. It is paid once per endpoint, not per task or per iteration.
+
 ## Findings (ORBIT / RHAPSODY issues hit during the runs)
 
 1. **Large submissions exceed the frame cap and hang the client.**
@@ -235,6 +292,8 @@ python bench.py orbit --tag default                      # F1 + F2, 1 endpoint j
 python bench.py orbit --tag nw0 --notify-window 0 --phases f1,f2,f2bw0 --batch-timeout 60
 python bench.py f5 --tag f5                              # 2 endpoint jobs
 python analyze.py /pscratch/sd/m/merzky/overnight-2026-10-29/runs/perf .
+python f3_startup.py /pscratch/sd/m/merzky/overnight-2026-10-29/runs/orbit/{w4a,w5a,w5b,w5c,w5fix,w8r2,w8r3,w8r4}-*
+python f4_app_overhead.py                                # numbers inline
 ```
 
 On the ORBIT side, the runs that produced these data were:

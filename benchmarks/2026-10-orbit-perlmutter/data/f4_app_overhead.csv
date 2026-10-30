@@ -1,0 +1,3 @@
+scenario,local_total_s,orbit_endpoint_start_s,orbit_optimization_s
+"staged 5 per batch, 4 iter.",113.2,36.0,104.6
+"video size 4 per batch, 4 iter.",109.0,36.0,105.7

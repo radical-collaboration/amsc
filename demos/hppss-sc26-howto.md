@@ -191,7 +191,7 @@ was Slurm 60647290, and the whole run took 5:03.
 | Step | Time |
 |---|---|
 | Endpoint submit → registered | 115 s: 91 s in the debug queue (part 1 was running at the same time), then 24 s from job start |
-| Clients A and B, in parallel | 134 s each. The first batch takes about 64 s (Dragon warm-up); later batches take 17–21 s |
+| Clients A and B, in parallel | 134 s each. The first batch takes about 64 s, because one case in it does not converge and runs to the 2000-iteration cap (40–55 s). Later batches take 17–21 s |
 | Cancel through ORBIT → endpoint gone | 45 s |
 
 | Client | Target `avgInlets` | Best loss per batch | Result |

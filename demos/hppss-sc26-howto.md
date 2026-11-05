@@ -66,6 +66,8 @@ login node). The broker needs a TLS pair, and endpoints authenticate with a
 token. Create both for the demo only.
 
 Don't reuse `~/.radical/orbit/`, which another ORBIT deployment may rely on.
+The environment file below also moves the psij plugin's job files out of it
+(`RADICAL_ORBIT_PSIJ_DIR`).
 
 ```sh
 mkdir -p $W/tls && chmod 700 $W/tls
@@ -89,6 +91,8 @@ export ORBIT_DEMO_ENV=\$HPPSS_WORK/my-env.sh
 export RADICAL_ORBIT_BROKER_CERT=\$HPPSS_WORK/tls/broker_cert.pem
 export RADICAL_ORBIT_BROKER_KEY=\$HPPSS_WORK/tls/broker_key.pem
 export RADICAL_ORBIT_BROKER_TOKEN=\$(cat \$HPPSS_WORK/tls/broker.token)
+# psij job scripts and job output, instead of ~/.radical/orbit/psij
+export RADICAL_ORBIT_PSIJ_DIR=\$HPPSS_WORK/psij
 EOF
 source $W/my-env.sh
 ```

@@ -32,7 +32,7 @@ covers only how to run the demo.
 | Environment file | `/pscratch/sd/m/merzky/hppss-demo/env.sh` | sources everything below |
 | Python venv | `/pscratch/sd/m/merzky/hppss-demo/ve` | cray-python 3.12.12, dragonhpc 0.15.0 |
 | RHAPSODY | branch `demo/hppss` of `radical-cybertools/rhapsody` | Dragon 0.15.0 pin + `OrbitDataBackend` + sid filter |
-| radical.orbit | branch `demo/hppss` of `radical-cybertools/radical.orbit` | devel with the session-scoped notification fix |
+| radical.orbit | branch `devel` of `radical-cybertools/radical.orbit`, `a843434` | includes session-scoped notifications (#146/#147), endpoint signal forwarding (#158), configurable WebSocket compression (#159) |
 | radical.prof | `radical-cybertools/radical.profile` `2bf1eb1` | |
 | radex (C++ library and Python client) | `/pscratch/sd/m/merzky/hppss-d015/radex/install`, commit `c4b4d1f` | Dragon backend |
 | `radexWrite` function objects | `/pscratch/sd/m/merzky/hppss-d015/of-user` | `CrayLabs/rhapsody-plugins-openfoam` `306d3f4` |
@@ -261,7 +261,7 @@ pip install -U pip
 pip install dragonhpc==0.15.0 cython numpy scikit-optimize matplotlib
 cd $D/src
 git clone -b demo/hppss https://github.com/radical-cybertools/rhapsody.git
-git clone -b demo/hppss https://github.com/radical-cybertools/radical.orbit.git
+git clone -b devel https://github.com/radical-cybertools/radical.orbit.git && git -C radical.orbit checkout a843434
 git clone https://github.com/radical-cybertools/radical.profile.git && git -C radical.profile checkout 2bf1eb1
 (cd rhapsody && pip install '.[dragon,orbit]')
 (cd radical.orbit && pip install .)

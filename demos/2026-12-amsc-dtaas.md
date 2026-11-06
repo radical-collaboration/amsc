@@ -10,7 +10,9 @@
   and data), Shantenu Jha.
 - **Compute:** STELLAR-AI (`stellarai-amd.princeton.edu`, B200 nodes);
   Perlmutter as fallback.
-- **Related:** the HPPSS demo (`2026-11-15-hppss-sc26.md`) builds parts of
+- **Related:** the HPPSS demo (`hppss/2026-11-15-hppss-sc26.md` in
+  [radical-experiments/rhapsody](https://github.com/radical-experiments/rhapsody/tree/2026_hppss/hppss),
+  branch `2026_hppss`) builds parts of
   the same service stack; section 7 lists what carries over.
 - **Status of this document:** plan as of 2026-10-26, to be agreed with
   Vini and Shantenu. STELLAR-AI offers no IRI API for now, so this plan

@@ -4,3 +4,5 @@
 *.pem
 *.id
 token_*
+__pycache__/
+*.pyc

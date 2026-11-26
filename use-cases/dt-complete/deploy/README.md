@@ -16,8 +16,8 @@ not survive it.
     ./setup-hpc-endpoint.sh <broker-host>
 
     # client machine
-    git clone https://github.com/radical-cybertools/digital.twins.git
-    (cd digital_twins && ./deploy/install.sh client &&
+    git clone -b devel https://github.com/radical-cybertools/digital.twins.git
+    (cd digital.twins && ./deploy/install.sh client &&
      ./ve.demo/bin/pip install pandas scikit-learn pyarrow)
     scp <broker-host>:.radical/orbit/broker_cert.pem \
         <broker-host>:.radical/orbit/broker.token ~/.radical/orbit/

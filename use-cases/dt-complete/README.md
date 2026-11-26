@@ -32,9 +32,10 @@ RAND_VAL sensor  ---> NEGATIVE_Agent ------/
 
 ## To run
 
-Use the current DT framework,
-[radical-cybertools/digital.twins](https://github.com/radical-cybertools/digital.twins);
-the `release/vanilla-framework` branch is not needed.  The framework's
+Both paths run against the DT framework commit that `deploy/install.sh`
+on the `devel` branch of
+[radical-cybertools/digital.twins](https://github.com/radical-cybertools/digital.twins)
+pins; the `release/vanilla-framework` branch is not needed.  The framework's
 documentation (concepts, tutorials, limits) is in its `docs/`.
 
 ### As a service
@@ -46,12 +47,14 @@ has the setup and run steps used for the recorded demo.
 
 ### Locally
 
-`run_me.py` runs the same twin in one process, on the same pinned stack:
+`run_me.py` runs the same twin in one process, on the same pinned stack.
+`install.sh` needs `python3.12` (or set `DT_PYTHON` to another
+interpreter).
 
 1. Install the framework and the use case's extra dependencies:
 
    ```bash
-   git clone https://github.com/radical-cybertools/digital.twins
+   git clone -b devel https://github.com/radical-cybertools/digital.twins
    (cd digital.twins && ./deploy/install.sh client)      # venv: ./ve.demo
    ./digital.twins/ve.demo/bin/pip install pandas scikit-learn pyarrow
    . digital.twins/ve.demo/bin/activate

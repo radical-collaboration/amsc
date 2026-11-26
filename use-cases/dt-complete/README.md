@@ -61,6 +61,9 @@ interpreter).
 
    Run the remaining steps from this directory (`use-cases/dt-complete`),
    each in a terminal with `. ~/digital_twins/ve.demo/bin/activate`.
+   Use fresh terminals, not ones that sourced `deploy/client-env.sh`:
+   its `DT_STREAM_BACKEND=orbit` would send the streams to a remote
+   broker instead of `local_broker.py`.
 
 2. Start the PUB/SUB streaming broker: `python3 local_broker.py`
 3. Start the sensors, each in its own terminal:

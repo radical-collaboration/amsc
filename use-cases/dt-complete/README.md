@@ -30,18 +30,40 @@ RAND_VAL sensor  ---> NEGATIVE_Agent ------/
 
 
 
-## To run:
+## To run
 
-1. Install the digital twins library:
+Use the current DT framework,
+[radical-cybertools/digital.twins](https://github.com/radical-cybertools/digital.twins);
+the `release/vanilla-framework` branch is not needed.  The framework's
+documentation (concepts, tutorials, limits) is in its `docs/`.
 
-``` bash
-git clone https://github.com/radical-cybertools/digital.twins
+### As a service
 
-# this is for the plain DT framework without all the as-a-service changes
-git checkout release/vanilla-framework
-pip install . 
-```
+The ORBIT broker with the DT service plugin runs on a standalone host,
+the compute on a Perlmutter allocation, and the sensors and the client
+(`run_me_service.py`) on your machine.  [deploy/README.md](deploy/README.md)
+has the setup and run steps used for the recorded demo.
 
-2. Start up your sensors: `python3 m3dc1_mock_sensor.py` and `python3 rand_sensor.py`
-3. Start up the PUB/SUB streaming broker: `python3 local_broker.py`
-4. Finally, run `python3 run_me.py`
+### Locally
+
+`run_me.py` runs the same twin in one process, on the same pinned stack:
+
+1. Install the framework and the use case's extra dependencies:
+
+   ```bash
+   git clone https://github.com/radical-cybertools/digital.twins
+   (cd digital.twins && ./deploy/install.sh client)      # venv: ./ve.demo
+   ./digital.twins/ve.demo/bin/pip install pandas scikit-learn pyarrow
+   . digital.twins/ve.demo/bin/activate
+   ```
+
+2. Start the PUB/SUB streaming broker: `python3 local_broker.py`
+3. Start the sensors, each in its own terminal:
+   `python3 m3dc1/m3dc1_mock_sensor.py` and
+   `python3 negative_agent/rand_sensor.py`
+4. Run the twin: `python3 run_me.py`
+
+> The framework package is being renamed from `digitaltwin` to
+> `radical.doppelganger` for its first release.  This use case imports
+> `digitaltwin` and runs against the commit `deploy/install.sh` pins; it
+> moves to the new name with that release.

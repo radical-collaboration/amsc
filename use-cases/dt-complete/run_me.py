@@ -17,7 +17,6 @@ from concurrent.futures import ProcessPoolExecutor
 from radical.asyncflow import WorkflowEngine
 from rhapsody.backends import ConcurrentExecutionBackend
 from radical.asyncflow.logging import init_default_logger
-from rhapsody.backends.data.redis import RedisDataBackend
 
 # Digital Twin imports
 from digitaltwin.runtime import DTRuntime

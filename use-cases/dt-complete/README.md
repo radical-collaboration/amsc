@@ -54,11 +54,13 @@ interpreter).
 1. Install the framework and the use case's extra dependencies:
 
    ```bash
-   git clone -b devel https://github.com/radical-cybertools/digital.twins
-   (cd digital.twins && ./deploy/install.sh client)      # venv: ./ve.demo
-   ./digital.twins/ve.demo/bin/pip install pandas scikit-learn pyarrow
-   . digital.twins/ve.demo/bin/activate
+   git clone -b devel https://github.com/radical-cybertools/digital.twins ~/digital_twins
+   (cd ~/digital_twins && ./deploy/install.sh client)    # venv: ~/digital_twins/ve.demo
+   ~/digital_twins/ve.demo/bin/pip install pandas scikit-learn pyarrow
    ```
+
+   Run the remaining steps from this directory (`use-cases/dt-complete`),
+   each in a terminal with `. ~/digital_twins/ve.demo/bin/activate`.
 
 2. Start the PUB/SUB streaming broker: `python3 local_broker.py`
 3. Start the sensors, each in its own terminal:

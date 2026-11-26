@@ -16,8 +16,8 @@ not survive it.
     ./setup-hpc-endpoint.sh <broker-host>
 
     # client machine
-    git clone -b devel https://github.com/radical-cybertools/digital.twins.git
-    (cd digital.twins && ./deploy/install.sh client &&
+    git clone -b devel https://github.com/radical-cybertools/digital.twins.git ~/digital_twins
+    (cd ~/digital_twins && ./deploy/install.sh client &&
      ./ve.demo/bin/pip install pandas scikit-learn pyarrow)
     scp <broker-host>:.radical/orbit/broker_cert.pem \
         <broker-host>:.radical/orbit/broker.token ~/.radical/orbit/
@@ -31,11 +31,11 @@ not survive it.
     salloc -N1 -C cpu -q interactive -t 2:00:00 -A <account>
     ./run-hpc-endpoint.sh <broker-host>        # watch for: registered as 'hpc'
 
-    # 3. client: three terminals, each sourced
+    # 3. client: three terminals, each sourced (<ve.demo> = ~/digital_twins/ve.demo)
     source deploy/client-env.sh <broker-host>
-    <ve.demo>/python m3dc1/m3dc1_mock_sensor.py        # terminal 1
-    <ve.demo>/python negative_agent/rand_sensor.py     # terminal 2
-    <ve.demo>/python run_me_service.py                 # terminal 3
+    <ve.demo>/bin/python m3dc1/m3dc1_mock_sensor.py        # terminal 1
+    <ve.demo>/bin/python negative_agent/rand_sensor.py     # terminal 2
+    <ve.demo>/bin/python run_me_service.py                 # terminal 3
 
 Dashboard: `https://<broker-host>:8000/broker/dt/ui?live=1` (broker
 token at the prompt).  The learning lane shows the ROSE window tasks;
